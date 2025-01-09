@@ -1,14 +1,123 @@
 ﻿<Window x:Class="ISDP2025_Parfonov_Zerrou.MainWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:local="clr-namespace:ISDP2025_Parfonov_Zerrou"
-        mc:Ignorable="d"
-        Title="MainWindow" Height="450" Width="800">
+        xmlns:fa="http://schemas.fontawesome.io/icons/"
+        Title="Login - Bullseye IMS" Height="800" Width="1000"
+        MinWidth="1000" MinHeight="800"
+        WindowStartupLocation="CenterScreen"
+        Background="#F7F7F7">
     <Grid>
-        <Button Content="HELLO THERE" HorizontalAlignment="Left" Margin="129,102,0,0" VerticalAlignment="Top" Height="154" Width="340" FontSize="48" Click="Button_Click"/>
-        <Label Content="THis is a big label" HorizontalAlignment="Left" Margin="148,31,0,0" VerticalAlignment="Top"/>
+        <!-- Centered Content -->
+        <Grid HorizontalAlignment="Center" VerticalAlignment="Top" Margin="0,219,0,0">
+            <!-- Logo and Title -->
+            <StackPanel HorizontalAlignment="Center" VerticalAlignment="Top" Margin="0,-146,0,0">
+                <Image Source="/bullseye.jpg" Width="100" Height="100" />
+                <TextBlock Text="Bullseye IMS" FontSize="24" FontWeight="Bold" 
+                           HorizontalAlignment="Center" Foreground="#444" />
+            </StackPanel>
 
+            <!-- Login Form -->
+            <Grid x:Name="LoginForm" Visibility="Visible">
+                <Border Background="White" CornerRadius="10" Padding="20" Width="400">
+                    <StackPanel>
+                        <!-- Title -->
+                        <TextBlock Text="Login" FontSize="20" FontWeight="Bold" Foreground="#333" Margin="0,0,0,10" />
+                        <TextBlock Text="Log in by entering your UserID and password." 
+                                   FontSize="12" Foreground="#888" Margin="0,0,0,20" />
+
+                        <!-- Username Field -->
+                        <StackPanel Margin="0,0,0,10">
+                            <TextBlock Text="Username:" FontSize="12" Foreground="#555" Margin="0,0,0,5" />
+                            <DockPanel Background="#F0F0F0" Height="35" VerticalAlignment="Center" >
+                                <fa:ImageAwesome Icon="User" Width="16" Height="16" 
+                                                  Foreground="#888" Margin="10,0" />
+                                <TextBox Background="Transparent" BorderThickness="0" 
+                                         Margin="5,0" VerticalContentAlignment="Center" />
+                            </DockPanel>
+                        </StackPanel>
+
+                        <!-- Password Field -->
+                        <StackPanel Margin="0,0,0,20"> 
+                            <TextBlock Text="Password:" FontSize="12" Foreground="#555" Margin="0,0,0,5" />
+                            <Grid Background="#FFF0F0F0" Height="35">
+                                <PasswordBox x:Name="PasswordBox" Background="Transparent" BorderThickness="0" 
+                                             VerticalContentAlignment="Center" Visibility="Visible" Margin="5,0,40,0" Password="jnkj" />
+                                <TextBox x:Name="PasswordTextBox" Background="Transparent" BorderThickness="0" 
+                                         VerticalContentAlignment="Center" Visibility="Collapsed" Margin="5,0,40,0" />
+                                <fa:ImageAwesome Icon="Eye" Width="20" Height="20" Foreground="#888" 
+                                                  HorizontalAlignment="Right" VerticalAlignment="Center" Margin="0,0,10,0"
+                                                  Cursor="Hand" MouseDown="TogglePasswordVisibility" OpacityMask="#FFF0F0F0" />
+                            </Grid>
+                            <TextBlock Text="Forgot password?" Foreground="#888" FontSize="12" 
+                                       HorizontalAlignment="Right" Margin="0,5,0,0" Cursor="Hand"
+                                       MouseDown="ShowPasswordResetForm" />
+                        </StackPanel>
+
+                        <!-- Login Button -->
+                        <Button Content="Log in" Height="40" Background="#444" Foreground="White" 
+                                FontWeight="Bold" BorderThickness="0"/>
+                    </StackPanel>
+                </Border>
+            </Grid>
+
+            <!-- Password Reset Form -->
+            <Grid x:Name="PasswordResetForm" Visibility="Collapsed">
+                <Border Background="White" CornerRadius="10" Padding="20" Width="400">
+                    <StackPanel>
+                        <!-- Title -->
+                        <TextBlock Text="Forgot password?" FontSize="20" FontWeight="Bold" Foreground="#333" Margin="0,0,0,10" />
+                        <TextBlock Text="Enter a New Password and we'll reset your password." 
+                                   FontSize="12" Foreground="#888" Margin="0,0,0,20" />
+
+                        <!-- Username Field -->
+                        <StackPanel Margin="0,0,0,10">
+                            <TextBlock Text="Username:" FontSize="12" Foreground="#555" Margin="0,0,0,5" />
+                            <DockPanel Background="#F0F0F0" Height="35" VerticalAlignment="Center">
+                                <fa:ImageAwesome Icon="User" Width="16" Height="16" 
+                                                  Foreground="#888" Margin="10,0" />
+                                <TextBox Text="UserName" Background="Transparent" BorderThickness="0" 
+                                         Margin="5,0" VerticalContentAlignment="Center" />
+                            </DockPanel>
+                        </StackPanel>
+
+                        <!-- New Password Field -->
+                        <StackPanel Margin="0,0,0,10">
+                            <TextBlock Text="New password:" FontSize="12" Foreground="#555" Margin="0,0,0,5" />
+                            <Grid Height="35" Background="#FFF0F0F0">
+                                <PasswordBox x:Name="NewPasswordBox" Background="Transparent" BorderThickness="0" 
+                                             VerticalContentAlignment="Center" Visibility="Visible" Margin="5,0,40,0" />
+                                <TextBox x:Name="NewPasswordTextBox" Background="Transparent" BorderThickness="0" 
+                                         VerticalContentAlignment="Center" Visibility="Collapsed" Margin="5,0,40,0" />
+                                <fa:ImageAwesome Icon="Eye" Width="20" Height="20" Foreground="#888" 
+                                                  HorizontalAlignment="Right" VerticalAlignment="Center" Margin="0,0,10,0"
+                                                  Cursor="Hand" MouseDown="ToggleNewPasswordVisibility" />
+                            </Grid>
+                        </StackPanel>
+
+                        <!-- Confirm Password Field -->
+                        <StackPanel Margin="0,0,0,20">
+                            <TextBlock Text="Confirm password:" FontSize="12" Foreground="#555" Margin="0,0,0,5" />
+                            <Grid Height="35" Background="#FFF0F0F0">
+                                <PasswordBox x:Name="ConfirmPasswordBox" Background="Transparent" BorderThickness="0" 
+                                             VerticalContentAlignment="Center" Visibility="Visible" Margin="5,0,40,0" />
+                                <TextBox x:Name="ConfirmPasswordTextBox" Background="Transparent" BorderThickness="0" 
+                                         VerticalContentAlignment="Center" Visibility="Collapsed" Margin="5,0,40,0" />
+                                <fa:ImageAwesome Icon="Eye" Width="20" Height="20" Foreground="#888" 
+                                                  HorizontalAlignment="Right" VerticalAlignment="Center" Margin="0,0,10,0"
+                                                  Cursor="Hand" MouseDown="ToggleConfirmPasswordVisibility" />
+                            </Grid>
+                        </StackPanel>
+
+                        <!-- Reset Password Button -->
+                        <Button Content="Reset Password" Height="40" Background="#444" Foreground="White" 
+                                FontWeight="Bold" BorderThickness="0" Margin="0,10,0,0" />
+                        <TextBlock Text="Generate Random password" Foreground="#888" FontSize="12" HorizontalAlignment="Center" Margin="0,10,0,0" Cursor="Hand" MouseDown="GeneratePassword"/>
+                        <TextBlock Text="Go back to Login page." Foreground="#888" FontSize="12" 
+                                   HorizontalAlignment="Center" Margin="0,10,0,0" Cursor="Hand"
+                                   MouseDown="ShowLoginForm" />
+                    </StackPanel>
+                </Border>
+            </Grid>
+        </Grid>
     </Grid>
 </Window>

@@ -14,11 +14,13 @@ using System.Windows.Shapes;
 using ISDP2025_Parfonov_Zerrou.Models;
 using Microsoft.EntityFrameworkCore;
 
+//ISDP Project
+//Mohammed Alae-Zerrou, Serhii Parfonov
+//NBCC, Winter 2025
 namespace ISDP2025_Parfonov_Zerrou
 {
-    /// <summary>
-    /// Interaction logic for MainWindow.xaml
-    /// </summary>
+    
+    //Main
     public partial class MainWindow : Window
     {
         BestContext context = new BestContext();
@@ -31,17 +33,18 @@ namespace ISDP2025_Parfonov_Zerrou
 
         private void TogglePasswordVisibility(object sender, MouseButtonEventArgs e)
         {
-            if (PasswordBox.Visibility == Visibility.Visible)
+            //Switch Visibility for Password, Collapse Unnecessary info
+            if (pwdPassword.Visibility == Visibility.Visible)
             {
-                PasswordTextBox.Text = PasswordBox.Password;
-                PasswordBox.Visibility = Visibility.Collapsed;
-                PasswordTextBox.Visibility = Visibility.Visible;
+                txtPassword.Text = pwdPassword.Password;
+                pwdPassword.Visibility = Visibility.Collapsed;
+                txtPassword.Visibility = Visibility.Visible;
             }
             else
             {
-                PasswordBox.Password = PasswordTextBox.Text;
-                PasswordBox.Visibility = Visibility.Visible;
-                PasswordTextBox.Visibility = Visibility.Collapsed;
+                pwdPassword.Password = txtPassword.Text;
+                pwdPassword.Visibility = Visibility.Visible;
+                txtPassword.Visibility = Visibility.Collapsed;
             }
         }
 
@@ -49,76 +52,105 @@ namespace ISDP2025_Parfonov_Zerrou
         {
             LoginForm.Visibility = Visibility.Collapsed;
             PasswordResetForm.Visibility = Visibility.Visible;
+            txtUserNameReset.IsEnabled = false;
+            txtUserNameReset.Text = txtUserName.Text;
         }
 
         private void ShowLoginForm(object sender, MouseButtonEventArgs e)
         {
             PasswordResetForm.Visibility = Visibility.Collapsed;
             LoginForm.Visibility = Visibility.Visible;
+            txtUserName.Clear();
+
+            BlankResetForm();
+        }
+
+        private void BlankResetForm()
+        {
+            txtNewPassword.Clear();
+            txtConfirmPassword.Clear();
+            txtUserNameReset.Clear();
         }
 
         private void ToggleNewPasswordVisibility(object sender, MouseButtonEventArgs e)
         {
-            if (NewPasswordBox.Visibility == Visibility.Visible)
+            if (pwdNewPassword.Visibility == Visibility.Visible)
             {
-                NewPasswordTextBox.Text = NewPasswordBox.Password;
-                NewPasswordBox.Visibility = Visibility.Collapsed;
-                NewPasswordTextBox.Visibility = Visibility.Visible;
+                txtNewPassword.Text = pwdNewPassword.Password;
+                pwdNewPassword.Visibility = Visibility.Collapsed;
+                txtNewPassword.Visibility = Visibility.Visible;
             }
             else
             {
-                NewPasswordBox.Password = NewPasswordTextBox.Text;
-                NewPasswordBox.Visibility = Visibility.Visible;
-                NewPasswordTextBox.Visibility = Visibility.Collapsed;
+                pwdNewPassword.Password = txtNewPassword.Text;
+                pwdNewPassword.Visibility = Visibility.Visible;
+                txtNewPassword.Visibility = Visibility.Collapsed;
             }
         }
 
         private void ToggleConfirmPasswordVisibility(object sender, MouseButtonEventArgs e)
         {
-            if (ConfirmPasswordBox.Visibility == Visibility.Visible)
+            if (pwdConfirmPassword.Visibility == Visibility.Visible)
             {
-                ConfirmPasswordTextBox.Text = ConfirmPasswordBox.Password;
-                ConfirmPasswordBox.Visibility = Visibility.Collapsed;
-                ConfirmPasswordTextBox.Visibility = Visibility.Visible;
+                txtConfirmPassword.Text = pwdConfirmPassword.Password;
+                pwdConfirmPassword.Visibility = Visibility.Collapsed;
+                txtConfirmPassword.Visibility = Visibility.Visible;
             }
             else
             {
-                ConfirmPasswordBox.Password = ConfirmPasswordTextBox.Text;
-                ConfirmPasswordBox.Visibility = Visibility.Visible;
-                ConfirmPasswordTextBox.Visibility = Visibility.Collapsed;
+                pwdConfirmPassword.Password = txtConfirmPassword.Text;
+                pwdConfirmPassword.Visibility = Visibility.Visible;
+                txtConfirmPassword.Visibility = Visibility.Collapsed;
             }
         }
 
         private void GeneratePassword(object sender, MouseButtonEventArgs e)
         {
-            const string CapitalLetters = "QWERTYUIOPASDFGHJKLZXCVBNM";
-            const string SmallLetters = "qwertyuiopasdfghjklzxcvbnm";
-            const string Digits = "0123456789";
-            const string SpecialCharacters = "!@#^&_=+<,>.";
-            const string AllChars = CapitalLetters + SmallLetters + Digits + SpecialCharacters;
+            //Available Character Storage
+            const string capitalLetters = "QWERTYUIOPASDFGHJKLZXCVBNM";
+            const string smallLetters = "qwertyuiopasdfghjklzxcvbnm";
+            const string digits = "0123456789";
+            const string specialCharacters = "!@#^&_=+<,>.";
+            const string allChars = capitalLetters + smallLetters + digits + specialCharacters;
 
-            int PasswordLength = 8;
+            //Assign Lenght
+            const int passwordLength = 15;
 
-            Random rnd = new Random();
+            //Initialize Random Object
+            Random randNum = new Random();
 
-            // Initialize the password with at least one character from each required category
-            char[] password = new char[PasswordLength];
-            password[0] = CapitalLetters[rnd.Next(CapitalLetters.Length)]; // Ensure at least one uppercase letter
-            password[1] = Digits[rnd.Next(Digits.Length)];                 // Ensure at least one digit
-            password[2] = SpecialCharacters[rnd.Next(SpecialCharacters.Length)]; // Ensure at least one special character
+            //Initialize the password with at least one character from each required category
+            char[] password = new char[passwordLength];
+            password[0] = capitalLetters[randNum.Next(capitalLetters.Length)];
+            password[1] = digits[randNum.Next(digits.Length)];
+            password[2] = specialCharacters[randNum.Next(specialCharacters.Length)];
 
-            // Fill the rest of the password randomly
-            for (int i = 3; i < PasswordLength; i++)
+            //Fill the rest of the password randomly
+            for (int i = 3; i < passwordLength; i++)
             {
-                password[i] = AllChars[rnd.Next(AllChars.Length)];
+                password[i] = allChars[randNum.Next(allChars.Length)];
             }
 
-            // Shuffle the password to randomize the order of characters
-            password = password.OrderBy(x => rnd.Next()).ToArray();
+            //Shuffle the password to randomize the order of characters
+            for (int i = 0; i < password.Length; i++)
+            {
 
-            // Convert the password array to a string and display it
+                int randIndex = randNum.Next(i, password.Length);
+
+                char temp = password[i];
+                password[i] = password[randIndex];
+                password[randIndex] = temp;
+            }
+
+            //Cast Char Array With Password as String and Display
             string finalPassword = new string(password);
-            MessageBox.Show(new string(finalPassword)); 
+            string hashedFinal = HashPasswordWithMD5(finalPassword, "Mohammed");
+
+            txtNewPassword.Visibility = Visibility.Visible;
+            txtConfirmPassword.Visibility = Visibility.Visible;
+            txtNewPassword.Text = finalPassword;
+            txtConfirmPassword.Text = finalPassword;
+
         }
         private void GetUsers()
         {
@@ -130,25 +162,33 @@ namespace ISDP2025_Parfonov_Zerrou
         }
 
         //HashPasswordWithMD5 will hash and salt the password
-        //it takes two parameters the password and salt
+        //It takes two parameters the password and salt
         static string HashPasswordWithMD5(string password, string salt)
         {
-            // Combine password and salt
+            //Combine password and salt
             string saltedPassword = password + salt;
 
-            // Create MD5 hash
+            //Create MD5 hash
             using (MD5 md5 = MD5.Create())
             {
                 byte[] hashBytes = md5.ComputeHash(Encoding.UTF8.GetBytes(saltedPassword));
 
-                // Convert hash to hexadecimal string
+                //Convert hash to hexadecimal string
                 StringBuilder hashBuilder = new StringBuilder();
                 foreach (byte b in hashBytes)
                 {
-                    hashBuilder.Append(b.ToString("x2")); // Convert byte to hex
+                    //Convert byte to hex
+                    hashBuilder.Append(b.ToString("x2")); 
                 }
-                return hashBuilder.ToString(); // This will be a 32-character string
+
+                //This will be a 32-character string
+                return hashBuilder.ToString(); 
             }
+        }
+
+        private void Button_Click(object sender, RoutedEventArgs e)
+        {
+            MessageBox.Show("tttt");        
         }
 
         private void Window_Loaded(object sender, RoutedEventArgs e)

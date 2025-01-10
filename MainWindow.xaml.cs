@@ -1,14 +1,18 @@
-﻿using System.Security.Cryptography;
+﻿using System.Net.Mail;
+using System.Security.Cryptography;
 using System.Text;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Documents;
 using System.Windows.Input;
+using System.Windows.Interop;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using ISDP2025_Parfonov_Zerrou.Models;
+using Microsoft.EntityFrameworkCore;
 
 namespace ISDP2025_Parfonov_Zerrou
 {
@@ -17,14 +21,12 @@ namespace ISDP2025_Parfonov_Zerrou
     /// </summary>
     public partial class MainWindow : Window
     {
+        BestContext context = new BestContext();
+        List<Employee> employees = new List<Employee>();
         public MainWindow()
         {
             InitializeComponent();
-        }
-
-        private void Button_Click(object sender, RoutedEventArgs e)
-        {
-            MessageBox.Show("skdjfbjakjkadghjFJKFjjbdfJHIfdhifdshfasajhidsfhjdsfjaklvknoaetboerg6519816");
+            BestContext context = new BestContext();
         }
 
         private void TogglePasswordVisibility(object sender, MouseButtonEventArgs e)
@@ -118,6 +120,14 @@ namespace ISDP2025_Parfonov_Zerrou
             string finalPassword = new string(password);
             MessageBox.Show(new string(finalPassword)); 
         }
+        private void GetUsers()
+        {
+            var users = from Employee in context.Employees select Employee;
+            foreach (var item in users)
+            {
+                employees.Add(item);
+            }
+        }
 
         //HashPasswordWithMD5 will hash and salt the password
         //it takes two parameters the password and salt
@@ -139,6 +149,14 @@ namespace ISDP2025_Parfonov_Zerrou
                 }
                 return hashBuilder.ToString(); // This will be a 32-character string
             }
+        }
+
+        private void Window_Loaded(object sender, RoutedEventArgs e)
+        {
+            context = new BestContext();
+            context.Employees.Load();
+            GetUsers();
+
         }
     }
 }

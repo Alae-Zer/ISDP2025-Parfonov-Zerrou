@@ -31,7 +31,7 @@
                             <DockPanel Background="#F0F0F0" Height="35" VerticalAlignment="Center" >
                                 <fa:ImageAwesome Icon="User" Width="16" Height="16" 
                                                   Foreground="#888" Margin="10,0" />
-                                <TextBox Background="Transparent" BorderThickness="0" 
+                                <TextBox x:Name="txtUserName" Background="Transparent" BorderThickness="0" 
                                          Margin="5,0" VerticalContentAlignment="Center" />
                             </DockPanel>
                         </StackPanel>
@@ -40,9 +40,9 @@
                         <StackPanel Margin="0,0,0,20"> 
                             <TextBlock Text="Password:" FontSize="12" Foreground="#555" Margin="0,0,0,5" />
                             <Grid Background="#FFF0F0F0" Height="35">
-                                <PasswordBox x:Name="PasswordBox" Background="Transparent" BorderThickness="0" 
+                                <PasswordBox x:Name="pwdPassword" Background="Transparent" BorderThickness="0" 
                                              VerticalContentAlignment="Center" Visibility="Visible" Margin="5,0,40,0" Password="jnkj" />
-                                <TextBox x:Name="PasswordTextBox" Background="Transparent" BorderThickness="0" 
+                                <TextBox x:Name="txtPassword" Background="Transparent" BorderThickness="0" 
                                          VerticalContentAlignment="Center" Visibility="Collapsed" Margin="5,0,40,0" />
                                 <fa:ImageAwesome Icon="Eye" Width="20" Height="20" Foreground="#888" 
                                                   HorizontalAlignment="Right" VerticalAlignment="Center" Margin="0,0,10,0"
@@ -55,7 +55,7 @@
 
                         <!-- Login Button -->
                         <Button Content="Log in" Height="40" Background="#444" Foreground="White" 
-                                FontWeight="Bold" BorderThickness="0"/>
+                                FontWeight="Bold" BorderThickness="0" Click="Button_Click"/>
                     </StackPanel>
                 </Border>
             </Grid>
@@ -75,8 +75,8 @@
                             <DockPanel Background="#F0F0F0" Height="35" VerticalAlignment="Center">
                                 <fa:ImageAwesome Icon="User" Width="16" Height="16" 
                                                   Foreground="#888" Margin="10,0" />
-                                <TextBox Text="UserName" Background="Transparent" BorderThickness="0" 
-                                         Margin="5,0" VerticalContentAlignment="Center" />
+                                <TextBox x:Name="txtUserNameReset" Text="UserName" Background="Transparent" BorderThickness="0" 
+                                         Margin="5,0" VerticalContentAlignment="Center" IsEnabled="False" />
                             </DockPanel>
                         </StackPanel>
 
@@ -84,9 +84,9 @@
                         <StackPanel Margin="0,0,0,10">
                             <TextBlock Text="New password:" FontSize="12" Foreground="#555" Margin="0,0,0,5" />
                             <Grid Height="35" Background="#FFF0F0F0">
-                                <PasswordBox x:Name="NewPasswordBox" Background="Transparent" BorderThickness="0" 
+                                <PasswordBox x:Name="pwdNewPassword" Background="Transparent" BorderThickness="0" 
                                              VerticalContentAlignment="Center" Visibility="Visible" Margin="5,0,40,0" />
-                                <TextBox x:Name="NewPasswordTextBox" Background="Transparent" BorderThickness="0" 
+                                <TextBox x:Name="txtNewPassword" Background="Transparent" BorderThickness="0" 
                                          VerticalContentAlignment="Center" Visibility="Collapsed" Margin="5,0,40,0" />
                                 <fa:ImageAwesome Icon="Eye" Width="20" Height="20" Foreground="#888" 
                                                   HorizontalAlignment="Right" VerticalAlignment="Center" Margin="0,0,10,0"
@@ -98,9 +98,9 @@
                         <StackPanel Margin="0,0,0,20">
                             <TextBlock Text="Confirm password:" FontSize="12" Foreground="#555" Margin="0,0,0,5" />
                             <Grid Height="35" Background="#FFF0F0F0">
-                                <PasswordBox x:Name="ConfirmPasswordBox" Background="Transparent" BorderThickness="0" 
+                                <PasswordBox x:Name="pwdConfirmPassword" Background="Transparent" BorderThickness="0" 
                                              VerticalContentAlignment="Center" Visibility="Visible" Margin="5,0,40,0" />
-                                <TextBox x:Name="ConfirmPasswordTextBox" Background="Transparent" BorderThickness="0" 
+                                <TextBox x:Name="txtConfirmPassword" Background="Transparent" BorderThickness="0" 
                                          VerticalContentAlignment="Center" Visibility="Collapsed" Margin="5,0,40,0" />
                                 <fa:ImageAwesome Icon="Eye" Width="20" Height="20" Foreground="#888" 
                                                   HorizontalAlignment="Right" VerticalAlignment="Center" Margin="0,0,10,0"

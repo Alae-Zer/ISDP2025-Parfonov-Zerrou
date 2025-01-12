@@ -190,15 +190,12 @@ namespace ISDP2025_Parfonov_Zerrou
                             this.IsEnabled = false;
                             MessageBox.Show("You have exceeded the maximum login attempts. Please reset your password.");
                             txtResetTitle.Text = "Password Reset Is Required";
-                            txtUserNameReset.Text = user.Username;
-                            txtUserNameReset.IsEnabled = false;
+
+                            //NEEDS REVIEW
                             LoginForm.Visibility = Visibility.Collapsed;
                             PasswordResetForm.Visibility = Visibility.Visible;
-                            //NEEDS REVIEW
-                            pwdNewPassword.IsEnabled = true;
-                            pwdConfirmPassword.IsEnabled = true;
-                            txtConfirmPassword.IsEnabled = true;
-                            txtNewPassword.IsEnabled = true;
+                            txtUserNameReset.IsEnabled = false;
+                            txtUserNameReset.Text = txtUserName.Text;
                         }
                     }
                 }

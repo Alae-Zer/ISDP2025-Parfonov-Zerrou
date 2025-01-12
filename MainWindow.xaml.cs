@@ -24,7 +24,7 @@ namespace ISDP2025_Parfonov_Zerrou
     public partial class MainWindow : Window
     {
         BestContext context = new BestContext();
-        List<Employee> employees = new List<Employee>();
+        //List<Employee> employees = new List<Employee>();
         int passwordAttempts = 0;
         int maxPasswordAttempts = 1;
         
@@ -67,7 +67,8 @@ namespace ISDP2025_Parfonov_Zerrou
 
             BlankResetForm();
         }
-
+        
+        //Resets Inputs
         private void BlankResetForm()
         {
             txtNewPassword.Clear();
@@ -193,7 +194,11 @@ namespace ISDP2025_Parfonov_Zerrou
                             txtUserNameReset.IsEnabled = false;
                             LoginForm.Visibility = Visibility.Collapsed;
                             PasswordResetForm.Visibility = Visibility.Visible;
-                        
+                            //NEEDS REVIEW
+                            pwdNewPassword.IsEnabled = true;
+                            pwdConfirmPassword.IsEnabled = true;
+                            txtConfirmPassword.IsEnabled = true;
+                            txtNewPassword.IsEnabled = true;
                         }
                     }
                 }

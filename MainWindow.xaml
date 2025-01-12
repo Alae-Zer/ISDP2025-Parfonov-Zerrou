@@ -115,7 +115,7 @@
 
                         <!-- Reset Password Button -->
                         <Button x:Name="btnResetPassword" Content="Reset Password" Height="40" Background="#444" Foreground="White" 
-                                FontWeight="Bold" BorderThickness="0" Margin="0,10,0,0" KeyDown="Button_KeyDown" Click="btnResetPassword_Click" />
+                                FontWeight="Bold" BorderThickness="0" Margin="0,10,0,0" Click="btnResetPassword_Click" />
                         <TextBlock Text="Generate Random password" Foreground="#888" FontSize="12" HorizontalAlignment="Center" Margin="0,10,0,0" Cursor="Hand" MouseDown="GeneratePassword"/>
                         <TextBlock Text="Go back to Login page." Foreground="#888" FontSize="12" 
                                    HorizontalAlignment="Center" Margin="0,10,0,0" Cursor="Hand"

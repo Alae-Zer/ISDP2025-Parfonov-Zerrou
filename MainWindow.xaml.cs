@@ -24,7 +24,9 @@ namespace ISDP2025_Parfonov_Zerrou
     public partial class MainWindow : Window
     {
         BestContext context = new BestContext();
-        List<Employee> employees = new List<Employee>();
+        string TheSalt = "TheSalt";
+        Employee employee = new Employee();
+
         public MainWindow()
         {
             InitializeComponent();
@@ -154,11 +156,11 @@ namespace ISDP2025_Parfonov_Zerrou
         }
         private void GetUsers()
         {
-            var users = from Employee in context.Employees select Employee;
-            foreach (var item in users)
-            {
-                employees.Add(item);
+            employee = context.Employees.FirstOrDefault(employee => employee.Username==txtUserName.Text);
+            if (employee == null) {
+                MessageBox.Show("No employee found");
             }
+
         }
 
         //HashPasswordWithMD5 will hash and salt the password
@@ -186,17 +188,21 @@ namespace ISDP2025_Parfonov_Zerrou
             }
         }
 
-        private void Button_Click(object sender, RoutedEventArgs e)
-        {
-            MessageBox.Show("tttt");        
-        }
-
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
-            context = new BestContext();
             context.Employees.Load();
-            GetUsers();
+            
 
+        }
+
+        private void btnLogIn_Click(object sender, RoutedEventArgs e)
+        {
+            GetUsers();
+            MessageBox.Show(employee.Username + "  " + employee.Password);
+            if (HashPasswordWithMD5(txtPassword.Text, TheSalt) == employee.Password)
+            {
+                MessageBox.Show("You can login");
+            }
         }
     }
 }

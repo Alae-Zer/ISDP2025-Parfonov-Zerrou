@@ -46,7 +46,7 @@
                             <TextBlock Text="Password:" FontSize="12" Foreground="#555" Margin="0,0,0,5" />
                             <Grid Background="#FFF0F0F0" Height="35">
                                 <PasswordBox x:Name="pwdPassword" Background="Transparent" BorderThickness="0" 
-                                             VerticalContentAlignment="Center" Visibility="Visible" Margin="5,0,40,0" Password="jnkj" />
+                                             VerticalContentAlignment="Center" Visibility="Visible" Margin="5,0,40,0" Password="P@ssw0rd-" />
                                 <TextBox x:Name="txtPassword" Background="Transparent" BorderThickness="0" 
                                          VerticalContentAlignment="Center" Visibility="Collapsed" Margin="5,0,40,0" />
                                 <fa:ImageAwesome Icon="Eye" Width="20" Height="20" Foreground="#888" 
@@ -59,8 +59,8 @@
                         </StackPanel>
 
                         <!-- Login Button -->
-                        <Button Content="Log in" Height="40" Background="#444" Foreground="White" 
-                                FontWeight="Bold" BorderThickness="0" Click="Button_Click"/>
+                        <Button x:Name="btnLogIn" Content="Log in" Height="40" Background="#444" Foreground="White" 
+                                FontWeight="Bold" BorderThickness="0" Click="btnLogIn_Click"/>
                     </StackPanel>
                 </Border>
             </Grid>
@@ -124,6 +124,5 @@
                 </Border>
             </Grid>
         </Grid>
-        <DataGrid x:Name="dgvTest" av:ItemsSource="{av:SampleData ItemCount=5}" Margin="34,48,535,223"/>
     </Grid>
 </Window>

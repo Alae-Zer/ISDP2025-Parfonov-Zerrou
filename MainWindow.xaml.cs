@@ -201,6 +201,11 @@ namespace ISDP2025_Parfonov_Zerrou
                 else
                 {
                     MessageBox.Show("Your login credentials are incorrect.");
+                    passwordAttempts++;
+                    if (passwordAttempts > maxPasswordAttempts) 
+                    {
+                        //LOCK USER HERE
+                    }
                 }
             }
             catch (Exception ex)

@@ -162,7 +162,8 @@ namespace ISDP2025_Parfonov_Zerrou
             {
                 string userName = txtUserName.Text;
                 var user = context.Employees.Where(e => e.Username == userName).FirstOrDefault();
-                if (user != null)
+                
+                if (user != null && user.Active == 1)
                 {
                     output = user.Username;
                 }
@@ -175,50 +176,37 @@ namespace ISDP2025_Parfonov_Zerrou
             }  
         }
 
-        private string FindPasswordByEmployee()
+        private void ValidateLoginAndHandleAccess()
         {
-            string output = "error";
-            string inputPassword = pwdPassword.Password;
-            string userName = GetUser();
-
             try
             {
-                var password = context.Employees.Where(e => e.Username == userName && e.Password == inputPassword).FirstOrDefault();
-                if (password != null)
+                string userName = GetUser();
+                string inputPassword = pwdPassword.Password;
+
+                var employee = context.Employees.FirstOrDefault(e => e.Username == userName && e.Password == inputPassword);
+
+                if (employee != null)
                 {
-                    output = password.Password;
+                    if (employee.Password == defaultPassword)
+                    {
+                        MessageBox.Show("You need to reset your password.");
+                        ShowPasswordResetForm();
+                    }
+                    else
+                    {
+                        MessageBox.Show("Login Successful!");
+                        // Navigate to the next page or main dashboard
+                    }
                 }
-                return output;
+                else
+                {
+                    MessageBox.Show("Your login credentials are incorrect.");
+                }
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"An error occurred while retrieving passwords: {ex.Message}");
-                return "DBerror";
-            }
-        }
-
-        private void HandleAccess()
-        {
-            string receivedPassword = FindPasswordByEmployee();
-
-            if (receivedPassword != "error" && receivedPassword == defaultPassword && receivedPassword != "DBerror") 
-            {
-                MessageBox.Show("Need To reset");
-                //PROMPT TO RESET PAGE HERE
-            }
-            else if (receivedPassword != "error" && receivedPassword != "DBerror")
-            {
-                MessageBox.Show("Login Successsful");
-                //PROMPT TO THE NEXT PAGE HERE
-            }
-            else if (receivedPassword == "DBerror")
-            {
-                MessageBox.Show("Contact your Database Administrator");
-                //PROMPT TO NOTHING
-            }
-            else
-            {
-                MessageBox.Show("Your Login Credentials are Incorrect");
+                MessageBox.Show($"An error occurred while processing your login: {ex.Message}");
+                // Optionally log the error or handle it further
             }
         }
 
@@ -258,7 +246,7 @@ namespace ISDP2025_Parfonov_Zerrou
 
         private void Button_Click(object sender, RoutedEventArgs e)
         {
-            HandleAccess();     
+            ValidateLoginAndHandleAccess();     
         }
 
         private void Window_Loaded(object sender, RoutedEventArgs e)

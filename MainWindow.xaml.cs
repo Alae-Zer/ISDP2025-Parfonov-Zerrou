@@ -27,7 +27,8 @@ namespace ISDP2025_Parfonov_Zerrou
         //List<Employee> employees = new List<Employee>();
         int passwordAttempts = 0;
         int maxPasswordAttempts = 1;
-        
+        string defaultPassword = "P@ssw0rd-";
+
         public MainWindow()
         {
             InitializeComponent();
@@ -53,10 +54,7 @@ namespace ISDP2025_Parfonov_Zerrou
 
         private void ShowPasswordResetForm(object sender, MouseButtonEventArgs e)
         {
-            LoginForm.Visibility = Visibility.Collapsed;
-            PasswordResetForm.Visibility = Visibility.Visible;
-            txtUserNameReset.IsEnabled = false;
-            txtUserNameReset.Text = txtUserName.Text;
+            ShowPasswordResetForm();
         }
 
         private void ShowLoginForm(object sender, MouseButtonEventArgs e)
@@ -157,57 +155,79 @@ namespace ISDP2025_Parfonov_Zerrou
 
         }
 
-        private void GetUsers()
+        private string GetUser()
         {
+            string output = "error";
             try
             {
-                // Retrieve UserName from the input
                 string userName = txtUserName.Text;
-                // Retrieve password from the textbox for comparison
-                string hashedPassword = pwdPassword.Password;
-
-                // Query to find the user by username
                 var user = context.Employees.Where(e => e.Username == userName).FirstOrDefault();
-
                 if (user != null)
                 {
-                    // Find the User By Password If User Exists
-                    var userPassword = context.Employees.Where(e => e.Password == hashedPassword && e.Username == userName).FirstOrDefault();
-
-                    if (userPassword != null)
-                    {
-                        // Login successful
-                        MessageBox.Show($"Login Successful, Welcome {user.FirstName.ToUpper()}");
-                        
-                    }
-                    else
-                    {
-                        MessageBox.Show("Your Credentials don't match our records!");
-                        passwordAttempts++;
-
-                        if (passwordAttempts >= maxPasswordAttempts)
-                        {
-                            this.IsEnabled = false;
-                            MessageBox.Show("You have exceeded the maximum login attempts. Please reset your password.");
-                            txtResetTitle.Text = "Password Reset Is Required";
-
-                            //NEEDS REVIEW
-                            LoginForm.Visibility = Visibility.Collapsed;
-                            PasswordResetForm.Visibility = Visibility.Visible;
-                            txtUserNameReset.IsEnabled = false;
-                            txtUserNameReset.Text = txtUserName.Text;
-                        }
-                    }
+                    output = user.Username;
                 }
-                else
-                {
-                    MessageBox.Show("Your Credentials don't match our records!");
-                }
+                return output;
             }
             catch (Exception ex)
             {
                 MessageBox.Show($"An error occurred while retrieving users: {ex.Message}");
+                return "DBerror";
+            }  
+        }
+
+        private string FindPasswordByEmployee()
+        {
+            string output = "error";
+            string inputPassword = pwdPassword.Password;
+            string userName = GetUser();
+
+            try
+            {
+                var password = context.Employees.Where(e => e.Username == userName && e.Password == inputPassword).FirstOrDefault();
+                if (password != null)
+                {
+                    output = password.Password;
+                }
+                return output;
             }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"An error occurred while retrieving passwords: {ex.Message}");
+                return "DBerror";
+            }
+        }
+
+        private void HandleAccess()
+        {
+            string receivedPassword = FindPasswordByEmployee();
+
+            if (receivedPassword != "error" && receivedPassword == defaultPassword && receivedPassword != "DBerror") 
+            {
+                MessageBox.Show("Need To reset");
+                //PROMPT TO RESET PAGE HERE
+            }
+            else if (receivedPassword != "error" && receivedPassword != "DBerror")
+            {
+                MessageBox.Show("Login Successsful");
+                //PROMPT TO THE NEXT PAGE HERE
+            }
+            else if (receivedPassword == "DBerror")
+            {
+                MessageBox.Show("Contact your Database Administrator");
+                //PROMPT TO NOTHING
+            }
+            else
+            {
+                MessageBox.Show("Your Login Credentials are Incorrect");
+            }
+        }
+
+        private void ShowPasswordResetForm()
+        {
+            LoginForm.Visibility = Visibility.Collapsed;
+            PasswordResetForm.Visibility = Visibility.Visible;
+            txtUserNameReset.IsEnabled = false;
+            txtUserNameReset.Text = txtUserName.Text;
         }
 
 
@@ -238,7 +258,7 @@ namespace ISDP2025_Parfonov_Zerrou
 
         private void Button_Click(object sender, RoutedEventArgs e)
         {
-            GetUsers();      
+            HandleAccess();     
         }
 
         private void Window_Loaded(object sender, RoutedEventArgs e)

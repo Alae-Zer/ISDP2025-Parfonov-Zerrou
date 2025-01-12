@@ -201,12 +201,43 @@ namespace ISDP2025_Parfonov_Zerrou
                 else
                 {
                     MessageBox.Show("Your login credentials are incorrect.");
+                    passwordAttempts++;
+                    if (passwordAttempts > maxPasswordAttempts) 
+                    {
+                        //LOCK USER HERE
+                        LockUser(userName);
+                    }
                 }
             }
             catch (Exception ex)
             {
                 MessageBox.Show($"An error occurred while processing your login: {ex.Message}");
                 // Optionally log the error or handle it further
+            }
+        }
+
+        private void LockUser(string userName)
+        {
+            try
+            {
+                var employee = context.Employees.FirstOrDefault(e => e.Username == userName);
+
+                if (employee != null)
+                {
+                    employee.Active = 0;
+                    context.SaveChanges();
+
+                    MessageBox.Show($"User '{userName}' has been locked due to too many failed login attempts.");
+                    passwordAttempts = 0;
+                }
+                else
+                {
+                    MessageBox.Show("User not found. Unable to lock the account.");
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"An error occurred while locking the user: {ex.Message}");
             }
         }
 

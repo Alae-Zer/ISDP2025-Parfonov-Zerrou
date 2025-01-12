@@ -27,6 +27,10 @@ namespace ISDP2025_Parfonov_Zerrou
         string TheSalt = "TheSalt";
         Employee employee = new Employee();
 
+        //List<Employee> employees = new List<Employee>();
+        int passwordAttempts = 0;
+        int maxPasswordAttempts = 1;
+        
         public MainWindow()
         {
             InitializeComponent();
@@ -66,7 +70,8 @@ namespace ISDP2025_Parfonov_Zerrou
 
             BlankResetForm();
         }
-
+        
+        //Resets Inputs
         private void BlankResetForm()
         {
             txtNewPassword.Clear();
@@ -154,17 +159,67 @@ namespace ISDP2025_Parfonov_Zerrou
             txtConfirmPassword.Text = finalPassword;
 
         }
+
         private void GetUsers()
         {
             employee = context.Employees.FirstOrDefault(employee => employee.Username==txtUserName.Text);
             if (employee == null) {
                 MessageBox.Show("No employee found");
+            try
+            {
+                // Retrieve UserName from the input
+                string userName = txtUserName.Text;
+                // Retrieve password from the textbox for comparison
+                string hashedPassword = pwdPassword.Password;
+
+                // Query to find the user by username
+                var user = context.Employees.Where(e => e.Username == userName).FirstOrDefault();
+
+                if (user != null)
+                {
+                    // Find the User By Password If User Exists
+                    var userPassword = context.Employees.Where(e => e.Password == hashedPassword && e.Username == userName).FirstOrDefault();
+
+                    if (userPassword != null)
+                    {
+                        // Login successful
+                        MessageBox.Show($"Login Successful, Welcome {user.FirstName.ToUpper()}");
+                        
+                    }
+                    else
+                    {
+                        MessageBox.Show("Your Credentials don't match our records!");
+                        passwordAttempts++;
+
+                        if (passwordAttempts >= maxPasswordAttempts)
+                        {
+                            this.IsEnabled = false;
+                            MessageBox.Show("You have exceeded the maximum login attempts. Please reset your password.");
+                            txtResetTitle.Text = "Password Reset Is Required";
+
+                            //NEEDS REVIEW
+                            LoginForm.Visibility = Visibility.Collapsed;
+                            PasswordResetForm.Visibility = Visibility.Visible;
+                            txtUserNameReset.IsEnabled = false;
+                            txtUserNameReset.Text = txtUserName.Text;
+                        }
+                    }
+                }
+                else
+                {
+                    MessageBox.Show("Your Credentials don't match our records!");
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"An error occurred while retrieving users: {ex.Message}");
             }
 
         }
 
+
         //HashPasswordWithMD5 will hash and salt the password
-        //It takes two parameters the password and salt
+        //It takes two parameters the password and the salt
         static string HashPasswordWithMD5(string password, string salt)
         {
             //Combine password and salt
@@ -193,10 +248,13 @@ namespace ISDP2025_Parfonov_Zerrou
             context.Employees.Load();
             
 
+            GetUsers();      
         }
 
         private void btnLogIn_Click(object sender, RoutedEventArgs e)
         {
+            context = new BestContext();
+            context.Employees.Load();
             GetUsers();
             MessageBox.Show(employee.Username + "  " + employee.Password);
             if (HashPasswordWithMD5(txtPassword.Text, TheSalt) == employee.Password)

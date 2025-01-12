@@ -70,13 +70,13 @@
                 <Border Background="White" CornerRadius="10" Padding="20" Width="400">
                     <StackPanel>
                         <!-- Title -->
-                        <TextBlock Text="Forgot password?" FontSize="20" FontWeight="Bold" Foreground="#333" Margin="0,0,0,10" />
+                        <TextBlock x:Name="txtResetTitle" Text="Forgot password?" FontSize="20" FontWeight="Bold" Foreground="#333" Margin="0,0,0,10" />
                         <TextBlock Text="Enter a New Password and we'll reset your password." 
                                    FontSize="12" Foreground="#888" Margin="0,0,0,20" />
 
                         <!-- Username Field -->
                         <StackPanel Margin="0,0,0,10">
-                            <TextBlock Text="Username:" FontSize="12" Foreground="#555" Margin="0,0,0,5" />
+                            <TextBlock x:Name="txtResetUsername" Text="Username:" FontSize="12" Foreground="#555" Margin="0,0,0,5" />
                             <DockPanel Background="#F0F0F0" Height="35" VerticalAlignment="Center">
                                 <fa:ImageAwesome Icon="User" Width="16" Height="16" 
                                                   Foreground="#888" Margin="10,0" />
@@ -87,7 +87,7 @@
 
                         <!-- New Password Field -->
                         <StackPanel Margin="0,0,0,10">
-                            <TextBlock Text="New password:" FontSize="12" Foreground="#555" Margin="0,0,0,5" />
+                            <TextBlock x:Name="txtResetNewPassword" Text="New password:" FontSize="12" Foreground="#555" Margin="0,0,0,5" />
                             <Grid Height="35" Background="#FFF0F0F0">
                                 <PasswordBox x:Name="pwdNewPassword" Background="Transparent" BorderThickness="0" 
                                              VerticalContentAlignment="Center" Visibility="Visible" Margin="5,0,40,0" />
@@ -101,7 +101,7 @@
 
                         <!-- Confirm Password Field -->
                         <StackPanel Margin="0,0,0,20">
-                            <TextBlock Text="Confirm password:" FontSize="12" Foreground="#555" Margin="0,0,0,5" />
+                            <TextBlock x:Name="txtResetConfirmNewPassword" Text="Confirm password:" FontSize="12" Foreground="#555" Margin="0,0,0,5" />
                             <Grid Height="35" Background="#FFF0F0F0">
                                 <PasswordBox x:Name="pwdConfirmPassword" Background="Transparent" BorderThickness="0" 
                                              VerticalContentAlignment="Center" Visibility="Visible" Margin="5,0,40,0" />

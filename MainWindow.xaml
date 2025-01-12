@@ -104,9 +104,9 @@
                             <TextBlock x:Name="txtResetConfirmNewPassword" Text="Confirm password:" FontSize="12" Foreground="#555" Margin="0,0,0,5" />
                             <Grid Height="35" Background="#FFF0F0F0">
                                 <PasswordBox x:Name="pwdConfirmPassword" Background="Transparent" BorderThickness="0" 
-                                             VerticalContentAlignment="Center" Visibility="Visible" Margin="5,0,40,0" />
+                                             VerticalContentAlignment="Center" Visibility="Visible" Margin="5,0,40,0" KeyUp="pwdConfirmPassword_KeyUp" />
                                 <TextBox x:Name="txtConfirmPassword" Background="Transparent" BorderThickness="0" 
-                                         VerticalContentAlignment="Center" Visibility="Collapsed" Margin="5,0,40,0" />
+                                         VerticalContentAlignment="Center" Visibility="Collapsed" Margin="5,0,40,0" KeyUp="txtConfirmPassword_KeyUp" />
                                 <fa:ImageAwesome Icon="Eye" Width="20" Height="20" Foreground="#888" 
                                                   HorizontalAlignment="Right" VerticalAlignment="Center" Margin="0,0,10,0"
                                                   Cursor="Hand" MouseDown="ToggleConfirmPasswordVisibility" />
@@ -114,8 +114,8 @@
                         </StackPanel>
 
                         <!-- Reset Password Button -->
-                        <Button Content="Reset Password" Height="40" Background="#444" Foreground="White" 
-                                FontWeight="Bold" BorderThickness="0" Margin="0,10,0,0" />
+                        <Button x:Name="btnResetPassword" Content="Reset Password" Height="40" Background="#444" Foreground="White" 
+                                FontWeight="Bold" BorderThickness="0" Margin="0,10,0,0" KeyDown="Button_KeyDown" Click="btnResetPassword_Click" />
                         <TextBlock Text="Generate Random password" Foreground="#888" FontSize="12" HorizontalAlignment="Center" Margin="0,10,0,0" Cursor="Hand" MouseDown="GeneratePassword"/>
                         <TextBlock Text="Go back to Login page." Foreground="#888" FontSize="12" 
                                    HorizontalAlignment="Center" Margin="0,10,0,0" Cursor="Hand"
@@ -125,5 +125,6 @@
             </Grid>
         </Grid>
         <DataGrid x:Name="dgvTest" av:ItemsSource="{av:SampleData ItemCount=5}" Margin="34,48,689,223"/>
+        <TextBox x:Name="txtMatchPassword" HorizontalAlignment="Left" Margin="715,403,0,0" TextWrapping="Wrap" Text="TextBox" VerticalAlignment="Top" Width="218" Height="32"/>
     </Grid>
 </Window>

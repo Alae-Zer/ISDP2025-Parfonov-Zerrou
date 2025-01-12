@@ -266,5 +266,46 @@ namespace ISDP2025_Parfonov_Zerrou
             context = new BestContext();
             context.Employees.Load();
         }
+
+        private void matchPassword()
+        {
+            string newPassword = pwdNewPassword.Visibility == 0 ? pwdNewPassword.Password : txtNewPassword.Text;
+            string confirmPassword = pwdConfirmPassword.Visibility == 0 ? pwdConfirmPassword.Password : txtConfirmPassword.Text;
+            if (newPassword != confirmPassword)
+            {
+                txtMatchPassword.Text = "the passwords doesnt match";
+                txtMatchPassword.Foreground = new SolidColorBrush(Colors.Red);
+            }
+            else
+            {
+               txtMatchPassword.Text = "";
+            }
+
+        }
+
+        private void pwdConfirmPassword_KeyUp(object sender, KeyEventArgs e)
+        {
+            matchPassword();
+        }
+
+        private void txtConfirmPassword_KeyUp(object sender, KeyEventArgs e)
+        {
+            matchPassword();
+        }
+
+        private void lockOutUser()
+        {
+            // this function will lock the user
+        }
+        private void updatePassword(string password)
+        {
+            // this function will hash the password and update it
+        }
+
+        private void btnResetPassword_Click(object sender, RoutedEventArgs e)
+        {
+            //string inputPassword = pwdNewPassword.Visibility == 0 ? pwdNewPassword.Password : txtNewPassword.Text;
+            //updatePassword(inputPassword);
+        }
     }
 }

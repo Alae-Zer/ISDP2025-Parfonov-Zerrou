@@ -30,11 +30,9 @@ namespace ISDP2025_Parfonov_Zerrou
     public partial class MainWindow : Window
     {
         BestContext context = new BestContext();
-        string TheSalt = "TheSalt";
-        //Employee employee = new Employee();
 
-        //List<Employee> employees = new List<Employee>();
-        //int passwordAttempts = 0;
+        //Global VAriables
+        string TheSalt = "TheSalt";
         int maxPasswordAttempts = 1;
         string defaultPassword = "P@ssw0rd-";
         List<string> usersAttempts = new List<string>();
@@ -48,12 +46,24 @@ namespace ISDP2025_Parfonov_Zerrou
 
         private void TogglePasswordVisibility(object sender, MouseButtonEventArgs e)
         {
-            PasswordVisibility();
+            TogglePasswords(pwdPassword, txtPassword);
         }
 
-        private void PasswordVisibility()
+        private void ToggleNewPasswordVisibility(object sender, MouseButtonEventArgs e)
         {
-            //Switch Visibility for Password, Collapse Unnecessary info
+            TogglePasswords(pwdNewPassword, txtNewPassword);
+        }
+
+        private void ToggleConfirmPasswordVisibility(object sender, MouseButtonEventArgs e)
+        {
+            TogglePasswords(pwdConfirmPassword, txtConfirmPassword);
+        }
+
+        //Switch Visibility for Password, Collapse Unnecessary info
+        //Sends Two Controls (PasswordBox and textBox)
+        //Returns Nothing
+        private void TogglePasswords (PasswordBox pwdPassword, TextBox txtPassword)
+        {
             if (pwdPassword.Visibility == Visibility.Visible)
             {
                 txtPassword.Text = pwdPassword.Password;
@@ -82,13 +92,19 @@ namespace ISDP2025_Parfonov_Zerrou
             BlankResetForm();
         }
 
+        //Blank Inputs
+        //Sends Nothing
+        //Returns Nothing
         private void BlankResetForm()
         {
             txtNewPassword.Clear();
             txtConfirmPassword.Clear();
             txtUserNameReset.Clear();
         }
-
+        
+        //Verifies that input is not empty
+        //Sends TextBox with Displayed Name
+        //Return Boolean
         private bool IsEmptyInput(TextBox textInput, string name)
         {
             if (textInput.Text == "")
@@ -97,38 +113,6 @@ namespace ISDP2025_Parfonov_Zerrou
                 return false;
             }
             return true;
-        }
-
-        private void ToggleNewPasswordVisibility(object sender, MouseButtonEventArgs e)
-        {
-            if (pwdNewPassword.Visibility == Visibility.Visible)
-            {
-                txtNewPassword.Text = pwdNewPassword.Password;
-                pwdNewPassword.Visibility = Visibility.Collapsed;
-                txtNewPassword.Visibility = Visibility.Visible;
-            }
-            else
-            {
-                pwdNewPassword.Password = txtNewPassword.Text;
-                pwdNewPassword.Visibility = Visibility.Visible;
-                txtNewPassword.Visibility = Visibility.Collapsed;
-            }
-        }
-
-        private void ToggleConfirmPasswordVisibility(object sender, MouseButtonEventArgs e)
-        {
-            if (pwdConfirmPassword.Visibility == Visibility.Visible)
-            {
-                txtConfirmPassword.Text = pwdConfirmPassword.Password;
-                pwdConfirmPassword.Visibility = Visibility.Collapsed;
-                txtConfirmPassword.Visibility = Visibility.Visible;
-            }
-            else
-            {
-                pwdConfirmPassword.Password = txtConfirmPassword.Text;
-                pwdConfirmPassword.Visibility = Visibility.Visible;
-                txtConfirmPassword.Visibility = Visibility.Collapsed;
-            }
         }
 
         private void GeneratePassword(object sender, MouseButtonEventArgs e)
@@ -220,9 +204,6 @@ namespace ISDP2025_Parfonov_Zerrou
                     inputPassword = txtNewPassword.Text;
                 }
 
-                //var employee = context.Employees.FirstOrDefault(e => e.Username == userName);
-                //var password = context.Employees.FirstOrDefault(e => e.Username == userName && e.Password == inputPassword);
-
                 if (employee != null)
                 {
                     if (inputPassword == employee.Password && employee.Password == defaultPassword)
@@ -265,23 +246,30 @@ namespace ISDP2025_Parfonov_Zerrou
         }
 
         //Browse the User in The list and Checks Number of session Attempts
+        //Accepts Username String
+        //Return Boolean Value (Exceeded limit or Not)
         private bool FindUserInTheList(string userName)
         {
+            //Initialize Loop
             for (int i = 0; i < usersAttempts.Count; i++)
             {
-
+                //Split Row
                 string[] userParts = usersAttempts[i].Split(',');
 
+                //Check the Number Of Arguments and Name Is the Same as In the Records
                 if (userParts.Length == 2 && userName == userParts[0])
                 {
+                    //Parse String To Integer
                     if (int.TryParse(userParts[1], out int attempt))
                     {
+                        //Increment and Record
                         attempt++;
                         usersAttempts[i] = $"{userName},{attempt}";
 
                         MessageBox.Show($"Attempt {attempt} for user {userName}");
 
-                        if (attempt > maxPasswordAttempts)
+                        //Check The Limit
+                        if (attempt >= maxPasswordAttempts)
                         {
                             return true;
                         }
@@ -290,6 +278,7 @@ namespace ISDP2025_Parfonov_Zerrou
                 }
             }
 
+            //Add New Record If Not Found
             usersAttempts.Add($"{userName},1");
             MessageBox.Show($"New user added: {userName} with 1 attempt");
 

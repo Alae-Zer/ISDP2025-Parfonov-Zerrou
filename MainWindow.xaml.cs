@@ -1,5 +1,10 @@
-﻿using System.Net.Mail;
+﻿using System.Diagnostics;
+using System.Diagnostics.Eventing.Reader;
+using System.Net.Mail;
+using System.Net.Sockets;
 using System.Security.Cryptography;
+using System.Security.Policy;
+using System.Security.Principal;
 using System.Text;
 using System.Windows;
 using System.Windows.Controls;
@@ -13,17 +18,21 @@ using System.Windows.Navigation;
 using System.Windows.Shapes;
 using ISDP2025_Parfonov_Zerrou.Models;
 using Microsoft.EntityFrameworkCore;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 //ISDP Project
 //Mohammed Alae-Zerrou, Serhii Parfonov
 //NBCC, Winter 2025
 namespace ISDP2025_Parfonov_Zerrou
 {
-    
+
     //Main
     public partial class MainWindow : Window
     {
         BestContext context = new BestContext();
+        string TheSalt = "TheSalt";
+        Employee employee = new Employee();
+
         //List<Employee> employees = new List<Employee>();
         int passwordAttempts = 0;
         int maxPasswordAttempts = 1;
@@ -33,9 +42,15 @@ namespace ISDP2025_Parfonov_Zerrou
         {
             InitializeComponent();
             BestContext context = new BestContext();
+            ResetInputs();
         }
 
         private void TogglePasswordVisibility(object sender, MouseButtonEventArgs e)
+        {
+            PasswordVisibility();
+        }
+
+        private void PasswordVisibility()
         {
             //Switch Visibility for Password, Collapse Unnecessary info
             if (pwdPassword.Visibility == Visibility.Visible)
@@ -65,13 +80,23 @@ namespace ISDP2025_Parfonov_Zerrou
 
             BlankResetForm();
         }
-        
+
         //Resets Inputs
         private void BlankResetForm()
         {
             txtNewPassword.Clear();
             txtConfirmPassword.Clear();
             txtUserNameReset.Clear();
+        }
+
+        private bool IsEmptyInput(TextBox textInput, string name)
+        {
+            if (textInput.Text == "")
+            {
+                MessageBox.Show($"{name} Can't Be Empty");
+                return false;
+            }
+            return true;
         }
 
         private void ToggleNewPasswordVisibility(object sender, MouseButtonEventArgs e)
@@ -178,35 +203,53 @@ namespace ISDP2025_Parfonov_Zerrou
 
         private void ValidateLoginAndHandleAccess()
         {
+
             try
             {
+                string inputPassword;
                 string userName = GetUser();
-                string inputPassword = pwdPassword.Password;
 
-                var employee = context.Employees.FirstOrDefault(e => e.Username == userName && e.Password == inputPassword);
+                if (pwdPassword.Visibility == Visibility.Visible)
+                {
+                    inputPassword = pwdPassword.Password;
+                }
+                else
+                {
+                    inputPassword = txtNewPassword.Text;
+                }
+
+                var employee = context.Employees.FirstOrDefault(e => e.Username == userName);
+                var password = context.Employees.FirstOrDefault(e => e.Username == userName && e.Password == inputPassword);
 
                 if (employee != null)
                 {
-                    if (employee.Password == defaultPassword)
+                    if (password != null && password.Password == defaultPassword)
                     {
                         MessageBox.Show("You need to reset your password.");
                         ShowPasswordResetForm();
+                        ResetInputs();
                     }
-                    else
+                    else if (employee.Password == inputPassword)
                     {
                         MessageBox.Show("Login Successful!");
                         // Navigate to the next page or main dashboard
+                    }
+                    else
+                    {
+                        MessageBox.Show("Your login credentials are incorrect.");
+                        passwordAttempts++;
+                        if (passwordAttempts > maxPasswordAttempts)
+                        {
+                            //LOCK USER HERE
+                            LockUser(userName);
+                            passwordAttempts = 0;
+                            ResetInputs();
+                        }
                     }
                 }
                 else
                 {
                     MessageBox.Show("Your login credentials are incorrect.");
-                    passwordAttempts++;
-                    if (passwordAttempts > maxPasswordAttempts) 
-                    {
-                        //LOCK USER HERE
-                        LockUser(userName);
-                    }
                 }
             }
             catch (Exception ex)
@@ -228,8 +271,8 @@ namespace ISDP2025_Parfonov_Zerrou
                     context.SaveChanges();
 
                     MessageBox.Show($"User '{userName}' has been locked due to too many failed login attempts.");
-                    passwordAttempts = 0;
                 }
+                //this else means there is no employee with the correct name
                 else
                 {
                     MessageBox.Show("User not found. Unable to lock the account.");
@@ -239,6 +282,13 @@ namespace ISDP2025_Parfonov_Zerrou
             {
                 MessageBox.Show($"An error occurred while locking the user: {ex.Message}");
             }
+        }
+
+        private void ResetInputs()
+        {
+            txtUserName.Clear();
+            txtPassword.Clear();
+            pwdPassword.Clear();
         }
 
         private void ShowPasswordResetForm()
@@ -252,41 +302,74 @@ namespace ISDP2025_Parfonov_Zerrou
 
         //HashPasswordWithMD5 will hash and salt the password
         //It takes two parameters the password and the salt
-        static string HashPasswordWithMD5(string password, string salt)
-        {
-            //Combine password and salt
-            string saltedPassword = password + salt;
+        static string HashPasswordWithMD5(string password, string salt){
+                //Combine password and salt
+                string saltedPassword = password + salt;
 
-            //Create MD5 hash
-            using (MD5 md5 = MD5.Create())
-            {
-                byte[] hashBytes = md5.ComputeHash(Encoding.UTF8.GetBytes(saltedPassword));
-
-                //Convert hash to hexadecimal string
-                StringBuilder hashBuilder = new StringBuilder();
-                foreach (byte b in hashBytes)
+                //Create MD5 hash
+                using (MD5 md5 = MD5.Create())
                 {
-                    //Convert byte to hex
-                    hashBuilder.Append(b.ToString("x2")); 
+                    byte[] hashBytes = md5.ComputeHash(Encoding.UTF8.GetBytes(saltedPassword));
+
+                    //Convert hash to hexadecimal string
+                    StringBuilder hashBuilder = new StringBuilder();
+                    foreach (byte b in hashBytes)
+                    {
+                        //Convert byte to hex
+                        hashBuilder.Append(b.ToString("x2"));
+                    }
+
+                    //This will be a 32-character string
+                    return hashBuilder.ToString();
                 }
-
-                //This will be a 32-character string
-                return hashBuilder.ToString(); 
-            }
-        }
-
-        private void Button_Click(object sender, RoutedEventArgs e)
-        {
-            ValidateLoginAndHandleAccess();     
         }
 
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
-            context = new BestContext();
             context.Employees.Load();
         }
+        
+        private void TogglePassword(PasswordBox pwbInput, TextBox txtInput)
+        {
+            if (pwbInput.Visibility == Visibility.Visible)
+            {
+                txtInput.Text = pwbInput.Password;
+            }
+            else
+            {
+                pwbInput.Password = txtInput.Text;
+            }
+        }
 
-        private void matchPassword()
+        private void btnLogIn_Click(object sender, RoutedEventArgs e)
+        {
+            TogglePassword(pwdPassword,txtPassword);
+
+            if (IsEmptyInput(txtUserName, "User Name") && IsEmptyInput(txtPassword, "Password"))
+            {
+                ValidateLoginAndHandleAccess();
+            }
+            
+        }
+
+        private void btnResetPasswrd_Click(object sender, RoutedEventArgs e)
+        {
+            string inputPassword = pwdNewPassword.Visibility == 0 ? pwdNewPassword.Password : txtNewPassword.Text;
+            updatePassword(inputPassword);
+        }
+
+        private void pwdConfirmPassword_KeyUp(object sender, KeyEventArgs e)
+        {
+            MatchPassword();
+        }
+
+        private void txtConfirmPassword_KeyUp(object sender, KeyEventArgs e)
+        {
+            MatchPassword();
+
+        }
+
+        private void MatchPassword()
         {
             string newPassword = pwdNewPassword.Visibility == 0 ? pwdNewPassword.Password : txtNewPassword.Text;
             string confirmPassword = pwdConfirmPassword.Visibility == 0 ? pwdConfirmPassword.Password : txtConfirmPassword.Text;
@@ -302,20 +385,6 @@ namespace ISDP2025_Parfonov_Zerrou
 
         }
 
-        private void pwdConfirmPassword_KeyUp(object sender, KeyEventArgs e)
-        {
-            matchPassword();
-        }
-
-        private void txtConfirmPassword_KeyUp(object sender, KeyEventArgs e)
-        {
-            matchPassword();
-        }
-
-        private void lockOutUser()
-        {
-            // this function will lock the user
-        }
         private void updatePassword(string password)
         {
             // this function will hash the password and update it

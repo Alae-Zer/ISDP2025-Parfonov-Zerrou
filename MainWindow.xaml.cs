@@ -31,12 +31,13 @@ namespace ISDP2025_Parfonov_Zerrou
     {
         BestContext context = new BestContext();
         string TheSalt = "TheSalt";
-        Employee employee = new Employee();
+        //Employee employee = new Employee();
 
         //List<Employee> employees = new List<Employee>();
-        int passwordAttempts = 0;
+        //int passwordAttempts = 0;
         int maxPasswordAttempts = 1;
         string defaultPassword = "P@ssw0rd-";
+        List<string> usersAttempts = new List<string>();
 
         public MainWindow()
         {
@@ -170,7 +171,7 @@ namespace ISDP2025_Parfonov_Zerrou
 
             //Cast Char Array With Password as String and Display
             string finalPassword = new string(password);
-            string hashedFinal = HashPasswordWithMD5(finalPassword, "Mohammed");
+            string hashedFinal = HashPasswordWithMD5(finalPassword, TheSalt);
 
             txtNewPassword.Visibility = Visibility.Visible;
             txtConfirmPassword.Visibility = Visibility.Visible;
@@ -237,12 +238,9 @@ namespace ISDP2025_Parfonov_Zerrou
                     else
                     {
                         MessageBox.Show("Your login credentials are incorrect.");
-                        passwordAttempts++;
-                        if (passwordAttempts > maxPasswordAttempts)
+                        if (FindUserInTheList(userName))
                         {
-                            //LOCK USER HERE
                             LockUser(userName);
-                            passwordAttempts = 0;
                         }
                         ResetInputs();
                     }
@@ -250,6 +248,7 @@ namespace ISDP2025_Parfonov_Zerrou
                 else
                 {
                     MessageBox.Show("Your login credentials are incorrect.");
+                    ResetInputs();
                 }
             }
             catch (Exception ex)
@@ -257,6 +256,32 @@ namespace ISDP2025_Parfonov_Zerrou
                 MessageBox.Show($"An error occurred while processing your login: {ex.Message}");
                 // Optionally log the error or handle it further
             }
+        }
+
+        //Browse the User in The list and Checks Number of session Attempts
+        private bool FindUserInTheList(string userName)
+        {
+            for (int i = 0; i < usersAttempts.Count; i++)
+            {
+                string[] userParts = usersAttempts[0].Split(',');
+
+                if (userParts.Length == 2 && userName == userParts[0])
+                {
+                    string userNameIncorrect = userParts[0];
+
+                    if (int.TryParse(userParts[1], out int attempt))
+                    {
+                        attempt++;
+                        usersAttempts[i] = userName + attempt.ToString();
+
+                        if (attempt > maxPasswordAttempts)
+                        {
+                            return true;
+                        }
+                    }
+                }
+            }
+            return false;
         }
 
         private void LockUser(string userName)
@@ -385,7 +410,7 @@ namespace ISDP2025_Parfonov_Zerrou
             string confirmPassword = pwdConfirmPassword.Visibility == 0 ? pwdConfirmPassword.Password : txtConfirmPassword.Text;
             if (newPassword != confirmPassword)
             {
-                txtMatchPassword.Text = "the passwords doesnt match";
+                txtMatchPassword.Text = "Passwords Don't Match";
                 txtMatchPassword.Foreground = new SolidColorBrush(Colors.Red);
             }
             else

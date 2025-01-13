@@ -317,16 +317,16 @@ namespace ISDP2025_Parfonov_Zerrou
 
         private void pwdConfirmPassword_KeyUp(object sender, KeyEventArgs e)
         {
-            matchPassword();
+            MatchPassword();
         }
 
         private void txtConfirmPassword_KeyUp(object sender, KeyEventArgs e)
         {
-            matchPassword();
+            MatchPassword();
 
         }
 
-        private void matchPassword()
+        private void MatchPassword()
         {
             string newPassword = pwdNewPassword.Visibility == 0 ? pwdNewPassword.Password : txtNewPassword.Text;
             string confirmPassword = pwdConfirmPassword.Visibility == 0 ? pwdConfirmPassword.Password : txtConfirmPassword.Text;
@@ -340,16 +340,6 @@ namespace ISDP2025_Parfonov_Zerrou
                txtMatchPassword.Text = "";
             }
 
-        }
-
-        private void pwdConfirmPassword_KeyUp(object sender, KeyEventArgs e)
-        {
-            matchPassword();
-        }
-
-        private void txtConfirmPassword_KeyUp(object sender, KeyEventArgs e)
-        {
-            matchPassword();
         }
 
         private void lockOutUser()

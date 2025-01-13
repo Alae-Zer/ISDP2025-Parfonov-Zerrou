@@ -180,9 +180,10 @@ namespace ISDP2025_Parfonov_Zerrou
 
         }
 
-        private string GetUser()
+        private Employee GetUser()
         {
             string output = "error";
+            Employee userOutput = new Employee();
             try
             {
                 string userName = txtUserName.Text;
@@ -191,13 +192,14 @@ namespace ISDP2025_Parfonov_Zerrou
                 if (user != null && user.Active == 1)
                 {
                     output = user.Username;
+                    userOutput = user;
                 }
-                return output;
+                return userOutput;
             }
             catch (Exception ex)
             {
                 MessageBox.Show($"An error occurred while retrieving users: {ex.Message}");
-                return "DBerror";
+                return userOutput;
             }  
         }
 
@@ -207,7 +209,7 @@ namespace ISDP2025_Parfonov_Zerrou
             try
             {
                 string inputPassword;
-                string userName = GetUser();
+                Employee employee = GetUser();
 
                 if (pwdPassword.Visibility == Visibility.Visible)
                 {
@@ -218,12 +220,12 @@ namespace ISDP2025_Parfonov_Zerrou
                     inputPassword = txtNewPassword.Text;
                 }
 
-                var employee = context.Employees.FirstOrDefault(e => e.Username == userName);
-                var password = context.Employees.FirstOrDefault(e => e.Username == userName && e.Password == inputPassword);
+                //var employee = context.Employees.FirstOrDefault(e => e.Username == userName);
+                //var password = context.Employees.FirstOrDefault(e => e.Username == userName && e.Password == inputPassword);
 
                 if (employee != null)
                 {
-                    if (password != null && password.Password == defaultPassword)
+                    if (inputPassword == employee.Password && employee.Password == defaultPassword)
                     {
                         MessageBox.Show("You need to reset your password.");
                         ShowPasswordResetForm();
@@ -238,9 +240,13 @@ namespace ISDP2025_Parfonov_Zerrou
                     else
                     {
                         MessageBox.Show("Your login credentials are incorrect.");
-                        if (FindUserInTheList(userName))
+                        if (FindUserInTheList(employee.Username))
                         {
-                            LockUser(userName);
+                            LockUser(employee.Username);
+                        }
+                        else
+                        {
+                            usersAttempts.Add(employee.Username + ",1");
                         }
                         ResetInputs();
                     }

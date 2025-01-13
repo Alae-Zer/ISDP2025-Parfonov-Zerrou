@@ -70,18 +70,17 @@ namespace ISDP2025_Parfonov_Zerrou
         private void ShowPasswordResetForm(object sender, MouseButtonEventArgs e)
         {
             ShowPasswordResetForm();
+            txtUserNameReset.IsEnabled = true;
         }
 
         private void ShowLoginForm(object sender, MouseButtonEventArgs e)
         {
             PasswordResetForm.Visibility = Visibility.Collapsed;
             LoginForm.Visibility = Visibility.Visible;
-            txtUserName.Clear();
-
+            ResetInputs();
             BlankResetForm();
         }
 
-        //Resets Inputs
         private void BlankResetForm()
         {
             txtNewPassword.Clear();
@@ -232,6 +231,7 @@ namespace ISDP2025_Parfonov_Zerrou
                     else if (employee.Password == inputPassword)
                     {
                         MessageBox.Show("Login Successful!");
+                        ResetInputs();
                         // Navigate to the next page or main dashboard
                     }
                     else
@@ -243,8 +243,8 @@ namespace ISDP2025_Parfonov_Zerrou
                             //LOCK USER HERE
                             LockUser(userName);
                             passwordAttempts = 0;
-                            ResetInputs();
                         }
+                        ResetInputs();
                     }
                 }
                 else
@@ -352,10 +352,20 @@ namespace ISDP2025_Parfonov_Zerrou
             
         }
 
-        private void btnResetPasswrd_Click(object sender, RoutedEventArgs e)
+        private void btnResetPassword_Click(object sender, RoutedEventArgs e)
         {
             string inputPassword = pwdNewPassword.Visibility == 0 ? pwdNewPassword.Password : txtNewPassword.Text;
-            updatePassword(inputPassword);
+            
+            if (IsEmptyInput(txtUserNameReset, "User Name")&& IsEmptyInput(txtNewPassword, "New Password") && IsEmptyInput(txtConfirmPassword, "Confirm Password")){
+                var user = context.Employees.FirstOrDefault(u => u.Username == txtUserNameReset.Text);
+                if (user != null) 
+                {
+                    user.Password = inputPassword;
+                    context.SaveChanges();
+                    MessageBox.Show("Password updated successfully!", "Success");
+                }
+            }
+            
         }
 
         private void pwdConfirmPassword_KeyUp(object sender, KeyEventArgs e)
@@ -383,17 +393,6 @@ namespace ISDP2025_Parfonov_Zerrou
                txtMatchPassword.Text = "";
             }
 
-        }
-
-        private void updatePassword(string password)
-        {
-            // this function will hash the password and update it
-        }
-
-        private void btnResetPassword_Click(object sender, RoutedEventArgs e)
-        {
-            //string inputPassword = pwdNewPassword.Visibility == 0 ? pwdNewPassword.Password : txtNewPassword.Text;
-            //updatePassword(inputPassword);
         }
     }
 }

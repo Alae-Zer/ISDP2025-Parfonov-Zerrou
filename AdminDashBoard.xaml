@@ -33,10 +33,10 @@
         <DockPanel>
             <StackPanel Background="#333" Width="250" DockPanel.Dock="Left" VerticalAlignment="Stretch">
                 <!-- Logo -->
-                <StackPanel Margin="10" VerticalAlignment="Top" Height="120">
-                    <Image Source="/bullseye.jpg" Width="80" Height="80" HorizontalAlignment="Center" />
+                <StackPanel Margin="10" VerticalAlignment="Top" Height="140">
+                    <Image Source="/bullseye.png" Width="126" Height="100" HorizontalAlignment="Center" Stretch="UniformToFill" />
                     <TextBlock Text="Bullseye IMS" Foreground="White" FontWeight="Bold" 
-                               FontSize="20" TextAlignment="Center" />
+                               FontSize="20" TextAlignment="Center" Margin="0,12,0,0" />
                 </StackPanel>
 
                 <!-- Navigation -->

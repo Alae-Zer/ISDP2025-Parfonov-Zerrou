@@ -35,6 +35,7 @@ namespace ISDP2025_Parfonov_Zerrou
         //List<Employee> employees = new List<Employee>();
         int passwordAttempts = 0;
         int maxPasswordAttempts = 1;
+        string defaultPassword = "P@ssw0rd-";
 
         public MainWindow()
         {
@@ -61,10 +62,7 @@ namespace ISDP2025_Parfonov_Zerrou
 
         private void ShowPasswordResetForm(object sender, MouseButtonEventArgs e)
         {
-            LoginForm.Visibility = Visibility.Collapsed;
-            PasswordResetForm.Visibility = Visibility.Visible;
-            txtUserNameReset.IsEnabled = false;
-            txtUserNameReset.Text = txtUserName.Text;
+            ShowPasswordResetForm();
         }
 
         private void ShowLoginForm(object sender, MouseButtonEventArgs e)
@@ -165,85 +163,99 @@ namespace ISDP2025_Parfonov_Zerrou
 
         }
 
-        private void GetUsers()
+        private string GetUser()
+        {
+            string output = "error";
+            try
+            {
+                string userName = txtUserName.Text;
+                var user = context.Employees.Where(e => e.Username == userName).FirstOrDefault();
+                
+                if (user != null && user.Active == 1)
+                {
+                    output = user.Username;
+                }
+                return output;
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"An error occurred while retrieving users: {ex.Message}");
+                return "DBerror";
+            }  
+        }
+
+        private void ValidateLoginAndHandleAccess()
         {
             try
             {
-                // Retrieve UserName from the input
-                string userName = txtUserName.Text;
-                // Retrieve password from the textbox or tha password box based on which one is visible (if it is visible == the password in the element is the latest)
-                string inputPassword = pwdPassword.Visibility == 0 ? pwdPassword.Password : txtPassword.Text;
-                //hashing the password
-                string hashedPassword = HashPasswordWithMD5(inputPassword, TheSalt);
+                string userName = GetUser();
+                string inputPassword = pwdPassword.Password;
 
-                //getting the employee from the DB
-                employee = context.Employees.FirstOrDefault(employee => employee.Username == txtUserName.Text);
+                var employee = context.Employees.FirstOrDefault(e => e.Username == userName && e.Password == inputPassword);
 
-                // checking if there is an employee with the given name
                 if (employee != null)
                 {
-                    //checking if the employee is already locked
-                    if (employee.Locked != 1)
+                    if (employee.Password == defaultPassword)
                     {
-                        //checking if the hashed password is the password in the DB
-                        if (hashedPassword == employee.Password)
-                        {
-                            // if it is the Login is successful
-                            MessageBox.Show($"Login Successful, Welcome {employee.FirstName.ToUpper()}");
-                        }
-                        else
-                        {
-                            // checking if the employee still has the default password
-                            if (employee.Password == "P@ssw0rd-")
-                            {
-                                // if the employee has the default password it asks the employee to change the password
-                                MessageBox.Show("You need to change your default password");
-                                txtResetTitle.Text = "Password Reset Is Required";
-
-                                LoginForm.Visibility = Visibility.Collapsed;
-                                PasswordResetForm.Visibility = Visibility.Visible;
-                                txtUserNameReset.IsEnabled = false;
-                                txtUserNameReset.Text = txtUserName.Text;
-                            }
-                            else
-                            {
-                                // if the code reach here that means this isnt the first login and password is wrong
-                                MessageBox.Show("Your Credentials don't match our records!");
-                                passwordAttempts++;
-
-                                if (passwordAttempts >= maxPasswordAttempts)
-                                {
-                                    MessageBox.Show("You have exceeded the maximum login attempts.");
-                                    MessageBox.Show("You account has been locked because of too many incorrect login attempts.Please contact your Administrator at admin@bullseye.ca for assistance");
-                                    lockOutUser();
-                                }
-                            }
-                        }
+                        MessageBox.Show("You need to reset your password.");
+                        ShowPasswordResetForm();
                     }
                     else
                     {
-                        MessageBox.Show("You account has been locked because of too many incorrect login attempts.Please contact your Administrator at admin@bullseye.ca for assistance");
+                        MessageBox.Show("Login Successful!");
+                        // Navigate to the next page or main dashboard
                     }
-
                 }
-                //this else means there is no employee with the correct name
                 else
                 {
-                    MessageBox.Show("Your Credentials don't match our records!");
+                    MessageBox.Show("Your login credentials are incorrect.");
                     passwordAttempts++;
-
-                    if (passwordAttempts >= maxPasswordAttempts)
+                    if (passwordAttempts > maxPasswordAttempts) 
                     {
-                        MessageBox.Show("You have exceeded the maximum login attempts.");
-                        MessageBox.Show("You account has been locked because of too many incorrect login attempts.Please contact your Administrator at admin@bullseye.ca for assistance");
-                        lockOutUser();
+                        //LOCK USER HERE
+                        LockUser(userName);
                     }
                 }
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"An error occurred while retrieving users: {ex.Message}");
+                MessageBox.Show($"An error occurred while processing your login: {ex.Message}");
+                // Optionally log the error or handle it further
             }
+        }
+
+        private void LockUser(string userName)
+        {
+            try
+            {
+                var employee = context.Employees.FirstOrDefault(e => e.Username == userName);
+
+                if (employee != null)
+                {
+                    employee.Active = 0;
+                    context.SaveChanges();
+
+                    MessageBox.Show($"User '{userName}' has been locked due to too many failed login attempts.");
+                    passwordAttempts = 0;
+                }
+                //this else means there is no employee with the correct name
+                else
+                {
+                    MessageBox.Show("User not found. Unable to lock the account.");
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"An error occurred while locking the user: {ex.Message}");
+            }
+        }
+
+        private void ShowPasswordResetForm()
+        {
+            LoginForm.Visibility = Visibility.Collapsed;
+            PasswordResetForm.Visibility = Visibility.Visible;
+            txtUserNameReset.IsEnabled = false;
+            txtUserNameReset.Text = txtUserName.Text;
         }
 
 
@@ -278,16 +290,7 @@ namespace ISDP2025_Parfonov_Zerrou
 
         private void btnLogIn_Click(object sender, RoutedEventArgs e)
         {
-            GetUsers();
-            MessageBox.Show(employee.Username + "  " + employee.Password);
-        }
-        private void lockOutUser()
-        {
-            // this function will lock the user
-        }
-        private void updatePassword(string password)
-        {
-            // this function will hash the password and update it
+            ValidateLoginAndHandleAccess();     
         }
 
         private void btnResetPasswrd_Click(object sender, RoutedEventArgs e)
@@ -322,5 +325,46 @@ namespace ISDP2025_Parfonov_Zerrou
             matchPassword();
 
         }
-    } 
+
+        private void matchPassword()
+        {
+            string newPassword = pwdNewPassword.Visibility == 0 ? pwdNewPassword.Password : txtNewPassword.Text;
+            string confirmPassword = pwdConfirmPassword.Visibility == 0 ? pwdConfirmPassword.Password : txtConfirmPassword.Text;
+            if (newPassword != confirmPassword)
+            {
+                txtMatchPassword.Text = "the passwords doesnt match";
+                txtMatchPassword.Foreground = new SolidColorBrush(Colors.Red);
+            }
+            else
+            {
+               txtMatchPassword.Text = "";
+            }
+
+        }
+
+        private void pwdConfirmPassword_KeyUp(object sender, KeyEventArgs e)
+        {
+            matchPassword();
+        }
+
+        private void txtConfirmPassword_KeyUp(object sender, KeyEventArgs e)
+        {
+            matchPassword();
+        }
+
+        private void lockOutUser()
+        {
+            // this function will lock the user
+        }
+        private void updatePassword(string password)
+        {
+            // this function will hash the password and update it
+        }
+
+        private void btnResetPassword_Click(object sender, RoutedEventArgs e)
+        {
+            //string inputPassword = pwdNewPassword.Visibility == 0 ? pwdNewPassword.Password : txtNewPassword.Text;
+            //updatePassword(inputPassword);
+        }
+    }
 }

@@ -269,26 +269,34 @@ namespace ISDP2025_Parfonov_Zerrou
         {
             for (int i = 0; i < usersAttempts.Count; i++)
             {
-                string[] userParts = usersAttempts[0].Split(',');
+
+                string[] userParts = usersAttempts[i].Split(',');
 
                 if (userParts.Length == 2 && userName == userParts[0])
                 {
-                    string userNameIncorrect = userParts[0];
-
                     if (int.TryParse(userParts[1], out int attempt))
                     {
                         attempt++;
-                        usersAttempts[i] = userName + attempt.ToString();
+                        usersAttempts[i] = $"{userName},{attempt}";
+
+                        MessageBox.Show($"Attempt {attempt} for user {userName}");
 
                         if (attempt > maxPasswordAttempts)
                         {
                             return true;
                         }
+                        return false;
                     }
                 }
             }
+
+            usersAttempts.Add($"{userName},1");
+            MessageBox.Show($"New user added: {userName} with 1 attempt");
+
             return false;
         }
+
+
 
         private void LockUser(string userName)
         {

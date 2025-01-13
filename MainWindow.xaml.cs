@@ -299,22 +299,6 @@ namespace ISDP2025_Parfonov_Zerrou
             updatePassword(inputPassword);
         }
 
-        
-        private void matchPassword()
-        {
-            string newPassword = pwdNewPassword.Visibility == 0 ? pwdNewPassword.Password : txtNewPassword.Text;
-            string confirmPassword = pwdConfirmPassword.Visibility == 0 ? pwdConfirmPassword.Password : txtConfirmPassword.Text;
-            if (newPassword != confirmPassword)
-            {
-                txtMatchPassword.Text = "the passwords doesnt match";
-                txtMatchPassword.Foreground = new SolidColorBrush(Colors.Red);
-            }
-            else {
-                txtMatchPassword.Text = "";
-            }
-
-        }
-
         private void pwdConfirmPassword_KeyUp(object sender, KeyEventArgs e)
         {
             MatchPassword();

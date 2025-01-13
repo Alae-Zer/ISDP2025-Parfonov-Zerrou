@@ -11,6 +11,9 @@
 
   <ItemGroup>
     <None Remove="bullseye.jpg" />
+    <None Remove="icons\Font Awesome 6 Brands-Regular-400.otf" />
+    <None Remove="icons\Font Awesome 6 Free-Regular-400.otf" />
+    <None Remove="icons\Font Awesome 6 Free-Solid-900.otf" />
   </ItemGroup>
 
   <ItemGroup>
@@ -29,6 +32,15 @@
 
   <ItemGroup>
     <Resource Include="bullseye.jpg" />
+    <Resource Include="icons\Font Awesome 6 Brands-Regular-400.otf">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="icons\Font Awesome 6 Free-Regular-400.otf">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="icons\Font Awesome 6 Free-Solid-900.otf">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Resource>
   </ItemGroup>
 
 </Project>

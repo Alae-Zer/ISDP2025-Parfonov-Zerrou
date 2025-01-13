@@ -112,7 +112,16 @@
 
             <!-- Main Content -->
             <Grid Background="White" Margin="0">
-                <ContentControl x:Name="MainContent" />
+                <ContentControl x:Name="MainContent" /><Button Content="Big button" FontSize="72" RenderTransformOrigin="1,0" Width="392" Height="300" Margin="454,394,104,90" >
+                    <Button.RenderTransform>
+                        <TransformGroup>
+                            <ScaleTransform ScaleX="2"/>
+                            <SkewTransform/>
+                            <RotateTransform Angle="31.322"/>
+                            <TranslateTransform/>
+                        </TransformGroup>
+                    </Button.RenderTransform>
+                </Button>
             </Grid>
         </DockPanel>
     </Grid>

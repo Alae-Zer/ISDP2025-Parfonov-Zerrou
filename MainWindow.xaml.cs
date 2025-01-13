@@ -64,6 +64,7 @@ namespace ISDP2025_Parfonov_Zerrou
         //Returns Nothing
         private void TogglePasswords (PasswordBox pwdPassword, TextBox txtPassword)
         {
+            //Swap Visibility
             if (pwdPassword.Visibility == Visibility.Visible)
             {
                 txtPassword.Text = pwdPassword.Password;
@@ -97,6 +98,7 @@ namespace ISDP2025_Parfonov_Zerrou
         //Returns Nothing
         private void BlankResetForm()
         {
+            //Blank Inputs
             txtNewPassword.Clear();
             txtConfirmPassword.Clear();
             txtUserNameReset.Clear();
@@ -107,6 +109,7 @@ namespace ISDP2025_Parfonov_Zerrou
         //Return Boolean
         private bool IsEmptyInput(TextBox textInput, string name)
         {
+            //If String is empty - return false
             if (textInput.Text == "")
             {
                 MessageBox.Show($"{name} Can't Be Empty");
@@ -115,6 +118,9 @@ namespace ISDP2025_Parfonov_Zerrou
             return true;
         }
 
+        //Generates Strong Password
+        //Sends Nothing
+        //Returns Nothing
         private void GeneratePassword(object sender, MouseButtonEventArgs e)
         {
             //Available Character Storage
@@ -164,18 +170,22 @@ namespace ISDP2025_Parfonov_Zerrou
 
         }
 
+        //Finds Employee In the database
+        //Sends Nothing
+        //Returns Employee
         private Employee GetUser()
         {
-            string output = "error";
+            //Initialize and try to retrieve
             Employee userOutput = new Employee();
+            string userName = txtUserName.Text;
+
             try
             {
-                string userName = txtUserName.Text;
                 var user = context.Employees.Where(e => e.Username == userName).FirstOrDefault();
                 
+                //Assign Value if User Exists and Status Is Active
                 if (user != null && user.Active == 1)
                 {
-                    output = user.Username;
                     userOutput = user;
                 }
                 return userOutput;
@@ -187,61 +197,61 @@ namespace ISDP2025_Parfonov_Zerrou
             }  
         }
 
+        //Check If Access Is Granted or Refused
+        //Sends Nothing
+        //Returns Nothing
         private void ValidateLoginAndHandleAccess()
         {
+            //Initialize and Assign
+            string inputPassword;
+            Employee employee = GetUser();
 
-            try
+            //Assign Password based On Active State
+            if (pwdPassword.Visibility == Visibility.Visible)
             {
-                string inputPassword;
-                Employee employee = GetUser();
+                inputPassword = pwdPassword.Password;
+            }
+            else
+            {
+                inputPassword = txtNewPassword.Text;
+            }
 
-                if (pwdPassword.Visibility == Visibility.Visible)
+            //Verify that Employee Exists
+            if (employee != null)
+            {
+                //Check That Employee Has A Default Password And Prompt to Change
+                if (inputPassword == employee.Password && employee.Password == defaultPassword)
                 {
-                    inputPassword = pwdPassword.Password;
+//ADD FUNC FOR MESSAGEBOX
+                    MessageBox.Show("You need to reset your password.");
+                    ShowPasswordResetForm();
+                    ResetInputs();
                 }
+                //Verify If Password Is The Same As Input and Redirect
+                else if (employee.Password == inputPassword)
+                {
+                    MessageBox.Show("Login Successful!");
+                    ResetInputs();
+// Navigate to the next page or main dashboard HERE
+                }
+                //Employee Exists But Password Doesn't Match Any Patterns
                 else
                 {
-                    inputPassword = txtNewPassword.Text;
-                }
-
-                if (employee != null)
-                {
-                    if (inputPassword == employee.Password && employee.Password == defaultPassword)
-                    {
-                        MessageBox.Show("You need to reset your password.");
-                        ShowPasswordResetForm();
-                        ResetInputs();
-                    }
-                    else if (employee.Password == inputPassword)
-                    {
-                        MessageBox.Show("Login Successful!");
-                        ResetInputs();
-                        // Navigate to the next page or main dashboard
-                    }
-                    else
-                    {
-                        MessageBox.Show("Your login credentials are incorrect.");
-                        if (FindUserInTheList(employee.Username))
-                        {
-                            LockUser(employee.Username);
-                        }
-                        else
-                        {
-                            usersAttempts.Add(employee.Username + ",1");
-                        }
-                        ResetInputs();
-                    }
-                }
-                else
-                {
+                    //Display Message And Sends Employee For Verification of Number Of Attempts
                     MessageBox.Show("Your login credentials are incorrect.");
+                    if (FindUserInTheList(employee.Username))
+                    {
+                        //If Number Is Exceeded And It's Verified, Employee Is Locked
+                        LockUser(employee.Username);
+                    }
                     ResetInputs();
                 }
             }
-            catch (Exception ex)
+            else
             {
-                MessageBox.Show($"An error occurred while processing your login: {ex.Message}");
-                // Optionally log the error or handle it further
+                //If User Doesn't Exist
+                MessageBox.Show("Your login credentials are incorrect.");
+                ResetInputs();
             }
         }
 
@@ -285,19 +295,20 @@ namespace ISDP2025_Parfonov_Zerrou
             return false;
         }
 
-
-
+        //Checks The List Of Users Who Attempted to Login, If Attempts Exceed limits - LOCK
         private void LockUser(string userName)
         {
             try
             {
                 var employee = context.Employees.FirstOrDefault(e => e.Username == userName);
 
+                //DOUBLE CHECK IF EMPLOYEE EXISTS
                 if (employee != null)
                 {
+                    //Remove Permissions
                     employee.Active = 0;
                     context.SaveChanges();
-
+//ADD MESSAGEBOX FUNC
                     MessageBox.Show($"User '{userName}' has been locked due to too many failed login attempts.");
                 }
                 //this else means there is no employee with the correct name
@@ -312,13 +323,19 @@ namespace ISDP2025_Parfonov_Zerrou
             }
         }
 
+        //Resets Some Inputs
+        //Sends Nothing
+        //Returns Nothing
         private void ResetInputs()
         {
-            txtUserName.Clear();
             txtPassword.Clear();
             pwdPassword.Clear();
         }
+        
 
+        //Display Password Rewset Form
+        //Sends Nothing
+        //Returns Nothing
         private void ShowPasswordResetForm()
         {
             LoginForm.Visibility = Visibility.Collapsed;
@@ -357,6 +374,9 @@ namespace ISDP2025_Parfonov_Zerrou
             context.Employees.Load();
         }
         
+        //Changes Input State Based On Visibility
+        //Sends Two Inputs
+        //Returns Nothing
         private void TogglePassword(PasswordBox pwbInput, TextBox txtInput)
         {
             if (pwbInput.Visibility == Visibility.Visible)
@@ -373,6 +393,7 @@ namespace ISDP2025_Parfonov_Zerrou
         {
             TogglePassword(pwdPassword,txtPassword);
 
+            //Verify That Input is Not Empty
             if (IsEmptyInput(txtUserName, "User Name") && IsEmptyInput(txtPassword, "Password"))
             {
                 ValidateLoginAndHandleAccess();
@@ -384,6 +405,7 @@ namespace ISDP2025_Parfonov_Zerrou
         {
             string inputPassword = pwdNewPassword.Visibility == 0 ? pwdNewPassword.Password : txtNewPassword.Text;
             
+            //Verify That Inputs Are Not Empty
             if (IsEmptyInput(txtUserNameReset, "User Name")&& IsEmptyInput(txtNewPassword, "New Password") && IsEmptyInput(txtConfirmPassword, "Confirm Password")){
                 var user = context.Employees.FirstOrDefault(u => u.Username == txtUserNameReset.Text);
                 if (user != null) 
@@ -407,10 +429,15 @@ namespace ISDP2025_Parfonov_Zerrou
 
         }
 
+        //Compares two Password Inputs For Matching Passwords
+        //Sends Nothing
+        //Returns Nothing
         private void MatchPassword()
         {
             string newPassword = pwdNewPassword.Visibility == 0 ? pwdNewPassword.Password : txtNewPassword.Text;
             string confirmPassword = pwdConfirmPassword.Visibility == 0 ? pwdConfirmPassword.Password : txtConfirmPassword.Text;
+            
+            //Display Message If Don't Match
             if (newPassword != confirmPassword)
             {
                 txtMatchPassword.Text = "Passwords Don't Match";

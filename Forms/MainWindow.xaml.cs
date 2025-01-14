@@ -26,6 +26,10 @@ using static System.Runtime.InteropServices.JavaScript.JSType;
 //NBCC, Winter 2025
 namespace ISDP2025_Parfonov_Zerrou
 {
+    //TO DO
+    //CHANGE THE PANEL YOU SEE AFTER THE PASSWORD GOT CHANGED
+    //BEFORE CHANGING THE CODE IN THE DATABASE YOU NEED TO HASH IT USING THE ComputeSha256Hash SEND IN THE PASSWORD AND "TheSalt"
+
 
     //Main
     public partial class MainWindow : Window
@@ -38,7 +42,7 @@ namespace ISDP2025_Parfonov_Zerrou
         string defaultPassword = "P@ssw0rd-";
         List<string> usersAttempts = new List<string>();
 
-        Employee employee = new Employee();
+        Employee? employee = new Employee();
 
         public MainWindow()
         {
@@ -169,7 +173,8 @@ namespace ISDP2025_Parfonov_Zerrou
 
             //Cast Char Array With Password as String and Display
             string finalPassword = new string(password);
-            string hashedFinal = HashPasswordWithMD5(finalPassword, TheSalt);
+            string hashedFinal = ComputeSha256Hash(finalPassword, TheSalt);
+
 
             txtNewPassword.Visibility = Visibility.Visible;
             txtConfirmPassword.Visibility = Visibility.Visible;
@@ -193,14 +198,12 @@ namespace ISDP2025_Parfonov_Zerrou
                 {
                     var user = context.Employees.Where(e => e.Username == userName).FirstOrDefault();
 
-                    //Assign Value if User Exists and Status Is Active
-                    if (user != null && user.Active == 1)
+                    //Assign Value if User Exists
+                    if (user != null)
                     {
                         employee = user;
                     }
-                    else {
-                        MessageBox.Show("Invalid username and/or password. Please contact your Administrator admin@bullseye.ca for assistance", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
-                    }
+                    
                 }
                 catch (Exception ex)
                 {
@@ -214,13 +217,16 @@ namespace ISDP2025_Parfonov_Zerrou
         //Returns Nothing
         private void ValidateLoginAndHandleAccess()
         {
+            employee = null;
             //Initialize and Assign
             string password = pwdPassword.Visibility == 0 ? pwdPassword.Password : txtPassword.Text;
+            //string test = ComputeSha256Hash(password, TheSalt);
+            //MessageBox.Show(test+" "+test.Length ,"Error", MessageBoxButton.OK);
             GetUser();
 
 
             //Verify that Employee Exists
-            if (employee != null && employee.Locked != 1)
+            if (employee != null)
             {
                 //Check That Employee Has A Default Password And Prompt to Change
                 if (password == employee.Password && employee.Password == defaultPassword)
@@ -238,6 +244,15 @@ namespace ISDP2025_Parfonov_Zerrou
                     MessageBox.Show("LOGGEDINNN");
 
                 }
+                else if (employee.Active==0)
+                {
+                    MessageBox.Show("Invalid username and/or password. Please contact your Administrator admin@bullseye.ca for assistance", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                }
+                //Employee Exists But Password Doesn't Match Any Patterns
+                else if (employee.Locked == 1)
+                {
+                    MessageBox.Show("You account has been locked because of too many incorrect login attempts. Please contact your Administrator at admin@bullseye.ca for assistance", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                }
                 //Employee Exists But Password Doesn't Match Any Patterns
                 else
                 {
@@ -248,14 +263,14 @@ namespace ISDP2025_Parfonov_Zerrou
                         //If Number Is Exceeded And It's Verified, Employee Is Locked
                         LockUser(employee.Username);
                     }
+
                     ResetInputs();
                 }
             }
             else
             {
                 //If User Doesn't Exist
-                MessageBox.Show("You account has been locked because of too many incorrect login attempts. Please contact your Administrator at admin@bullseye.ca for assistance", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
-                ResetInputs();
+                MessageBox.Show("Your login credentials are incorrect.", "Error", MessageBoxButton.OK, MessageBoxImage.Error); ResetInputs();
             }
         }
 
@@ -337,28 +352,27 @@ namespace ISDP2025_Parfonov_Zerrou
         }
 
 
-        //HashPasswordWithMD5 will hash and salt the password
+        //ComputeSha256Hash will hash and salt the password
         //It takes two parameters the password and the salt
-        static string HashPasswordWithMD5(string password, string salt){
-                //Combine password and salt
-                string saltedPassword = password + salt;
+        static string ComputeSha256Hash(string password, string salt)
+        {
+            string str = password + salt;
+            //create an Object
+            using (SHA256 sha256 = SHA256.Create())
+            {
+                //Compute the hash value from the input string
+                byte[] hashValue = sha256.ComputeHash(Encoding.UTF8.GetBytes(str));
 
-                //Create MD5 hash
-                using (MD5 md5 = MD5.Create())
+                //Convert the byte array into a hexadecimal string
+                StringBuilder hexString = new StringBuilder(64);
+                foreach (byte b in hashValue)
                 {
-                    byte[] hashBytes = md5.ComputeHash(Encoding.UTF8.GetBytes(saltedPassword));
-
-                    //Convert hash to hexadecimal string
-                    StringBuilder hashBuilder = new StringBuilder();
-                    foreach (byte b in hashBytes)
-                    {
-                        //Convert byte to hex
-                        hashBuilder.Append(b.ToString("x2"));
-                    }
-
-                    //This will be a 32-character string
-                    return hashBuilder.ToString();
+                    hexString.Append(b.ToString("x2"));
                 }
+
+                //Return the hexadecimal string (64 characters long)
+                return hexString.ToString();
+            }
         }
 
         private void Window_Loaded(object sender, RoutedEventArgs e)
@@ -403,6 +417,7 @@ namespace ISDP2025_Parfonov_Zerrou
                     {
                         if (IsValidPassword(txtNewPassword.Text) && IsValidPassword(txtConfirmPassword.Text))
                         {
+                            // HASH THE PASSWORD HERE AND SEND IT
                             user.Password = inputPassword;
                             context.SaveChanges();
                             MessageBox.Show("Password updated Successfully!", "Information", MessageBoxButton.OK, MessageBoxImage.Information);

@@ -410,15 +410,20 @@ namespace ISDP2025_Parfonov_Zerrou
             if (IsEmptyInput(txtUserNameReset, "User Name")&& IsEmptyInput(txtNewPassword, "New Password") && IsEmptyInput(txtConfirmPassword, "Confirm Password")){
                 
                 //We Understand that It's not Necessary To Check Two Inputs, But DOUBLE VALIDATION
-                if(IsValidPassword(txtNewPassword.Text) && IsValidPassword(txtConfirmPassword.Text))
-                {
+                
                     var user = context.Employees.FirstOrDefault(u => u.Username == txtUserNameReset.Text);
-                    if (user != null)
+                if (user != null)
+                {
+                    if (IsValidPassword(txtNewPassword.Text) && IsValidPassword(txtConfirmPassword.Text))
                     {
                         user.Password = inputPassword;
                         context.SaveChanges();
                         MessageBox.Show("Password updated successfully!", "Success");
                     }
+                }
+                else
+                {
+                    MessageBox.Show("Something went Wrong, Contact Your Admin", "Error");
                 }
             }  
         }

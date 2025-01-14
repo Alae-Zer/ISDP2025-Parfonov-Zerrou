@@ -81,7 +81,7 @@ namespace ISDP2025_Parfonov_Zerrou
 
         private void ShowPasswordResetForm(object sender, MouseButtonEventArgs e)
         {
-            ShowPasswordResetForm();
+            ShowPasswordResetForm("Forgot Your Password? No Problem!");
             txtUserNameReset.IsEnabled = true;
         }
 
@@ -217,14 +217,14 @@ namespace ISDP2025_Parfonov_Zerrou
             }
 
             //Verify that Employee Exists
-            if (employee != null)
+            if (employee != null && employee.Active == 1)
             {
                 //Check That Employee Has A Default Password And Prompt to Change
                 if (inputPassword == employee.Password && employee.Password == defaultPassword)
                 {
 //ADD FUNC FOR MESSAGEBOX
                     MessageBox.Show("You need to reset your password.");
-                    ShowPasswordResetForm();
+                    ShowPasswordResetForm("Reset Your Password");
                     ResetInputs();
                 }
                 //Verify If Password Is The Same As Input and Redirect
@@ -336,12 +336,13 @@ namespace ISDP2025_Parfonov_Zerrou
         //Display Password Rewset Form
         //Sends Nothing
         //Returns Nothing
-        private void ShowPasswordResetForm()
+        private void ShowPasswordResetForm(string message)
         {
             LoginForm.Visibility = Visibility.Collapsed;
             PasswordResetForm.Visibility = Visibility.Visible;
             txtUserNameReset.IsEnabled = false;
             txtUserNameReset.Text = txtUserName.Text;
+            txtResetTitle.Text = message;
         }
 
 
@@ -400,22 +401,26 @@ namespace ISDP2025_Parfonov_Zerrou
             }
             
         }
-
+//SURROUND WITH TRY CATCH INSIDE
         private void btnResetPassword_Click(object sender, RoutedEventArgs e)
         {
             string inputPassword = pwdNewPassword.Visibility == 0 ? pwdNewPassword.Password : txtNewPassword.Text;
             
             //Verify That Inputs Are Not Empty
             if (IsEmptyInput(txtUserNameReset, "User Name")&& IsEmptyInput(txtNewPassword, "New Password") && IsEmptyInput(txtConfirmPassword, "Confirm Password")){
-                var user = context.Employees.FirstOrDefault(u => u.Username == txtUserNameReset.Text);
-                if (user != null) 
+                
+                //We Understand that It's not Necessary To Check Two Inputs, But DOUBLE VALIDATION
+                if(IsValidPassword(txtNewPassword.Text) && IsValidPassword(txtConfirmPassword.Text))
                 {
-                    user.Password = inputPassword;
-                    context.SaveChanges();
-                    MessageBox.Show("Password updated successfully!", "Success");
+                    var user = context.Employees.FirstOrDefault(u => u.Username == txtUserNameReset.Text);
+                    if (user != null)
+                    {
+                        user.Password = inputPassword;
+                        context.SaveChanges();
+                        MessageBox.Show("Password updated successfully!", "Success");
+                    }
                 }
-            }
-            
+            }  
         }
 
         private void pwdConfirmPassword_KeyUp(object sender, KeyEventArgs e)
@@ -447,7 +452,55 @@ namespace ISDP2025_Parfonov_Zerrou
             {
                txtMatchPassword.Text = "";
             }
+        }
 
+        public bool IsValidPassword(string inputString)
+        {
+            bool hasUpper = false;
+            bool hasDigit = false;
+            bool hasSpecialChar = false;
+
+            string message = "Password must contain the following:\n";
+
+            foreach (char character in inputString)
+            {
+                if (char.IsUpper(character))
+                {
+                    hasUpper = true;
+                }
+             
+                else if (char.IsDigit(character))
+                {
+                    hasDigit = true;
+                }
+                
+                else if ("!@#^&_=+<,>. ".Contains(character))
+                {
+                    hasSpecialChar = true;
+                }
+
+            }
+
+            if (!hasUpper)
+            {
+                message += "- At least one uppercase letter\n";
+            }
+            if (!hasDigit)
+            {
+                message += "- At least one number\n";
+            }
+            if (!hasSpecialChar)
+            {
+                message += "- At least one special character\n";
+            }
+
+            if (!hasUpper || !hasDigit || !hasSpecialChar)
+            {
+                MessageBox.Show(message, "Password Validation", MessageBoxButton.OK, MessageBoxImage.Information);
+            }
+
+            //LOL, found if one of them is false - it will return false
+            return hasUpper && hasDigit && hasSpecialChar;
         }
     }
 }

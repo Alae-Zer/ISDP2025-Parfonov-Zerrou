@@ -25,25 +25,31 @@ namespace ISDP2025_Parfonov_Zerrou
         {
             InitializeComponent();
         }
-        //static string ComputeSha256Hash(string str)
-        //{
-        //    SHA256 sha256 = SHA256Managed.Create();
-        //    byte[] hashValue;
-        //    UTF8Encoding objUtf8 = new UTF8Encoding();
-        //    hashValue = sha256.ComputeHash(objUtf8.GetBytes(str));
-        //    return Encoding.UTF8.GetString(hashValue);
-            
-        //}
 
-        //private void Button_Click(object sender, RoutedEventArgs e)
-        //{
-        //    string result = ComputeSha256Hash("Hello");
-        //    MessageBox.Show(result+" "+ result.Length.ToString());
-        //}
+        static string ComputeSha256Hash(string str)
+        {
+            //create an Object
+            using (SHA256 sha256 = SHA256Managed.Create())
+            {
+                //Compute the hash value from the input string
+                byte[] hashValue = sha256.ComputeHash(Encoding.UTF8.GetBytes(str));
 
-        //private void Button_Click_1(object sender, RoutedEventArgs e)
-        //{
-        //    MessageBox.Show("Hello");
-        //}
+                //Convert the byte array into a hexadecimal string
+                StringBuilder hexString = new StringBuilder(64);
+                foreach (byte b in hashValue)
+                {
+                    hexString.Append(b.ToString("x2"));
+                }
+
+                //Return the hexadecimal string (64 characters long)
+                return hexString.ToString();
+            }
+        }
+
+        private void Button_Click_2(object sender, RoutedEventArgs e)
+        {
+            string result = ComputeSha256Hash("Hello");
+            MessageBox.Show(result + " " + result.Length.ToString());
+        }
     }
 }

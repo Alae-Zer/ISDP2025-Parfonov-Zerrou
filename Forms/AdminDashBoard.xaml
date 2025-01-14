@@ -107,7 +107,7 @@
                 <StackPanel Margin="10,10,10,86">
                     <!-- Dashboard Button -->
                     <Button Tag="DashboardPage" Height="41" Margin="0,9" 
-                            Style="{StaticResource SidebarButtonStyle}">
+                            Style="{StaticResource SidebarButtonStyle}" Click="Button_Click_2">
                         <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
                             <Label Style="{StaticResource SidebarLabelStyle}" Content="&#xf0db;" Padding="7,5,5,5" />
                             <TextBlock Text="Dashboard" VerticalAlignment="Center" />

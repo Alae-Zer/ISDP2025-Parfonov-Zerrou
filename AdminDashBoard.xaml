@@ -12,8 +12,13 @@
     <!-- Resources -->
     <Window.Resources>
         <Style x:Key="SidebarButtonStyle" TargetType="Button">
-            <Setter Property="Foreground" Value="#FFE8E7CC" />
-            <Setter Property="FontWeight" Value="Bold" />
+            <Style.Triggers>
+                <Trigger Property="IsMouseOver" Value="True">
+                    <Setter Property="Background" Value="#FFBF0E0E"/>
+                </Trigger>
+            </Style.Triggers>
+            <Setter Property="Foreground" Value="#FFE2E2E2" />
+            <Setter Property="FontWeight" Value="DemiBold" />
             <Setter Property="BorderThickness" Value="0" />
             <Setter Property="Cursor" Value="Hand" />
             <Setter Property="Template">
@@ -26,6 +31,20 @@
                 </Setter.Value>
             </Setter>
             <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+        </Style>
+        <!-- Generic Label Style -->
+        <Style TargetType="Label">
+            <Setter Property="Foreground" Value="#FF521A9A" />
+        </Style>
+
+        <!-- Sidebar Label Style -->
+        <Style x:Key="SidebarLabelStyle" TargetType="Label">
+            <Setter Property="Foreground" Value="#FFD0DA1C" />
+            <Setter Property="FontSize" Value="20" />
+            <Setter Property="FontFamily" Value="./icons/#Font Awesome 6 Free Solid" />
+            <Setter Property="Margin" Value="10,0,10,0" />
+            <Setter Property="Width" Value="32" />
+            <Setter Property="Height" Value="30" />
         </Style>
     </Window.Resources>
     <Grid>
@@ -45,15 +64,15 @@
                     <Button Tag="DashboardPage" Height="42" Margin="0,5" 
                             Style="{StaticResource SidebarButtonStyle}">
                         <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
-                            <Label FontFamily="./icons/#Font Awesome 6 Free Solid" Content="&#xf0db;"  Foreground="White" Width="32" Height="30" Margin="10,0,10,0" FontSize="20" />
-                            <TextBlock Text="Dashboard" VerticalAlignment="Center" />
+                            <Label Style="{StaticResource SidebarLabelStyle}" FontFamily="./icons/#Font Awesome 6 Free Solid" Content="&#xf0db;"/>
+                            <TextBlock  Text="Dashboard" VerticalAlignment="Center" />
                         </StackPanel>
                     </Button>
                     <!-- Employees Button -->
                     <Button Tag="EmployeesPage" Height="42" Margin="0,5" 
                             Style="{StaticResource SidebarButtonStyle}">
                         <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
-                            <Label FontFamily="./icons/#Font Awesome 6 Free Solid" Content="&#xf0c0;"  Foreground="White" Width="32" Height="30" Margin="10,0,10,0" FontSize="17" />
+                            <Label Style="{StaticResource SidebarLabelStyle}" Content="&#xf0c0;" Width="32" Height="30" Margin="10,0,10,0" FontSize="17" />
                             <TextBlock Text="Employees"  VerticalAlignment="Center" />
                         </StackPanel>
                     </Button>
@@ -61,7 +80,7 @@
                     <Button Tag="LocationsPage" Height="42" Margin="0,5" 
                             Style="{StaticResource SidebarButtonStyle}">
                         <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
-                            <Label FontFamily="./icons/#Font Awesome 6 Free Solid" Content="&#xf3c5;"  Foreground="White" Width="29" Height="30" Margin="13,0,10,0" FontSize="20" />
+                            <Label Style="{StaticResource SidebarLabelStyle}" Content="&#xf3c5;"/>
                             <TextBlock Text="Locations"  VerticalAlignment="Center" />
                         </StackPanel>
                     </Button>
@@ -69,7 +88,7 @@
                     <Button Tag="InventoryPage" Height="42" Margin="0,5" 
                             Style="{StaticResource SidebarButtonStyle}">
                         <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
-                            <Label FontFamily="./icons/#Font Awesome 6 Free Solid" Content="&#xf468;"  Foreground="White" Width="32" Height="30" Margin="10,0,10,0" FontSize="20" />
+                            <Label Style="{StaticResource SidebarLabelStyle}" Content="&#xf468;"/>
                             <TextBlock Text="Inventory" VerticalAlignment="Center" />
                         </StackPanel>
                     </Button>
@@ -77,7 +96,7 @@
                     <Button Tag="SuppliersPage" Height="42" Margin="0,5" 
                             Style="{StaticResource SidebarButtonStyle}">
                         <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
-                            <Label FontFamily="./icons/#Font Awesome 6 Free Solid" Content="&#xf275;"  Foreground="White" Width="32" Height="30" Margin="10,0,10,0" FontSize="20" />
+                            <Label Style="{StaticResource SidebarLabelStyle}" Content="&#xf275;"/>
                             <TextBlock Text="Suppliers" VerticalAlignment="Center" />
                         </StackPanel>
                     </Button>
@@ -85,7 +104,7 @@
                     <Button Tag="PermissionsPage" Height="42" Margin="0,5" 
                             Style="{StaticResource SidebarButtonStyle}">
                         <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
-                            <Label FontFamily="./icons/#Font Awesome 6 Free Solid" Content="&#xf4ff;"  Foreground="White" Width="35" Height="30" Margin="10,0,7,0" FontSize="20" />
+                            <Label Style="{StaticResource SidebarLabelStyle}" Content="&#xf4ff;"/>
                             <TextBlock Text="Permissions" VerticalAlignment="Center" />
                         </StackPanel>
                     </Button>
@@ -102,7 +121,7 @@
                         <Button Tag="Logout" Height="42" 
                                 Style="{StaticResource SidebarButtonStyle}" VerticalAlignment="Bottom">
                             <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
-                                <fa:ImageAwesome Icon="SignOut" Foreground="White" Width="20" Height="20" Margin="10,0,10,0" />
+                                <Label Style="{StaticResource SidebarLabelStyle}" Content="&#xf2f5;"/>
                                 <TextBlock Text="Logout" VerticalAlignment="Center" />
                             </StackPanel>
                         </Button>
@@ -112,7 +131,10 @@
 
             <!-- Main Content -->
             <Grid Background="White" Margin="0">
-                <ContentControl x:Name="MainContent" /><Button Content="Big button" FontSize="72" RenderTransformOrigin="1,0" Width="392" Height="300" Margin="454,394,104,90" >
+                <ContentControl x:Name="MainContent" >
+                    <Label Content="Label" HorizontalAlignment="Left" Margin="224,472,0,0" VerticalAlignment="Top"/>
+                </ContentControl>
+                <Button Content="Big button" FontSize="72" RenderTransformOrigin="1,0" Width="392" Height="300" Margin="454,394,104,90" >
                     <Button.RenderTransform>
                         <TransformGroup>
                             <ScaleTransform ScaleX="2"/>

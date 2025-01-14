@@ -29,6 +29,7 @@ namespace ISDP2025_Parfonov_Zerrou
     //TO DO
     //CHANGE THE PANEL YOU SEE AFTER THE PASSWORD GOT CHANGED
     //BEFORE CHANGING THE CODE IN THE DATABASE YOU NEED TO HASH IT USING THE ComputeSha256Hash SEND IN THE PASSWORD AND "TheSalt"
+    //Reset the password box and textbox before genrating a password
 
 
     //Main

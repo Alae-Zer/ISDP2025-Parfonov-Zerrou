@@ -16,6 +16,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using System.Xml.Linq;
 using ISDP2025_Parfonov_Zerrou.Models;
 using Microsoft.EntityFrameworkCore;
 using static System.Runtime.InteropServices.JavaScript.JSType;
@@ -42,6 +43,7 @@ namespace ISDP2025_Parfonov_Zerrou
             InitializeComponent();
             BestContext context = new BestContext();
             ResetInputs();
+            ShowLoginForm();
         }
 
         private void TogglePasswordVisibility(object sender, MouseButtonEventArgs e)
@@ -81,16 +83,37 @@ namespace ISDP2025_Parfonov_Zerrou
 
         private void ShowPasswordResetForm(object sender, MouseButtonEventArgs e)
         {
-            ShowPasswordResetForm("Forgot Your Password? No Problem!");
-            txtUserNameReset.IsEnabled = true;
+            Employee user = new Employee();
+            user = GetUser();
+            
+            if (user.Username == txtUserName.Text && user.Active == 1)
+            {
+                ShowPasswordResetForm("Forgot Your Password? No Problem!");
+            }
+            else
+            {
+                MessageBox.Show("Something is wrong", "Warning", MessageBoxButton.OK, MessageBoxImage.Warning);
+            }
+
         }
 
         private void ShowLoginForm(object sender, MouseButtonEventArgs e)
+        {
+            ShowLoginForm();
+        }
+
+        //Changes Style
+        //Sends Nothing
+        //Returns Nothing
+        private void ShowLoginForm()
         {
             PasswordResetForm.Visibility = Visibility.Collapsed;
             LoginForm.Visibility = Visibility.Visible;
             ResetInputs();
             BlankResetForm();
+            txtUserName.Text = "User Name";
+            txtUserName.Focus();
+            txtUserName.Select(0, txtUserName.Text.Length);
         }
 
         //Blank Inputs
@@ -107,12 +130,12 @@ namespace ISDP2025_Parfonov_Zerrou
         //Verifies that input is not empty
         //Sends TextBox with Displayed Name
         //Return Boolean
-        private bool IsEmptyInput(TextBox textInput, string name)
+        private bool IsEmptyInput(string textInput, string name)
         {
             //If String is empty - return false
-            if (textInput.Text == "")
+            if (textInput == "")
             {
-                MessageBox.Show($"{name} Can't Be Empty");
+                MessageBox.Show($"{name} Can't Be Empty", "Warning", MessageBoxButton.OK, MessageBoxImage.Warning);
                 return false;
             }
             return true;
@@ -177,24 +200,28 @@ namespace ISDP2025_Parfonov_Zerrou
         {
             //Initialize and try to retrieve
             Employee userOutput = new Employee();
-            string userName = txtUserName.Text;
+            if(IsEmptyInput(txtUserName.Text, "User name"))
+            {
+                string userName = txtUserName.Text;
 
-            try
-            {
-                var user = context.Employees.Where(e => e.Username == userName).FirstOrDefault();
-                
-                //Assign Value if User Exists and Status Is Active
-                if (user != null && user.Active == 1)
+                try
                 {
-                    userOutput = user;
+                    var user = context.Employees.Where(e => e.Username == userName).FirstOrDefault();
+
+                    //Assign Value if User Exists and Status Is Active
+                    if (user != null && user.Active == 1)
+                    {
+                        userOutput = user;
+                    }
+                    return userOutput;
                 }
-                return userOutput;
+                catch (Exception ex)
+                {
+                    MessageBox.Show($"An error occurred while retrieving users: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                    return userOutput;
+                }
             }
-            catch (Exception ex)
-            {
-                MessageBox.Show($"An error occurred while retrieving users: {ex.Message}");
-                return userOutput;
-            }  
+            return userOutput;
         }
 
         //Check If Access Is Granted or Refused
@@ -222,23 +249,21 @@ namespace ISDP2025_Parfonov_Zerrou
                 //Check That Employee Has A Default Password And Prompt to Change
                 if (inputPassword == employee.Password && employee.Password == defaultPassword)
                 {
-//ADD FUNC FOR MESSAGEBOX
-                    MessageBox.Show("You need to reset your password.");
+                    MessageBox.Show("You need to reset your password.", "Information", MessageBoxButton.OK, MessageBoxImage.Information);
                     ShowPasswordResetForm("Reset Your Password");
                     ResetInputs();
                 }
                 //Verify If Password Is The Same As Input and Redirect
                 else if (employee.Password == inputPassword)
                 {
-                    MessageBox.Show("Login Successful!");
                     ResetInputs();
-// Navigate to the next page or main dashboard HERE
+ // Navigate to the next page or main dashboard HERE
                 }
                 //Employee Exists But Password Doesn't Match Any Patterns
                 else
                 {
                     //Display Message And Sends Employee For Verification of Number Of Attempts
-                    MessageBox.Show("Your login credentials are incorrect.");
+                    MessageBox.Show("Your login credentials are incorrect.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
                     if (FindUserInTheList(employee.Username))
                     {
                         //If Number Is Exceeded And It's Verified, Employee Is Locked
@@ -250,7 +275,7 @@ namespace ISDP2025_Parfonov_Zerrou
             else
             {
                 //If User Doesn't Exist
-                MessageBox.Show("Your login credentials are incorrect.");
+                MessageBox.Show("Your login credentials are incorrect.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
                 ResetInputs();
             }
         }
@@ -276,8 +301,6 @@ namespace ISDP2025_Parfonov_Zerrou
                         attempt++;
                         usersAttempts[i] = $"{userName},{attempt}";
 
-                        MessageBox.Show($"Attempt {attempt} for user {userName}");
-
                         //Check The Limit
                         if (attempt >= maxPasswordAttempts)
                         {
@@ -290,7 +313,6 @@ namespace ISDP2025_Parfonov_Zerrou
 
             //Add New Record If Not Found
             usersAttempts.Add($"{userName},1");
-            MessageBox.Show($"New user added: {userName} with 1 attempt");
 
             return false;
         }
@@ -308,14 +330,10 @@ namespace ISDP2025_Parfonov_Zerrou
                     //Remove Permissions
                     employee.Active = 0;
                     context.SaveChanges();
-//ADD MESSAGEBOX FUNC
-                    MessageBox.Show($"User '{userName}' has been locked due to too many failed login attempts.");
+                    MessageBox.Show("Your account has been locked because of too many incorrect login attempts. " +
+                        "Please contact your Administrator at admin@bullseye.ca for assistance", "Warning", MessageBoxButton.OK, MessageBoxImage.Warning);
                 }
-                //this else means there is no employee with the correct name
-                else
-                {
-                    MessageBox.Show("User not found. Unable to lock the account.");
-                }
+              
             }
             catch (Exception ex)
             {
@@ -394,34 +412,47 @@ namespace ISDP2025_Parfonov_Zerrou
         {
             TogglePassword(pwdPassword,txtPassword);
 
+            string userName = txtUserName.Text;
+            string password = txtPassword.Text;
+
             //Verify That Input is Not Empty
-            if (IsEmptyInput(txtUserName, "User Name") && IsEmptyInput(txtPassword, "Password"))
+            if (IsEmptyInput(userName, "User Name") && IsEmptyInput(password, "Password"))
             {
                 ValidateLoginAndHandleAccess();
             }
             
         }
-//SURROUND WITH TRY CATCH INSIDE
+
         private void btnResetPassword_Click(object sender, RoutedEventArgs e)
         {
-            string inputPassword = pwdNewPassword.Visibility == 0 ? pwdNewPassword.Password : txtNewPassword.Text;
-            
-            //Verify That Inputs Are Not Empty
-            if (IsEmptyInput(txtUserNameReset, "User Name")&& IsEmptyInput(txtNewPassword, "New Password") && IsEmptyInput(txtConfirmPassword, "Confirm Password")){
-                
-                //We Understand that It's not Necessary To Check Two Inputs, But DOUBLE VALIDATION
-                if(IsValidPassword(txtNewPassword.Text) && IsValidPassword(txtConfirmPassword.Text))
+            try
+            {
+                string inputPassword = pwdNewPassword.Visibility == 0 ? pwdNewPassword.Password : txtNewPassword.Text;
+                string confirmPassword = pwdConfirmPassword.Visibility == 0 ? pwdConfirmPassword.Password : txtConfirmPassword.Text;
+
+                // Verify That Inputs Are Not Empty
+                if (IsEmptyInput(inputPassword, "New Password") && IsEmptyInput(confirmPassword, "Confirm Password"))
                 {
+                    // DOUBLE VALIDATION
                     var user = context.Employees.FirstOrDefault(u => u.Username == txtUserNameReset.Text);
                     if (user != null)
                     {
-                        user.Password = inputPassword;
-                        context.SaveChanges();
-                        MessageBox.Show("Password updated successfully!", "Success");
+                        if (IsValidPassword(txtNewPassword.Text) && IsValidPassword(txtConfirmPassword.Text))
+                        {
+                            user.Password = inputPassword;
+                            context.SaveChanges();
+                            MessageBox.Show("Password updated Successfully!", "Information", MessageBoxButton.OK, MessageBoxImage.Information);
+                        }
                     }
                 }
-            }  
+            }
+            catch (Exception ex)
+            {
+
+                MessageBox.Show($"An error occurred while resetting the password: {ex.Message}", "Error!", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
         }
+
 
         private void pwdConfirmPassword_KeyUp(object sender, KeyEventArgs e)
         {
@@ -454,14 +485,21 @@ namespace ISDP2025_Parfonov_Zerrou
             }
         }
 
+        //Checks that input meets requirements for password
+        //sends String
+        //returns Bool
         public bool IsValidPassword(string inputString)
         {
+            //Flags and Specials
             bool hasUpper = false;
             bool hasDigit = false;
             bool hasSpecialChar = false;
+            string specialCharacters = "!@#^&_=+<,>.";
 
-            string message = "Password must contain the following:\n";
+            //Assembly Message
+            string message = "Your Password must contain:\n";
 
+            //LOOP Through Input, if single condition is met - Flag Changes 
             foreach (char character in inputString)
             {
                 if (char.IsUpper(character))
@@ -474,13 +512,20 @@ namespace ISDP2025_Parfonov_Zerrou
                     hasDigit = true;
                 }
                 
-                else if ("!@#^&_=+<,>. ".Contains(character))
+                else if (specialCharacters.Contains(character))
                 {
                     hasSpecialChar = true;
+                }
+                
+                //Brake The loop if Conditions are Met
+                if (hasDigit && hasUpper && hasSpecialChar)
+                {
+                    break;
                 }
 
             }
 
+            //Assembly message based on What neeeded to Add
             if (!hasUpper)
             {
                 message += "- At least one uppercase letter\n";

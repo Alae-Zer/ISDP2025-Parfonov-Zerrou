@@ -34,8 +34,7 @@
                         <StackPanel Margin="0,0,0,10">
                             <TextBlock Text="Username:" FontSize="12" Foreground="#555" Margin="0,0,0,5" />
                             <DockPanel Background="#F0F0F0" Height="35" VerticalAlignment="Center" >
-                                <fa:ImageAwesome Icon="User" Width="16" Height="16" 
-                                                  Foreground="#888" Margin="10,0" />
+                                <Label FontFamily="../icons/#Font Awesome 6 Free Solid" Content="&#xf007;" Margin="0" FontSize="20" Foreground="#FF656262"/>
                                 <TextBox x:Name="txtUserName" Background="Transparent" BorderThickness="0" 
                                          Margin="5,0" VerticalContentAlignment="Center" />
                             </DockPanel>
@@ -49,9 +48,7 @@
                                              VerticalContentAlignment="Center" Visibility="Visible" Margin="5,0,40,0" Password="P@ssw0rd-" />
                                 <TextBox x:Name="txtPassword" Background="Transparent" BorderThickness="0" 
                                          VerticalContentAlignment="Center" Visibility="Collapsed" Margin="5,0,40,0" />
-                                <fa:ImageAwesome Icon="Eye" Width="20" Height="20" Foreground="#888" 
-                                                  HorizontalAlignment="Right" VerticalAlignment="Center" Margin="0,0,10,0"
-                                                  Cursor="Hand" MouseDown="TogglePasswordVisibility" OpacityMask="#FFF0F0F0" />
+                                <Label FontFamily="../icons/#Font Awesome 6 Free Solid" Content="&#xf06e;" FontSize="20" HorizontalAlignment="Right" VerticalAlignment="Center" Margin="0,0,10,0" Foreground="#FF656262" MouseDown="TogglePasswordVisibility" Cursor="Hand" OpacityMask="#FFF0F0F0"/>
                             </Grid>
                             <TextBlock Text="Forgot password?" Foreground="#888" FontSize="12" 
                                        HorizontalAlignment="Right" Margin="0,5,0,0" Cursor="Hand"
@@ -78,8 +75,10 @@
                         <StackPanel Margin="0,0,0,10">
                             <TextBlock x:Name="txtResetUsername" Text="Username:" FontSize="12" Foreground="#555" Margin="0,0,0,5" />
                             <DockPanel Background="#F0F0F0" Height="35" VerticalAlignment="Center">
-                                <fa:ImageAwesome Icon="User" Width="16" Height="16" 
-                                                  Foreground="#888" Margin="10,0" />
+
+                                <Label FontFamily="../icons/#Font Awesome 6 Free Solid" Content="&#xf007;" FontSize="20"
+                                VerticalAlignment="Center" Margin="10,0" Foreground="#FF656262"/>
+
                                 <TextBox x:Name="txtUserNameReset" Text="UserName" Background="Transparent" BorderThickness="0" 
                                          Margin="5,0" VerticalContentAlignment="Center" IsEnabled="False" />
                             </DockPanel>
@@ -93,9 +92,10 @@
                                              VerticalContentAlignment="Center" Visibility="Visible" Margin="5,0,40,0" />
                                 <TextBox x:Name="txtNewPassword" Background="Transparent" BorderThickness="0" 
                                          VerticalContentAlignment="Center" Visibility="Collapsed" Margin="5,0,40,0" />
-                                <fa:ImageAwesome Icon="Eye" Width="20" Height="20" Foreground="#888" 
-                                                  HorizontalAlignment="Right" VerticalAlignment="Center" Margin="0,0,10,0"
-                                                  Cursor="Hand" MouseDown="ToggleNewPasswordVisibility" />
+
+                                <Label FontFamily="../icons/#Font Awesome 6 Free Solid" Content="&#xf06e;" FontSize="20" HorizontalAlignment="Right"
+                                       VerticalAlignment="Center" Margin="0,0,10,0" Foreground="#FF656262" MouseDown="ToggleNewPasswordVisibility"
+                                       Cursor="Hand" OpacityMask="#FFF0F0F0"/>
                             </Grid>
                         </StackPanel>
 
@@ -107,9 +107,11 @@
                                              VerticalContentAlignment="Center" Visibility="Visible" Margin="5,0,40,0" KeyUp="pwdConfirmPassword_KeyUp" />
                                 <TextBox x:Name="txtConfirmPassword" Background="Transparent" BorderThickness="0" 
                                          VerticalContentAlignment="Center" Visibility="Collapsed" Margin="5,0,40,0" KeyUp="txtConfirmPassword_KeyUp" />
-                                <fa:ImageAwesome Icon="Eye" Width="20" Height="20" Foreground="#888" 
-                                                  HorizontalAlignment="Right" VerticalAlignment="Center" Margin="0,0,10,0"
-                                                  Cursor="Hand" MouseDown="ToggleConfirmPasswordVisibility" />
+
+                                <Label FontFamily="../icons/#Font Awesome 6 Free Solid" Content="&#xf06e;" FontSize="20" HorizontalAlignment="Right"
+                                VerticalAlignment="Center" Margin="0,0,10,0" Foreground="#FF656262" MouseDown="ToggleConfirmPasswordVisibility"
+                                Cursor="Hand" OpacityMask="#FFF0F0F0"/>
+
                             </Grid>
                             <TextBlock x:Name="txtMatchPassword" FontSize="12" HorizontalAlignment="Center" Margin="0,5,0,0"/>
                         </StackPanel>

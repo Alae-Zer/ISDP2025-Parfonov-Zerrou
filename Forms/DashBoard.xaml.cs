@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.Intrinsics.Arm;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
@@ -17,9 +18,9 @@ namespace ISDP2025_Parfonov_Zerrou
     /// <summary>
     /// Interaction logic for AdminDashBoard.xaml
     /// </summary>
-    public partial class AdminDashBoard : Window
+    public partial class DashBoard : Window
     {
-        public AdminDashBoard()
+        public DashBoard()
         {
             InitializeComponent();
         }
@@ -27,6 +28,7 @@ namespace ISDP2025_Parfonov_Zerrou
         private void Button_Click(object sender, RoutedEventArgs e)
         {
             MessageBox.Show("Hello");
+            
         }
 
         private void Button_Click_1(object sender, RoutedEventArgs e)

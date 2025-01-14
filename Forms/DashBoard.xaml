@@ -1,4 +1,4 @@
-﻿<Window x:Class="ISDP2025_Parfonov_Zerrou.AdminDashBoard"
+﻿<Window x:Class="ISDP2025_Parfonov_Zerrou.DashBoard"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         Title="Dashboard - Bullseye IMS"
@@ -36,7 +36,7 @@
                                 <ColorAnimation 
                             Storyboard.TargetProperty="(Background).(SolidColorBrush.Color)" 
                             To="Aqua" 
-                            Duration="0:0:0.3" />
+                            Duration="0:0:0.2" />
                             </Storyboard>
                         </BeginStoryboard>
                     </Trigger.EnterActions>
@@ -46,8 +46,8 @@
                                 <!-- Reverse back to the original color -->
                                 <ColorAnimation 
                             Storyboard.TargetProperty="(Background).(SolidColorBrush.Color)" 
-                            To="#FF867F7F" 
-                            Duration="0:0:0.3" />
+                            To="#FFEAEAEA" 
+                            Duration="0:0:0.2" />
                             </Storyboard>
                         </BeginStoryboard>
                     </Trigger.ExitActions>
@@ -63,7 +63,7 @@
         <Style x:Key="SidebarLabelStyle" TargetType="Label">
             <Setter Property="Foreground" Value="#FF293C3C" />
             <Setter Property="FontSize" Value="20" />
-            <Setter Property="FontFamily" Value="./icons/#Font Awesome 6 Free Solid" />
+            <Setter Property="FontFamily" Value="../icons/#Font Awesome 6 Free Solid" />
             <Setter Property="Margin" Value="10,0,10,0" />
             <Setter Property="Width" Value="32" />
             <Setter Property="Height" Value="30" />

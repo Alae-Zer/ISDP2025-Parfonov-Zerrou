@@ -16,7 +16,7 @@
         <Grid HorizontalAlignment="Left" VerticalAlignment="Top" Margin="300,219,0,0">
             <!-- Logo and Title -->
             <StackPanel HorizontalAlignment="Center" VerticalAlignment="Top" Margin="0,-146,0,0">
-                <Image Source="/bullseye.jpg" Width="100" Height="100" />
+                <Image Source="/bullseye.png" Width="100" Height="100" />
                 <TextBlock Text="Bullseye IMS" FontSize="24" FontWeight="Bold" 
                            HorizontalAlignment="Center" Foreground="#444" />
             </StackPanel>
@@ -37,7 +37,7 @@
                                 <fa:ImageAwesome Icon="User" Width="16" Height="16" 
                                                   Foreground="#888" Margin="10,0" />
                                 <TextBox x:Name="txtUserName" Background="Transparent" BorderThickness="0" 
-                                         Margin="5,0" VerticalContentAlignment="Center" Text="User Name" />
+                                         Margin="5,0" VerticalContentAlignment="Center" />
                             </DockPanel>
                         </StackPanel>
 
@@ -127,3 +127,4 @@
         </Grid>
     </Grid>
 </Window>
+

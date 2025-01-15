@@ -24,7 +24,6 @@ namespace ISDP2025_Parfonov_Zerrou
     public partial class AdminDashBoard : Window
     {
         BestContext context = new BestContext();
-        List<Employee> employees = new List<Employee>();
 
         private void GetAllEmployees()
         {

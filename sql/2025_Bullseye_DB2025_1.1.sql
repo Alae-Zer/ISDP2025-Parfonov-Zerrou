@@ -1,12 +1,16 @@
 -- Bullseye DB SQL Script 2025
--- version 1.0
--- January 6, 2025
+-- version 1.1
+-- January 14, 2025
 -- Chris London
 
 -- ********************************************
 -- Changes
 -- ********************************************
--- 1.0 New script 
+-- 1.1 First Update 2025-01-15
+-- 		Expand employee.Password field from varchar(32) to varchar(255)
+-- 		Added imageLocation field to item table (for storing location of images)
+--		Added constraint_username to username field in employee table
+-- 1.0 New script
 
 -- ********************************************
 -- ****       Create Database         ****
@@ -115,7 +119,8 @@ CREATE TABLE `employee` (
   `locked` tinyint DEFAULT 0,
   `active` tinyint DEFAULT 1 NOT NULL,
   FOREIGN KEY(`PositionID`) REFERENCES posn(`PositionID`),
-  FOREIGN KEY(`siteID`) REFERENCES site(`siteID`)
+  FOREIGN KEY(`siteID`) REFERENCES site(`siteID`),
+  CONSTRAINT username_constraint UNIQUE (`username`)
 );
 
 --
@@ -171,7 +176,8 @@ CREATE TABLE `item` (
   `retailPrice` decimal(10,2) NOT NULL,
   `supplierID` int NOT NULL,
   `notes` varchar(255) DEFAULT NULL,
-  `active` tinyint DEFAULT 1 NOT NULL,  
+  `active` tinyint DEFAULT 1 NOT NULL,
+  `imageLocation` varchar(255),
   FOREIGN KEY (`supplierID`) REFERENCES `supplier` (`supplierID`),
   FOREIGN KEY (`category`) REFERENCES `category` (`categoryName`)
 );

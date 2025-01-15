@@ -1,4 +1,6 @@
-﻿using System;
+﻿using ISDP2025_Parfonov_Zerrou.Models;
+using Microsoft.EntityFrameworkCore;
+using System;
 using System.Buffers.Text;
 using System.Collections.Generic;
 using System.Linq;
@@ -21,9 +23,29 @@ namespace ISDP2025_Parfonov_Zerrou
     /// </summary>
     public partial class AdminDashBoard : Window
     {
+        BestContext context = new BestContext();
+        List<Employee> employees = new List<Employee>();
+
+        private void GetAllEmployees()
+        {
+            try
+            {
+                // Load the employees into the context
+                context.Employees.Load();
+
+                // Bind the loaded employees to the DataGrid
+                dgvEmployees.ItemsSource = context.Employees.Local.ToList();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"An error occurred while loading employees: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+        }
+
         public AdminDashBoard()
         {
             InitializeComponent();
+            GetAllEmployees();
         }
 
         static string ComputeSha256Hash(string str)
@@ -50,6 +72,11 @@ namespace ISDP2025_Parfonov_Zerrou
         {
             string result = ComputeSha256Hash("Hello");
             MessageBox.Show(result + " " + result.Length.ToString());
+        }
+
+        private void Window_Loaded(object sender, RoutedEventArgs e)
+        {
+            GetAllEmployees();
         }
     }
 }

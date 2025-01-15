@@ -71,7 +71,7 @@ namespace ISDP2025_Parfonov_Zerrou
         //Switch Visibility for Password, Collapse Unnecessary info
         //Sends Two Controls (PasswordBox and textBox)
         //Returns Nothing
-        private void TogglePasswords (PasswordBox pwdPassword, TextBox txtPassword)
+        private void TogglePasswords(PasswordBox pwdPassword, TextBox txtPassword)
         {
             //Swap Visibility
             if (pwdPassword.Visibility == Visibility.Visible)
@@ -90,10 +90,9 @@ namespace ISDP2025_Parfonov_Zerrou
 
         private void ShowPasswordResetForm(object sender, MouseButtonEventArgs e)
         {
-            Employee user = new Employee();
             GetUser();
-            
-            if (user.Username == txtUserName.Text && user.Active == 1)
+
+            if (employee.Username == txtUserName.Text && employee.Active == 1)
             {
                 ShowPasswordResetForm("Forgot Your Password? No Problem!");
             }
@@ -137,6 +136,11 @@ namespace ISDP2025_Parfonov_Zerrou
         //Returns Nothing
         private void GeneratePassword(object sender, MouseButtonEventArgs e)
         {
+            GeneratePassword();
+        }
+
+        private string GeneratePassword()
+        {
             //Available Character Storage
             const string capitalLetters = "QWERTYUIOPASDFGHJKLZXCVBNM";
             const string smallLetters = "qwertyuiopasdfghjklzxcvbnm";
@@ -175,14 +179,12 @@ namespace ISDP2025_Parfonov_Zerrou
 
             //Cast Char Array With Password as String and Display
             string finalPassword = new string(password);
-            string hashedFinal = ComputeSha256Hash(finalPassword, TheSalt);
-
 
             txtNewPassword.Visibility = Visibility.Visible;
             txtConfirmPassword.Visibility = Visibility.Visible;
             txtNewPassword.Text = finalPassword;
             txtConfirmPassword.Text = finalPassword;
-
+            return finalPassword;
         }
 
         //Finds Employee In the database
@@ -191,8 +193,8 @@ namespace ISDP2025_Parfonov_Zerrou
         private void GetUser()
         {
             //Initialize and try to retrieve
-            
-            if(txtUserName.Text.Length!=0)
+
+            if (txtUserName.Text.Length != 0)
             {
                 string userName = txtUserName.Text;
 
@@ -205,7 +207,6 @@ namespace ISDP2025_Parfonov_Zerrou
                     {
                         employee = user;
                     }
-                    
                 }
                 catch (Exception ex)
                 {
@@ -222,8 +223,6 @@ namespace ISDP2025_Parfonov_Zerrou
             employee = null;
             //Initialize and Assign
             string password = pwdPassword.Visibility == 0 ? pwdPassword.Password : txtPassword.Text;
-            //string test = ComputeSha256Hash(password, TheSalt);
-            //MessageBox.Show(test+" "+test.Length ,"Error", MessageBoxButton.OK);
             GetUser();
 
 
@@ -242,11 +241,9 @@ namespace ISDP2025_Parfonov_Zerrou
                 {
                     ResetInputs();
                     // Navigate to the next page or main dashboard HERE
-
                     MessageBox.Show("LOGGEDINNN");
-
                 }
-                else if (employee.Active==0)
+                else if (employee.Active == 0)
                 {
                     MessageBox.Show("Invalid username and/or password. Please contact your Administrator admin@bullseye.ca for assistance", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
                 }
@@ -314,16 +311,17 @@ namespace ISDP2025_Parfonov_Zerrou
         }
 
         //Checks The List Of Users Who Attempted to Login, If Attempts Exceed limits - LOCK
+        //sends Username
+        //Returns Nothing
         private void LockUser(string userName)
         {
             try
             {
-                    //Remove Permissions
-                    employee.Locked = 1;
-                    context.SaveChanges();
-                    MessageBox.Show("Your account has been locked because of too many incorrect login attempts. " +
-                        "Please contact your Administrator at admin@bullseye.ca for assistance", "Warning", MessageBoxButton.OK, MessageBoxImage.Warning);
-
+                //Lock Employee
+                employee.Locked = 1;
+                context.SaveChanges();
+                MessageBox.Show("Your account has been locked because of too many incorrect login attempts. " +
+                "Please contact your Administrator at admin@bullseye.ca for assistance", "Warning", MessageBoxButton.OK, MessageBoxImage.Warning);
             }
             catch (Exception ex)
             {
@@ -339,7 +337,7 @@ namespace ISDP2025_Parfonov_Zerrou
             txtPassword.Clear();
             pwdPassword.Clear();
         }
-        
+
 
         //Display Password Rewset Form
         //Sends Nothing
@@ -359,7 +357,7 @@ namespace ISDP2025_Parfonov_Zerrou
         static string ComputeSha256Hash(string password, string salt)
         {
             string str = password + salt;
-            //create an Object
+            //Create an SHA256 object
             using (SHA256 sha256 = SHA256.Create())
             {
                 //Compute the hash value from the input string
@@ -372,27 +370,23 @@ namespace ISDP2025_Parfonov_Zerrou
                     hexString.Append(b.ToString("x2"));
                 }
 
-                //Return the hexadecimal string (64 characters long)
                 return hexString.ToString();
             }
         }
+
 
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
             context.Employees.Load();
         }
-        
-        //Changes Input State Based On Visibility
-        //Sends Two Inputs
-        //Returns Nothing
 
         private void btnLogIn_Click(object sender, RoutedEventArgs e)
         {
             string userName = txtUserName.Text;
-            string password = pwdPassword.Visibility==0 ? pwdPassword.Password : txtPassword.Text;
+            string password = pwdPassword.Visibility == 0 ? pwdPassword.Password : txtPassword.Text;
 
             //Verify That Input is Not Empty
-            if (userName.Length!=0 && password.Length!=0) 
+            if (userName.Length != 0 && password.Length != 0)
             {
                 ValidateLoginAndHandleAccess();
             }
@@ -400,27 +394,38 @@ namespace ISDP2025_Parfonov_Zerrou
             {
                 MessageBox.Show("The password and user name must be filled");
             }
-            
+
+        }
+
+        private string GetPasswordInput(PasswordBox passwordBox, TextBox textBox)
+        {
+            if (passwordBox.Visibility == Visibility.Visible)
+            {
+                return passwordBox.Password;
+            }
+            return textBox.Text;
         }
 
         private void btnResetPassword_Click(object sender, RoutedEventArgs e)
         {
             try
             {
-                string inputPassword = pwdNewPassword.Visibility == 0 ? pwdNewPassword.Password : txtNewPassword.Text;
-                string confirmPassword = pwdConfirmPassword.Visibility == 0 ? pwdConfirmPassword.Password : txtConfirmPassword.Text;
-
-                // Verify That Inputs Are Not Empty
-                if (inputPassword.Length != 0 && confirmPassword.Length != 0)
+                string generatedPassword = GeneratePassword();
+                string inputPassword = GetPasswordInput(pwdNewPassword, txtNewPassword);
+                string confirmPassword = GetPasswordInput(pwdConfirmPassword, txtConfirmPassword);
+               
+                //Verify That Inputs Are Not Empty
+                if (inputPassword.Length != 0 && confirmPassword.Length != 0 && inputPassword == confirmPassword)
                 {
-                    // DOUBLE VALIDATION
+                    //DOUBLE VALIDATION
                     var user = context.Employees.FirstOrDefault(u => u.Username == txtUserNameReset.Text);
                     if (user != null)
                     {
                         if (IsValidPassword(txtNewPassword.Text) && IsValidPassword(txtConfirmPassword.Text))
                         {
-                            // HASH THE PASSWORD HERE AND SEND IT
-                            user.Password = inputPassword;
+                            //HASH THE PASSWORD HERE AND SEND IT
+                            string finalHashed = ComputeSha256Hash(generatedPassword, TheSalt);
+                            user.Password = finalHashed;
                             context.SaveChanges();
                             MessageBox.Show("Password updated Successfully!", "Information", MessageBoxButton.OK, MessageBoxImage.Information);
                         }
@@ -453,7 +458,7 @@ namespace ISDP2025_Parfonov_Zerrou
         {
             string newPassword = pwdNewPassword.Visibility == 0 ? pwdNewPassword.Password : txtNewPassword.Text;
             string confirmPassword = pwdConfirmPassword.Visibility == 0 ? pwdConfirmPassword.Password : txtConfirmPassword.Text;
-            
+
             //Display Message If Don't Match
             if (newPassword != confirmPassword)
             {
@@ -462,9 +467,10 @@ namespace ISDP2025_Parfonov_Zerrou
             }
             else
             {
-               txtMatchPassword.Text = "";
+                txtMatchPassword.Text = "";
             }
         }
+
 
         //Checks that input meets requirements for password
         //sends String
@@ -487,17 +493,17 @@ namespace ISDP2025_Parfonov_Zerrou
                 {
                     hasUpper = true;
                 }
-             
+
                 else if (char.IsDigit(character))
                 {
                     hasDigit = true;
                 }
-                
+
                 else if (specialCharacters.Contains(character))
                 {
                     hasSpecialChar = true;
                 }
-                
+
                 //Brake The loop if Conditions are Met
                 if (hasDigit && hasUpper && hasSpecialChar)
                 {

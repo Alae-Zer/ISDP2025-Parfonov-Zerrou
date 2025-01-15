@@ -1,8 +1,21 @@
 ﻿using System.Security.Cryptography;
 using System.Text;
-using System.Windows;
+using System;
+using System.Windows.Controls;
 using ISDP2025_Parfonov_Zerrou.Models;
 using Microsoft.EntityFrameworkCore;
+using System.Linq;
+using System.Security.Cryptography;
+using System.Text;
+using System.Threading.Tasks;
+using System.Windows;
+using System.Windows.Controls;
+using System.Windows.Data;
+using System.Windows.Documents;
+using System.Windows.Input;
+using System.Windows.Media;
+using System.Windows.Media.Imaging;
+using System.Windows.Shapes;
 
 namespace ISDP2025_Parfonov_Zerrou
 {
@@ -13,57 +26,66 @@ namespace ISDP2025_Parfonov_Zerrou
     {
         BestContext context = new BestContext();
 
-        private void GetAllEmployees()
-        {
-            try
-            {
-                // Load the employees into the context
-                context.Employees.Load();
-
-                // Bind the loaded employees to the DataGrid
-                dgvEmployees.ItemsSource = context.Employees.Local.ToList();
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show($"An error occurred while loading employees: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
-            }
-        }
-
         public AdminDashBoard()
         {
             InitializeComponent();
-            GetAllEmployees();
         }
 
-        static string ComputeSha256Hash(string str)
+        private void LoadDataToGrid<T>(DbSet<T> dbSet, DataGrid dataGrid) where T : class
         {
-            //create an Object
-            using (SHA256 sha256 = SHA256Managed.Create())
+            try
             {
-                //Compute the hash value from the input string
-                byte[] hashValue = sha256.ComputeHash(Encoding.UTF8.GetBytes(str));
-
-                //Convert the byte array into a hexadecimal string
-                StringBuilder hexString = new StringBuilder(64);
-                foreach (byte b in hashValue)
+                //Ensure the DbSet and DataGrid are not null
+                if (dbSet == null)
                 {
-                    hexString.Append(b.ToString("x2"));
+                    throw new ArgumentNullException(nameof(dbSet), "DbSet cannot be null.");
+                }
+                if (dataGrid == null)
+                {
+                    throw new ArgumentNullException(nameof(dataGrid), "DataGrid cannot be null.");
                 }
 
-                //Return the hexadecimal string (64 characters long)
-                return hexString.ToString();
-            }
-        }
+                //Load the data into the context
+                dbSet.Load();
 
-        private void Button_Click_2(object sender, RoutedEventArgs e)
-        {
-            string result = ComputeSha256Hash("Hello");
-            MessageBox.Show(result + " " + result.Length.ToString());
+                //Bind the loaded data to the DataGrid
+                dataGrid.ItemsSource = dbSet.Local.ToList();
+            }
+            catch (Exception ex)
+            {
+                //Display a user-friendly error message
+                MessageBox.Show($"An error occurred while loading data: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
         }
 
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
-            GetAllEmployees();
+
+        }
+
+        private void btnEmployees_Click(object sender, RoutedEventArgs e)
+        {
+            LoadDataToGrid(context.Employees, dgvInformation);
+        }
+
+        private void btnLocations_Click(object sender, RoutedEventArgs e)
+        {
+            LoadDataToGrid(context.Sites, dgvInformation);
+        }
+
+        private void btnInventory_Click(object sender, RoutedEventArgs e)
+        {
+            LoadDataToGrid(context.Inventories, dgvInformation);
+        }
+
+        private void btnSuppliers_Click(object sender, RoutedEventArgs e)
+        {
+            LoadDataToGrid(context.Suppliers, dgvInformation);
+        }
+
+        private void btnDashBoard_Click(object sender, RoutedEventArgs e)
+        {
+
         }
     }
 }

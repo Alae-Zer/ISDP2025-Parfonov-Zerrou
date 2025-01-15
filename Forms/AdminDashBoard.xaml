@@ -107,40 +107,40 @@
                 <!-- Navigation -->
                 <StackPanel Margin="10,10,10,86">
                     <!-- Dashboard Button -->
-                    <Button Tag="DashboardPage" Height="41" Margin="0,9" 
-                            Style="{StaticResource SidebarButtonStyle}" Click="Button_Click_2">
+                    <Button x:Name="btnDashBoard" Tag="DashboardPage" Height="41" Margin="0,9" 
+                            Style="{StaticResource SidebarButtonStyle}" Click="btnDashBoard_Click">
                         <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
                             <Label Style="{StaticResource SidebarLabelStyle}" Content="&#xF0DB;" Padding="7,5,5,5" />
                             <TextBlock Text="Dashboard" VerticalAlignment="Center" />
                         </StackPanel>
                     </Button>
                     <!-- Employees Button -->
-                    <Button Tag="EmployeesPage" Height="41" Margin="0,9" 
-                            Style="{StaticResource SidebarButtonStyle}">
+                    <Button x:Name="btnEmployees" Tag="EmployeesPage" Height="41" Margin="0,9" 
+                            Style="{StaticResource SidebarButtonStyle}" Click="btnEmployees_Click">
                         <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
                             <Label Style="{StaticResource SidebarLabelStyle}" Content="&#xF0C0;" Width="35" Padding="4,5,5,5" />
                             <TextBlock Text="Employees" VerticalAlignment="Center" />
                         </StackPanel>
                     </Button>
                     <!-- Locations Button -->
-                    <Button Tag="LocationsPage" Height="41" Margin="0,9" 
-                            Style="{StaticResource SidebarButtonStyle}">
+                    <Button x:Name="btnLocations" Tag="LocationsPage" Height="41" Margin="0,9" 
+                            Style="{StaticResource SidebarButtonStyle}" Click="btnLocations_Click">
                         <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
                             <Label Style="{StaticResource SidebarLabelStyle}" Content="&#xF3C5;" Padding="10,5,1,5" />
                             <TextBlock Text="Locations" VerticalAlignment="Center" />
                         </StackPanel>
                     </Button>
                     <!-- Inventory Button -->
-                    <Button Tag="InventoryPage" Height="41" Margin="0,9" 
-                            Style="{StaticResource SidebarButtonStyle}">
+                    <Button x:Name="btnInventory" Tag="InventoryPage" Height="41" Margin="0,9" 
+                            Style="{StaticResource SidebarButtonStyle}" Click="btnInventory_Click">
                         <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
                             <Label Style="{StaticResource SidebarLabelStyle}" Content="&#xF468;" Padding="6,5,3,5" Margin="10,0,9,0" />
                             <TextBlock Text="Inventory" VerticalAlignment="Center" />
                         </StackPanel>
                     </Button>
                     <!-- Suppliers Button -->
-                    <Button Tag="SuppliersPage" Height="41" Margin="0,9" 
-                            Style="{StaticResource SidebarButtonStyle}">
+                    <Button x:Name="btnSuppliers" Tag="SuppliersPage" Height="41" Margin="0,9" 
+                            Style="{StaticResource SidebarButtonStyle}" Click="btnSuppliers_Click">
                         <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
                             <Label Style="{StaticResource SidebarLabelStyle}" Content="&#xF275;" Padding="7,5,2,5" />
                             <TextBlock Text="Suppliers" VerticalAlignment="Center" />
@@ -191,10 +191,70 @@
                     </Button>
                 </DockPanel>
 
-
                 <!-- Content -->
-                <ContentControl x:Name="MainContent" Margin="0,50,0,0" >
-                    <DataGrid x:Name="dgvEmployees" av:ItemsSource="{av:SampleData ItemCount=5}"/>
+                <ContentControl x:Name="MainContent" Margin="0,50,0,0">
+                    <Grid Margin="10">
+                        <!-- Define Grid Rows -->
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="*" />
+                            <!-- Row for the DataGrid -->
+                            <RowDefinition Height="Auto" />
+                            <!-- Row for Buttons (Add, Remove, Edit) -->
+                            <RowDefinition Height="Auto" />
+                            <!-- Row for Refresh Button -->
+                        </Grid.RowDefinitions>
+
+                        <!-- DataGrid -->
+                        <DataGrid x:Name="dgvInformation"
+                  Margin="10"
+                  Grid.Row="0"
+                  AutoGenerateColumns="True"
+                  HorizontalAlignment="Center"
+                  VerticalAlignment="Center"
+                  Width="854" />
+
+                        <!-- Buttons Row (Add, Remove, Edit) -->
+                        <Grid Grid.Row="1" Margin="10">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*" />
+                                <!-- Spacing before buttons -->
+                                <ColumnDefinition Width="Auto" />
+                                <!-- Space for buttons -->
+                                <ColumnDefinition Width="*" />
+                                <!-- Spacing after buttons -->
+                            </Grid.ColumnDefinitions>
+
+                            <!-- Buttons in the Center -->
+                            <StackPanel Orientation="Horizontal" Grid.Column="1" HorizontalAlignment="Center">
+                                <Button Content="Add" Width="100" Margin="5" />
+                                <Button Content="Remove" Width="100" Margin="5" />
+                                <Button Content="Edit" Width="100" Margin="5" />
+                            </StackPanel>
+                        </Grid>
+
+                        <!-- Refresh Button Row -->
+                        <Grid Grid.Row="2" Margin="10">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*" />
+                                <!-- Spacing before the button -->
+                                <ColumnDefinition Width="Auto" />
+                                <!-- Space for the button -->
+                                <ColumnDefinition Width="*" />
+                                <!-- Spacing after the button -->
+                            </Grid.ColumnDefinitions>
+
+                            <!-- Refresh Button -->
+                            <Button Content="Refresh"
+                    Width="120"
+                    Height="40"
+                    Background="Green"
+                    Foreground="White"
+                    FontWeight="Bold"
+                    HorizontalAlignment="Center"
+                    VerticalAlignment="Center"
+                    Grid.Column="1" />
+                        </Grid>
+                    </Grid>
                 </ContentControl>
             </Grid>
         </DockPanel>

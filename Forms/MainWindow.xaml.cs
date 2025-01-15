@@ -1,26 +1,11 @@
-﻿using System.Diagnostics;
-using System.Diagnostics.Eventing.Reader;
-using System.Linq.Expressions;
-using System.Net.Mail;
-using System.Net.Sockets;
-using System.Security.Cryptography;
-using System.Security.Policy;
-using System.Security.Principal;
+﻿using System.Security.Cryptography;
 using System.Text;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
 using System.Windows.Input;
-using System.Windows.Interop;
 using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
-using System.Xml.Linq;
 using ISDP2025_Parfonov_Zerrou.Models;
 using Microsoft.EntityFrameworkCore;
-using static System.Runtime.InteropServices.JavaScript.JSType;
 
 //ISDP Project
 //Mohammed Alae-Zerrou, Serhii Parfonov
@@ -49,7 +34,7 @@ namespace ISDP2025_Parfonov_Zerrou
         public MainWindow()
         {
             InitializeComponent();
-            ResetInputs();
+            clearAllPasswords();
             ShowLoginForm();
         }
 
@@ -92,13 +77,21 @@ namespace ISDP2025_Parfonov_Zerrou
         {
             GetUser();
 
-            if (employee.Username == txtUserName.Text && employee.Active == 1)
+            if (employee.Username == txtUserName.Text)
             {
-                ShowPasswordResetForm("Forgot Your Password? No Problem!");
+                if (employee.Locked != 1)
+                {
+                    ShowPasswordResetForm("Forgot Your Password? No Problem!");
+                }
+                else
+                {
+                    MessageBox.Show("You account has been locked because of too many incorrect login attempts. Please contact your Administrator at admin@bullseye.ca for assistance", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                }
+
             }
             else
             {
-                MessageBox.Show("Something is wrong", "Warning", MessageBoxButton.OK, MessageBoxImage.Warning);
+                MessageBox.Show("You need to enter a username", "Warning", MessageBoxButton.OK, MessageBoxImage.Warning);
             }
 
         }
@@ -115,7 +108,7 @@ namespace ISDP2025_Parfonov_Zerrou
         {
             PasswordResetForm.Visibility = Visibility.Collapsed;
             LoginForm.Visibility = Visibility.Visible;
-            ResetInputs();
+            clearAllPasswords();
             BlankResetForm();
             txtUserName.Focus();
         }
@@ -180,10 +173,12 @@ namespace ISDP2025_Parfonov_Zerrou
             //Cast Char Array With Password as String and Display
             string finalPassword = new string(password);
 
-            txtNewPassword.Visibility = Visibility.Visible;
-            txtConfirmPassword.Visibility = Visibility.Visible;
-            txtNewPassword.Text = finalPassword;
-            txtConfirmPassword.Text = finalPassword;
+            if (pwdConfirmPassword.Visibility == 0) pwdConfirmPassword.Password = finalPassword;
+            else txtConfirmPassword.Text = finalPassword;
+
+            if (pwdNewPassword.Visibility == 0) pwdNewPassword.Password = finalPassword;
+            else txtNewPassword.Text = finalPassword;
+
             return finalPassword;
         }
 
@@ -229,33 +224,29 @@ namespace ISDP2025_Parfonov_Zerrou
             //Verify that Employee Exists
             if (employee != null)
             {
-                //Check That Employee Has A Default Password And Prompt to Change
-                if (password == employee.Password && employee.Password == defaultPassword)
+                if (employee.Locked == 1)
                 {
-                    MessageBox.Show("You need to reset your password.", "Information", MessageBoxButton.OK, MessageBoxImage.Information);
-                    ShowPasswordResetForm("Reset Your Password");
-                    ResetInputs();
-                }
-                //Verify If Password Is The Same As Input and Redirect
-                else if (employee.Password == password)
-                {
-                    ResetInputs();
-                    // Navigate to the next page or main dashboard HERE
-                    MessageBox.Show("LOGGEDINNN");
+                    MessageBox.Show("You account has been locked because of too many incorrect login attempts. Please contact your Administrator at admin@bullseye.ca for assistance", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
                 }
                 else if (employee.Active == 0)
                 {
                     MessageBox.Show("Invalid username and/or password. Please contact your Administrator admin@bullseye.ca for assistance", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
                 }
-                //Employee Exists But Password Doesn't Match Any Patterns
-                else if (employee.Locked == 1)
+                else if (password == employee.Password && employee.Password == defaultPassword)
                 {
-                    MessageBox.Show("You account has been locked because of too many incorrect login attempts. Please contact your Administrator at admin@bullseye.ca for assistance", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                    MessageBox.Show("You need to reset your password.", "Information", MessageBoxButton.OK, MessageBoxImage.Information);
+                    ShowPasswordResetForm("Reset Your Password");
+                    clearAllPasswords();
                 }
-                //Employee Exists But Password Doesn't Match Any Patterns
+                else if (employee.Password == ComputeSha256Hash(password, TheSalt))
+                {
+                    clearAllPasswords();
+                    var FormAdmin = new AdminDashBoard();
+                    FormAdmin.Show();
+                    this.Close();
+                }
                 else
                 {
-                    //Display Message And Sends Employee For Verification of Number Of Attempts
                     MessageBox.Show("Your login credentials are incorrect.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
                     if (FindUserInTheList(employee.Username))
                     {
@@ -263,13 +254,13 @@ namespace ISDP2025_Parfonov_Zerrou
                         LockUser(employee.Username);
                     }
 
-                    ResetInputs();
+                    clearAllPasswords();
                 }
             }
             else
             {
                 //If User Doesn't Exist
-                MessageBox.Show("Your login credentials are incorrect.", "Error", MessageBoxButton.OK, MessageBoxImage.Error); ResetInputs();
+                MessageBox.Show("Your login credentials are incorrect.", "Error", MessageBoxButton.OK, MessageBoxImage.Error); clearAllPasswords();
             }
         }
 
@@ -329,16 +320,6 @@ namespace ISDP2025_Parfonov_Zerrou
             }
         }
 
-        //Resets Some Inputs
-        //Sends Nothing
-        //Returns Nothing
-        private void ResetInputs()
-        {
-            txtPassword.Clear();
-            pwdPassword.Clear();
-        }
-
-
         //Display Password Rewset Form
         //Sends Nothing
         //Returns Nothing
@@ -397,40 +378,23 @@ namespace ISDP2025_Parfonov_Zerrou
 
         }
 
-        private string GetPasswordInput(PasswordBox passwordBox, TextBox textBox)
-        {
-            if (passwordBox.Visibility == Visibility.Visible)
-            {
-                return passwordBox.Password;
-            }
-            return textBox.Text;
-        }
-
         private void btnResetPassword_Click(object sender, RoutedEventArgs e)
         {
             try
             {
-                string generatedPassword = GeneratePassword();
-                string inputPassword = GetPasswordInput(pwdNewPassword, txtNewPassword);
-                string confirmPassword = GetPasswordInput(pwdConfirmPassword, txtConfirmPassword);
-               
-                //Verify That Inputs Are Not Empty
-                if (inputPassword.Length != 0 && confirmPassword.Length != 0 && inputPassword == confirmPassword)
+                string inputPassword = pwdNewPassword.Visibility == 0 ? pwdNewPassword.Password : txtNewPassword.Text;
+                string confirmPassword = pwdConfirmPassword.Visibility == 0 ? pwdConfirmPassword.Password : txtConfirmPassword.Text;
+                if (IsValidPassword(inputPassword) && IsValidPassword(confirmPassword))
                 {
-                    //DOUBLE VALIDATION
-                    var user = context.Employees.FirstOrDefault(u => u.Username == txtUserNameReset.Text);
-                    if (user != null)
-                    {
-                        if (IsValidPassword(txtNewPassword.Text) && IsValidPassword(txtConfirmPassword.Text))
-                        {
-                            //HASH THE PASSWORD HERE AND SEND IT
-                            string finalHashed = ComputeSha256Hash(generatedPassword, TheSalt);
-                            user.Password = finalHashed;
-                            context.SaveChanges();
-                            MessageBox.Show("Password updated Successfully!", "Information", MessageBoxButton.OK, MessageBoxImage.Information);
-                        }
-                    }
+                    //HASH THE PASSWORD HERE AND SEND IT
+                    string finalHashed = ComputeSha256Hash(inputPassword, TheSalt);
+                    employee.Password = finalHashed;
+                    context.SaveChanges();
+                    MessageBox.Show("Password updated Successfully!", "Information", MessageBoxButton.OK, MessageBoxImage.Information);
+                    clearAllPasswords();
+                    ShowLoginForm();
                 }
+
             }
             catch (Exception ex)
             {
@@ -438,8 +402,27 @@ namespace ISDP2025_Parfonov_Zerrou
                 MessageBox.Show($"An error occurred while resetting the password: {ex.Message}", "Error!", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
+        private void clearAllPasswords()
+        {
+            pwdConfirmPassword.Password = "";
+            pwdNewPassword.Password = "";
+            pwdPassword.Password = "";
 
+            txtConfirmPassword.Text = "";
+            txtMatchPassword.Text = "";
+            txtNewPassword.Text = "";
+            txtPassword.Text = "";
+        }
 
+        private void pwdNewPassword_KeyUp(object sender, KeyEventArgs e)
+        {
+            MatchPassword();
+        }
+
+        private void txtNewPassword_KeyUp(object sender, KeyEventArgs e)
+        {
+            MatchPassword();
+        }
         private void pwdConfirmPassword_KeyUp(object sender, KeyEventArgs e)
         {
             MatchPassword();
@@ -534,5 +517,7 @@ namespace ISDP2025_Parfonov_Zerrou
             //LOL, found if one of them is false - it will return false
             return hasUpper && hasDigit && hasSpecialChar;
         }
+
+
     }
 }

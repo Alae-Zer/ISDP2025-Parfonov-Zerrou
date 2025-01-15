@@ -89,9 +89,9 @@
                             <TextBlock x:Name="txtResetNewPassword" Text="New password:" FontSize="12" Foreground="#555" Margin="0,0,0,5" />
                             <Grid Height="35" Background="#FFF0F0F0">
                                 <PasswordBox x:Name="pwdNewPassword" Background="Transparent" BorderThickness="0" 
-                                             VerticalContentAlignment="Center" Visibility="Visible" Margin="5,0,40,0" />
+                                             VerticalContentAlignment="Center" Visibility="Visible" Margin="5,0,40,0" KeyUp="pwdNewPassword_KeyUp" />
                                 <TextBox x:Name="txtNewPassword" Background="Transparent" BorderThickness="0" 
-                                         VerticalContentAlignment="Center" Visibility="Collapsed" Margin="5,0,40,0" />
+                                         VerticalContentAlignment="Center" Visibility="Collapsed" Margin="5,0,40,0" KeyUp="txtNewPassword_KeyUp" />
 
                                 <Label FontFamily="../icons/#Font Awesome 6 Free Solid" Content="&#xf06e;" FontSize="20" HorizontalAlignment="Right"
                                        VerticalAlignment="Center" Margin="0,0,10,0" Foreground="#FF656262" MouseDown="ToggleNewPasswordVisibility"

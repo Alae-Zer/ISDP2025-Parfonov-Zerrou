@@ -1,5 +1,6 @@
 ﻿using System.Diagnostics;
 using System.Diagnostics.Eventing.Reader;
+using System.Linq.Expressions;
 using System.Net.Mail;
 using System.Net.Sockets;
 using System.Security.Cryptography;
@@ -257,7 +258,6 @@ namespace ISDP2025_Parfonov_Zerrou
                 else if (employee.Password == inputPassword)
                 {
                     ResetInputs();
- // Navigate to the next page or main dashboard HERE
                 }
                 //Employee Exists But Password Doesn't Match Any Patterns
                 else

@@ -244,17 +244,8 @@
 
                         <!-- DataGrid -->
                         <DataGrid x:Name="dgvInformation" Grid.Row="1" Margin="10"
-                                  AutoGenerateColumns="False" IsReadOnly="True"
+                                  AutoGenerateColumns="True" IsReadOnly="True"
                                   SelectionMode="Single" SelectionUnit="FullRow">
-                            <DataGrid.Columns>
-                                <DataGridTextColumn Header="ID" Binding="{Binding ID}" Width="80"/>
-                                <DataGridTextColumn Header="First Name" Binding="{Binding FirstName}" Width="120"/>
-                                <DataGridTextColumn Header="Last Name" Binding="{Binding LastName}" Width="120"/>
-                                <DataGridTextColumn Header="Email" Binding="{Binding Email}" Width="200"/>
-                                <DataGridTextColumn Header="Role" Binding="{Binding Role}" Width="100"/>
-                                <DataGridTextColumn Header="Department" Binding="{Binding Department}" Width="120"/>
-                                <DataGridTextColumn Header="Status" Binding="{Binding Status}" Width="100"/>
-                            </DataGrid.Columns>
                         </DataGrid>
 
                         <!-- Action Buttons Row -->

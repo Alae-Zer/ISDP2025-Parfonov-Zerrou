@@ -1,8 +1,8 @@
-﻿using System.Windows;
-using System.Windows.Controls;
-using ISDP2025_Parfonov_Zerrou.Forms.AdminUserControls;
+﻿using ISDP2025_Parfonov_Zerrou.Forms.AdminUserControls;
 using ISDP2025_Parfonov_Zerrou.Models;
 using Microsoft.EntityFrameworkCore;
+using System.Windows;
+using System.Windows.Controls;
 
 namespace ISDP2025_Parfonov_Zerrou
 {
@@ -27,6 +27,7 @@ namespace ISDP2025_Parfonov_Zerrou
                 context.Sites.Load();
                 // Updated to match the exact column names from the database schema
                 currentSite = context.Sites.FirstOrDefault(s => s.SiteId == employee.SiteId);
+
 
                 txtLoggedUser.Text = "Logged in as: " + employee.Username;
                 txtUserLocation.Text = "Current Location: " + (currentSite != null ? currentSite.SiteName : "Unknown");
@@ -75,7 +76,7 @@ namespace ISDP2025_Parfonov_Zerrou
 
         private void btnInventory_Click(object sender, RoutedEventArgs e)
         {
-            LoadDataToGrid(context.Inventories, dgvInformation);
+            MainContent.Content = new InventoryControl();
         }
 
         private void btnSuppliers_Click(object sender, RoutedEventArgs e)

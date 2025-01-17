@@ -1,0 +1,127 @@
+﻿<UserControl x:Class="ISDP2025_Parfonov_Zerrou.Forms.AdminUserControls.InventoryControl"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:ISDP2025_Parfonov_Zerrou.Forms.AdminUserControls"
+             mc:Ignorable="d" 
+             d:DesignHeight="450" d:DesignWidth="800">
+    <Grid Background="White" Margin="10">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <!-- Title -->
+            <RowDefinition Height="Auto"/>
+            <!-- Search -->
+            <RowDefinition Height="Auto"/>
+            <!-- Form -->
+            <RowDefinition Height="Auto"/>
+            <!-- Buttons -->
+            <RowDefinition Height="*"/>
+            <!-- DataGrid -->
+        </Grid.RowDefinitions>
+
+        <!-- Title Section -->
+        <TextBlock Text="Inventory Management" 
+               FontSize="24" 
+               FontWeight="Bold" 
+               Margin="0,0,0,20"
+               Grid.Row="0"/>
+
+        <!-- Search Section -->
+        <StackPanel Grid.Row="1" Orientation="Horizontal" Margin="0,0,0,10">
+            <Label Content="Search:" VerticalAlignment="Center" Margin="0,0,5,0"/>
+            <TextBox x:Name="txtSearch" Width="200" Margin="0,0,10,0" 
+                 TextChanged="TxtSearch_TextChanged"/>
+            <Label Content="Category:" VerticalAlignment="Center" Margin="0,0,5,0"/>
+            <ComboBox x:Name="cmbSearchCategory" Width="150" Margin="0,0,10,0" 
+                  SelectionChanged="CmbSearchCategory_SelectionChanged"/>
+            <Label Content="Location:" VerticalAlignment="Center" Margin="0,0,5,0"/>
+            <ComboBox x:Name="cmbSearchLocation" Width="150" 
+                  SelectionChanged="CmbSearchLocation_SelectionChanged"/>
+        </StackPanel>
+
+        <!-- Inventory Form -->
+        <GroupBox Grid.Row="2" Header="Item Information" Padding="10" Margin="0,0,0,10">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="200"/>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="200"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                </Grid.RowDefinitions>
+
+                <!-- Left Column Labels -->
+                <Label Content="Item Name:" Grid.Row="0" Grid.Column="0"/>
+                <Label Content="SKU:" Grid.Row="1" Grid.Column="0"/>
+                <Label Content="Category:" Grid.Row="2" Grid.Column="0"/>
+                <Label Content="Weight:" Grid.Row="3" Grid.Column="0"/>
+                <Label Content="Case Size:" Grid.Row="4" Grid.Column="0"/>
+
+                <!-- Left Column Controls -->
+                <TextBox x:Name="txtItemName" Grid.Row="0" Grid.Column="1" Margin="5" IsReadOnly="True"/>
+                <TextBox x:Name="txtSKU" Grid.Row="1" Grid.Column="1" Margin="5" IsReadOnly="True"/>
+                <TextBox x:Name="txtCategory" Grid.Row="2" Grid.Column="1" Margin="5" IsReadOnly="True"/>
+                <TextBox x:Name="txtWeight" Grid.Row="3" Grid.Column="1" Margin="5" IsReadOnly="True"/>
+                <TextBox x:Name="txtCaseSize" Grid.Row="4" Grid.Column="1" Margin="5" IsReadOnly="True"/>
+
+                <!-- Right Column Labels -->
+                <Label Content="Cost Price:" Grid.Row="0" Grid.Column="2"/>
+                <Label Content="Retail Price:" Grid.Row="1" Grid.Column="2"/>
+                <Label Content="Quantity:" Grid.Row="2" Grid.Column="2"/>
+                <Label Content="Location:" Grid.Row="3" Grid.Column="2"/>
+                <Label Content="Active:" Grid.Row="4" Grid.Column="2"/>
+
+                <!-- Right Column Controls -->
+                <TextBox x:Name="txtCostPrice" Grid.Row="0" Grid.Column="3" Margin="5" IsReadOnly="True"/>
+                <TextBox x:Name="txtRetailPrice" Grid.Row="1" Grid.Column="3" Margin="5" IsReadOnly="True"/>
+                <TextBox x:Name="txtQuantity" Grid.Row="2" Grid.Column="3" Margin="5"/>
+                <ComboBox x:Name="cmbLocation" Grid.Row="3" Grid.Column="3" Margin="5"
+                          DisplayMemberPath="SiteName" 
+                          SelectedValuePath="SiteId"/>
+                <CheckBox x:Name="chkActive" Grid.Row="4" Grid.Column="3" Margin="5" 
+                          VerticalAlignment="Center" IsEnabled="False"/>
+            </Grid>
+        </GroupBox>
+
+        <!-- Buttons -->
+        <StackPanel Grid.Row="3" Orientation="Horizontal" Margin="0,10,0,10" 
+                HorizontalAlignment="Right">
+            <Button x:Name="btnClear" Content="Clear" Width="100" Height="30" 
+                Margin="0,0,10,0" Click="BtnClear_Click"/>
+            <Button x:Name="btnAdd" Content="Add" Width="100" Height="30" 
+                Margin="0,0,10,0" Click="BtnAdd_Click"/>
+            <Button x:Name="btnUpdate" Content="Update" Width="100" Height="30" 
+                Margin="0,0,10,0" Click="BtnUpdate_Click"/>
+            <Button x:Name="btnRefresh" Content="Refresh" Width="100" Height="30" 
+                Click="BtnRefresh_Click"/>
+        </StackPanel>
+
+        <!-- DataGrid -->
+        <DataGrid x:Name="dgInventory" 
+              Grid.Row="4" 
+              AutoGenerateColumns="False" 
+              IsReadOnly="True"
+              SelectionMode="Single"
+              SelectionChanged="DgInventory_SelectionChanged"
+              Margin="0,10,0,0">
+            <DataGrid.Columns>
+                <DataGridTextColumn Header="Item Name" Binding="{Binding ItemName}" Width="250"/>
+                <DataGridTextColumn Header="SKU" Binding="{Binding Sku}" Width="100"/>
+                <DataGridTextColumn Header="Category" Binding="{Binding Category}" Width="100"/>
+                <DataGridTextColumn Header="Site Name" Binding="{Binding SiteName}" Width="120"/>
+                <DataGridTextColumn Header="Quantity" Binding="{Binding Quantity}" Width="80"/>
+                <DataGridTextColumn Header="Case Size" Binding="{Binding CaseSize}" Width="80"/>
+                <DataGridTextColumn Header="Cost Price" Binding="{Binding CostPrice, StringFormat=C}" Width="100"/>
+                <DataGridTextColumn Header="Retail Price" Binding="{Binding RetailPrice, StringFormat=C}" Width="100"/>
+                <DataGridTextColumn Header="Active" Binding="{Binding Active}" Width="80"/>
+            </DataGrid.Columns>
+        </DataGrid>
+    </Grid>
+</UserControl>

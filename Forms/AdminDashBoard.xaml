@@ -232,9 +232,6 @@
                             <StackPanel Orientation="Horizontal" Margin="0,0,20,0">
                                 <TextBlock Text="Sort by:" VerticalAlignment="Center"/>
                                 <ComboBox Width="150" Margin="5,0,0,0">
-                                    <ComboBoxItem Content="ID"/>
-                                    <ComboBoxItem Content="Name"/>
-                                    <ComboBoxItem Content="Date"/>
                                 </ComboBox>
                             </StackPanel>
                             <TextBox Width="200" Margin="0,0,5,0" Name="txtSearch" 
@@ -260,10 +257,10 @@
                             </Grid.ColumnDefinitions>
 
                             <!-- Left - Refresh Button -->
-                            <Button Grid.Column="0" 
+                            <Button x:Name="btnRefresh" Grid.Column="0" 
                                     Content="Refresh" 
                                     Style="{StaticResource RoundedActionButton}"
-                                    Background="#228B22"/>
+                                    Background="#228B22" Click="btnRefresh_Click"/>
 
                             <!-- Center - Add Button -->
                             <Button Grid.Column="1" 

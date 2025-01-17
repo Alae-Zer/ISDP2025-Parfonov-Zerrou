@@ -14,7 +14,6 @@ namespace ISDP2025_Parfonov_Zerrou
         {
             InitializeComponent();
             this.employee = employee;
-            InitializeWindow();
         }
 
         private void InitializeWindow()
@@ -58,12 +57,12 @@ namespace ISDP2025_Parfonov_Zerrou
 
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
-            // Load initial data if needed
+            InitializeWindow();
         }
 
         private void btnEmployees_Click(object sender, RoutedEventArgs e)
         {
-            LoadDataToGrid(context.Employees, dgvInformation);
+
         }
 
         private void btnLocations_Click(object sender, RoutedEventArgs e)
@@ -84,6 +83,11 @@ namespace ISDP2025_Parfonov_Zerrou
         private void btnDashBoard_Click(object sender, RoutedEventArgs e)
         {
             // Handle dashboard view
+        }
+
+        private void btnRefresh_Click(object sender, RoutedEventArgs e)
+        {
+            LoadDataToGrid(context.Employees, dgvInformation);
         }
     }
 }

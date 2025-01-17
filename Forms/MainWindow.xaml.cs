@@ -1,11 +1,11 @@
-﻿using System.Security.Cryptography;
+﻿using ISDP2025_Parfonov_Zerrou.Models;
+using Microsoft.EntityFrameworkCore;
+using System.Security.Cryptography;
 using System.Text;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
-using ISDP2025_Parfonov_Zerrou.Models;
-using Microsoft.EntityFrameworkCore;
 
 //ISDP Project
 //Mohammed Alae-Zerrou, Serhii Parfonov
@@ -241,8 +241,7 @@ namespace ISDP2025_Parfonov_Zerrou
                 else if (employee.Password == ComputeSha256Hash(password, TheSalt))
                 {
                     clearAllPasswords();
-                    var FormAdmin = new AdminDashBoard();
-                    FormAdmin.Show();
+                    OpenNextForm();
                     this.Close();
                 }
                 else
@@ -354,7 +353,6 @@ namespace ISDP2025_Parfonov_Zerrou
                 return hexString.ToString();
             }
         }
-
 
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
@@ -518,6 +516,69 @@ namespace ISDP2025_Parfonov_Zerrou
             return hasUpper && hasDigit && hasSpecialChar;
         }
 
+        private void OpenNextForm()
+        {
+            try
+            {
+                Window nextForm;
+
+                switch (employee.PositionId)
+                {
+                    //Administrator
+                    case 9999:
+                        nextForm = new AdminDashBoard(employee);
+                        break;
+
+                    //Regional Manager
+                    case 1:
+                    //nextForm = new RegionalManagerDashBoard(employee);
+                    //break;
+
+                    //Financial Manager
+                    case 2:
+                    //nextForm = new FinanceManagerDashboard(employee);
+                    //break;
+
+                    //Warehouse Foreman
+                    case 3:
+                    //nextForm = new WarehouseForemanDashBoard(employee);
+                    //break;
+
+                    //Store Manager
+                    case 4:
+                    //nextForm = new StoreManagerDashBoard(employee); 
+                    //break;
+
+                    //Warehouse Worker
+                    case 5:
+                    //nextForm = new WarehouseWorkerDashBoard(employee); 
+                    //break;
+
+                    //Delivery
+                    case 6:
+                    //nextForm = new DeliveryDashboard(employee);
+                    //break;
+
+                    //Online Customer
+                    case 10000:
+                    //nextForm = new OnlineCustomerDashboard(employee);
+                    //break;
+
+                    //Default
+                    default:
+                        MessageBox.Show("Unknown position type. Please contact administrator.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                        return;
+                }
+
+                nextForm.Show();
+                this.Close();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Error opening dashboard: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+        }
 
     }
+
 }

@@ -1,4 +1,5 @@
-﻿using System.Windows;
+﻿using ISDP2025_Parfonov_Zerrou.Models;
+using System.Windows;
 
 namespace ISDP2025_Parfonov_Zerrou
 {
@@ -7,9 +8,13 @@ namespace ISDP2025_Parfonov_Zerrou
     /// </summary>
     public partial class FinanceManagerDashBoard : Window
     {
-        public FinanceManagerDashBoard()
+        BestContext context = new BestContext();
+        private Employee employee;
+
+        public FinanceManagerDashBoard(Employee employee)
         {
             InitializeComponent();
+            this.employee = employee;
         }
 
         private void Button_Click(object sender, RoutedEventArgs e)

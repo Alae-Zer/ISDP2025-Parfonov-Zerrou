@@ -11,7 +11,11 @@ namespace ISDP2025_Parfonov_Zerrou
         BestContext context = new BestContext();
         Employee employee;
 
-        public AdminDashBoard() { }
+        public AdminDashBoard()
+        {
+            InitializeComponent();
+            employee = context.Employees.Where(e => e.Username == "admin").FirstOrDefault();
+        }
 
         public AdminDashBoard(Employee employee)
         {

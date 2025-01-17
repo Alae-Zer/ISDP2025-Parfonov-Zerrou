@@ -1,7 +1,8 @@
-﻿using ISDP2025_Parfonov_Zerrou.Models;
-using Microsoft.EntityFrameworkCore;
-using System.Windows;
+﻿using System.Windows;
 using System.Windows.Controls;
+using ISDP2025_Parfonov_Zerrou.Forms.AdminUserControls;
+using ISDP2025_Parfonov_Zerrou.Models;
+using Microsoft.EntityFrameworkCore;
 
 namespace ISDP2025_Parfonov_Zerrou
 {
@@ -9,6 +10,8 @@ namespace ISDP2025_Parfonov_Zerrou
     {
         BestContext context = new BestContext();
         Employee employee;
+
+        public AdminDashBoard() { }
 
         public AdminDashBoard(Employee employee)
         {
@@ -62,7 +65,7 @@ namespace ISDP2025_Parfonov_Zerrou
 
         private void btnEmployees_Click(object sender, RoutedEventArgs e)
         {
-
+            MainContent.Content = new EmployeesControl();
         }
 
         private void btnLocations_Click(object sender, RoutedEventArgs e)

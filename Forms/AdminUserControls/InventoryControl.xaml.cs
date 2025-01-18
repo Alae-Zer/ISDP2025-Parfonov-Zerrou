@@ -14,10 +14,12 @@ namespace ISDP2025_Parfonov_Zerrou.Forms.AdminUserControls
         {
             InitializeComponent();
             context = new BestContext();
+            EnableSearchControls(false);
             LoadLocationsToGlobal();
             LoadInitialData();
             btnClear.IsEnabled = false;
             EnableInputs(false);
+            LoadInventory();
         }
 
         private void LoadLocationsToGlobal()
@@ -74,9 +76,10 @@ namespace ISDP2025_Parfonov_Zerrou.Forms.AdminUserControls
             cmbSearchLocation.SelectedIndex = 0;
         }
 
-        // Function to show all inventory without any filters
         private void LoadInventory()
         {
+            EnableSearchControls(false);
+
             var inventory = context.Inventories
                 .Include(i => i.Item)
                 .Include(i => i.Site)
@@ -98,6 +101,7 @@ namespace ISDP2025_Parfonov_Zerrou.Forms.AdminUserControls
                 .ToList();
 
             dgInventory.ItemsSource = inventory;
+            EnableSearchControls(true);
         }
 
         private void EnableInputs(bool isEnabled)
@@ -114,7 +118,14 @@ namespace ISDP2025_Parfonov_Zerrou.Forms.AdminUserControls
             chkActive.IsEnabled = isEnabled;
         }
 
-        // Function to show filtered inventory
+        private void EnableSearchControls(bool isEnabled)
+        {
+            txtSearch.IsEnabled = isEnabled;
+            cmbSearchCategory.IsEnabled = isEnabled;
+            cmbSearchLocation.IsEnabled = isEnabled;
+            dgInventory.IsEnabled = isEnabled;
+        }
+
         private void ApplyFilters()
         {
             if (dgInventory.ItemsSource == null)
@@ -162,6 +173,33 @@ namespace ISDP2025_Parfonov_Zerrou.Forms.AdminUserControls
             dgInventory.ItemsSource = query.ToList();
         }
 
+        private void RestoreDefaultState()
+        {
+            // Clear and disable inputs
+            ClearInputs();
+            EnableInputs(false);
+
+            // Enable search controls and grid
+            EnableSearchControls(true);
+
+            // Reset buttons to default visibility
+            btnSave.Visibility = Visibility.Collapsed;
+            btnAdd.Visibility = Visibility.Visible;
+            btnUpdate.Visibility = Visibility.Visible;
+            btnUpdate.IsEnabled = false;
+
+            // Reset filters to default
+            txtSearch.Clear();
+            cmbSearchCategory.SelectedIndex = 0;
+            cmbSearchLocation.SelectedIndex = 0;
+
+            // Clear selection and reload data
+            dgInventory.SelectedItem = null;
+            LoadInventory();
+
+            btnClear.IsEnabled = false;
+        }
+
         private void TxtSearch_TextChanged(object sender, TextChangedEventArgs e)
         {
             btnClear.IsEnabled = !string.IsNullOrWhiteSpace(txtSearch.Text);
@@ -180,10 +218,7 @@ namespace ISDP2025_Parfonov_Zerrou.Forms.AdminUserControls
 
         private void BtnClear_Click(object sender, System.Windows.RoutedEventArgs e)
         {
-            EnableInputs(false);
-            ClearInputs();
-            dgInventory.ItemsSource = null;
-            dgInventory.Items.Clear();
+            RestoreDefaultState();
         }
 
         private void BtnRefresh_Click(object sender, System.Windows.RoutedEventArgs e)
@@ -195,8 +230,6 @@ namespace ISDP2025_Parfonov_Zerrou.Forms.AdminUserControls
         {
             if (dgInventory.SelectedItem != null)
             {
-
-                //Found in Internet
                 dynamic selectedItem = dgInventory.SelectedItem;
 
                 try
@@ -213,7 +246,6 @@ namespace ISDP2025_Parfonov_Zerrou.Forms.AdminUserControls
                     cmbLocation.SelectedValue = selectedItem.SiteId;
                     chkActive.IsChecked = selectedItem.Active == "Yes";
 
-                    EnableInputs(false);
                     btnUpdate.IsEnabled = true;
                     btnClear.IsEnabled = true;
                 }
@@ -231,12 +263,12 @@ namespace ISDP2025_Parfonov_Zerrou.Forms.AdminUserControls
         private void DgInventory_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             ChangeIndex();
-            EnableInputs(true);
         }
 
         private void BtnUpdate_Click(object sender, System.Windows.RoutedEventArgs e)
         {
             EnableInputs(true);
+            EnableSearchControls(false);
             btnAdd.Visibility = Visibility.Collapsed;
             btnUpdate.Visibility = Visibility.Collapsed;
             btnSave.Visibility = Visibility.Visible;
@@ -246,12 +278,12 @@ namespace ISDP2025_Parfonov_Zerrou.Forms.AdminUserControls
         {
             ClearInputs();
             EnableInputs(true);
+            EnableSearchControls(false);
             btnAdd.Visibility = Visibility.Collapsed;
             btnUpdate.Visibility = Visibility.Collapsed;
             btnSave.Visibility = Visibility.Visible;
-            dgInventory.IsEnabled = false;
-            btnClear.IsEnabled = false;
         }
+
         private void ClearInputs()
         {
             lblItemId.Content = string.Empty;
@@ -269,7 +301,17 @@ namespace ISDP2025_Parfonov_Zerrou.Forms.AdminUserControls
 
         private void BtnSave_Click(object sender, RoutedEventArgs e)
         {
-            MessageBox.Show("SAVE");
+            MessageBoxResult result =
+            MessageBox.Show("The Item Will Be Added/Updated", "Confirmation Needed", MessageBoxButton.YesNoCancel, MessageBoxImage.Question);
+            if (result == MessageBoxResult.Yes)
+            {
+                // Your save logic here
+                RestoreDefaultState();
+            }
+            else if (result == MessageBoxResult.No)
+            {
+                RestoreDefaultState();
+            }
         }
     }
 }

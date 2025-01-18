@@ -2,7 +2,6 @@
 using ISDP2025_Parfonov_Zerrou.Models;
 using Microsoft.EntityFrameworkCore;
 using System.Windows;
-using System.Windows.Controls;
 
 namespace ISDP2025_Parfonov_Zerrou
 {
@@ -42,26 +41,7 @@ namespace ISDP2025_Parfonov_Zerrou
             }
         }
 
-        private void LoadDataToGrid<T>(DbSet<T> dbSet, DataGrid dataGrid) where T : class
-        {
-            try
-            {
-                if (dbSet == null)
-                {
-                    throw new ArgumentNullException(nameof(dbSet), "DbSet cannot be null.");
-                }
-                if (dataGrid == null)
-                {
-                    throw new ArgumentNullException(nameof(dataGrid), "DataGrid cannot be null.");
-                }
-                dbSet.Load();
-                dataGrid.ItemsSource = dbSet.Local.ToList();
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show($"An error occurred while loading data: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
-            }
-        }
+
 
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
@@ -75,7 +55,7 @@ namespace ISDP2025_Parfonov_Zerrou
 
         private void btnLocations_Click(object sender, RoutedEventArgs e)
         {
-            LoadDataToGrid(context.Sites, dgvInformation);
+
         }
 
         private void btnInventory_Click(object sender, RoutedEventArgs e)
@@ -85,17 +65,12 @@ namespace ISDP2025_Parfonov_Zerrou
 
         private void btnSuppliers_Click(object sender, RoutedEventArgs e)
         {
-            LoadDataToGrid(context.Suppliers, dgvInformation);
-        }
 
-        private void btnDashBoard_Click(object sender, RoutedEventArgs e)
-        {
-            // Handle dashboard view
         }
 
         private void btnRefresh_Click(object sender, RoutedEventArgs e)
         {
-            LoadDataToGrid(context.Employees, dgvInformation);
+
         }
     }
 }

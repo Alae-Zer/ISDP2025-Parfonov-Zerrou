@@ -219,6 +219,7 @@ namespace ISDP2025_Parfonov_Zerrou.Forms.AdminUserControls
 
         private void BtnRefresh_Click(object sender, System.Windows.RoutedEventArgs e)
         {
+            ClearInputs();
             LoadInventory();
         }
 
@@ -263,12 +264,16 @@ namespace ISDP2025_Parfonov_Zerrou.Forms.AdminUserControls
 
         private void BtnUpdate_Click(object sender, System.Windows.RoutedEventArgs e)
         {
-            EnableInputs(true);
-            EnableSearchControls(false);
-            btnAdd.Visibility = Visibility.Collapsed;
-            btnUpdate.Visibility = Visibility.Collapsed;
-            btnRefresh.Visibility = Visibility.Collapsed;
-            btnSave.Visibility = Visibility.Visible;
+            if (dgInventory.SelectedItems.Count > 0)
+            {
+                EnableInputs(true);
+                EnableSearchControls(false);
+                btnClear.IsEnabled = false;
+                btnAdd.Visibility = Visibility.Collapsed;
+                btnUpdate.Visibility = Visibility.Collapsed;
+                btnRefresh.Visibility = Visibility.Collapsed;
+                btnSave.Visibility = Visibility.Visible;
+            }
         }
 
         private void BtnAdd_Click(object sender, System.Windows.RoutedEventArgs e)
@@ -295,6 +300,9 @@ namespace ISDP2025_Parfonov_Zerrou.Forms.AdminUserControls
             txtCaseSize.Clear();
             cmbLocation.SelectedIndex = 0;
             chkActive.IsChecked = false;
+            cmbSearchCategory.SelectedIndex = 0;
+            cmbSearchLocation.SelectedIndex = 0;
+            txtSearch.Clear();
         }
 
         private void BtnSave_Click(object sender, RoutedEventArgs e)
@@ -305,9 +313,11 @@ namespace ISDP2025_Parfonov_Zerrou.Forms.AdminUserControls
             {
                 // Your save logic here
                 RestoreDefaultState();
+                btnClear.IsEnabled = true;
             }
             else if (result == MessageBoxResult.No)
             {
+                btnClear.IsEnabled = true;
                 RestoreDefaultState();
             }
         }

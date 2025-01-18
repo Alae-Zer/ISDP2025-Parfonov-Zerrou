@@ -17,6 +17,7 @@ namespace ISDP2025_Parfonov_Zerrou.Forms.AdminUserControls
             LoadLocationsToGlobal();
             LoadInitialData();
             btnClear.IsEnabled = false;
+            EnableInputs(false);
         }
 
         private void LoadLocationsToGlobal()
@@ -99,6 +100,20 @@ namespace ISDP2025_Parfonov_Zerrou.Forms.AdminUserControls
             dgInventory.ItemsSource = inventory;
         }
 
+        private void EnableInputs(bool isEnabled)
+        {
+            txtItemName.IsEnabled = isEnabled;
+            txtSKU.IsEnabled = isEnabled;
+            txtCategory.IsEnabled = isEnabled;
+            txtQuantity.IsEnabled = isEnabled;
+            txtWeight.IsEnabled = isEnabled;
+            txtCostPrice.IsEnabled = isEnabled;
+            txtRetailPrice.IsEnabled = isEnabled;
+            txtCaseSize.IsEnabled = isEnabled;
+            cmbLocation.IsEnabled = isEnabled;
+            chkActive.IsEnabled = isEnabled;
+        }
+
         // Function to show filtered inventory
         private void ApplyFilters()
         {
@@ -165,26 +180,10 @@ namespace ISDP2025_Parfonov_Zerrou.Forms.AdminUserControls
 
         private void BtnClear_Click(object sender, System.Windows.RoutedEventArgs e)
         {
-            DefaultState();
-        }
-
-        private void DefaultState()
-        {
-            txtSearch.Clear();
-            txtCaseSize.Clear();
-            txtCostPrice.Clear();
-            txtRetailPrice.Clear();
-            txtQuantity.Clear();
-            txtWeight.Clear();
-            txtCategory.Clear();
-            txtSKU.Clear();
-            chkActive.IsChecked = false;
-            cmbLocation.SelectedIndex = 0;
-            txtItemName.Clear();
-            cmbSearchCategory.SelectedIndex = 0;
-            cmbSearchLocation.SelectedIndex = 0;
-            btnClear.IsEnabled = false;
-
+            EnableInputs(false);
+            ClearInputs();
+            dgInventory.ItemsSource = null;
+            dgInventory.Items.Clear();
         }
 
         private void BtnRefresh_Click(object sender, System.Windows.RoutedEventArgs e)
@@ -192,14 +191,17 @@ namespace ISDP2025_Parfonov_Zerrou.Forms.AdminUserControls
             LoadInventory();
         }
 
-        private void DgInventory_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        private void ChangeIndex()
         {
             if (dgInventory.SelectedItem != null)
             {
+
+                //Found in Internet
                 dynamic selectedItem = dgInventory.SelectedItem;
 
                 try
                 {
+                    lblItemId.Content = selectedItem.ItemId.ToString();
                     txtItemName.Text = selectedItem.ItemName;
                     txtSKU.Text = selectedItem.Sku;
                     txtCategory.Text = selectedItem.Category;
@@ -211,6 +213,7 @@ namespace ISDP2025_Parfonov_Zerrou.Forms.AdminUserControls
                     cmbLocation.SelectedValue = selectedItem.SiteId;
                     chkActive.IsChecked = selectedItem.Active == "Yes";
 
+                    EnableInputs(false);
                     btnUpdate.IsEnabled = true;
                     btnClear.IsEnabled = true;
                 }
@@ -225,14 +228,48 @@ namespace ISDP2025_Parfonov_Zerrou.Forms.AdminUserControls
             }
         }
 
+        private void DgInventory_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            ChangeIndex();
+            EnableInputs(true);
+        }
+
         private void BtnUpdate_Click(object sender, System.Windows.RoutedEventArgs e)
         {
-
+            EnableInputs(true);
+            btnAdd.Visibility = Visibility.Collapsed;
+            btnUpdate.Visibility = Visibility.Collapsed;
+            btnSave.Visibility = Visibility.Visible;
         }
 
         private void BtnAdd_Click(object sender, System.Windows.RoutedEventArgs e)
         {
+            ClearInputs();
+            EnableInputs(true);
+            btnAdd.Visibility = Visibility.Collapsed;
+            btnUpdate.Visibility = Visibility.Collapsed;
+            btnSave.Visibility = Visibility.Visible;
+            dgInventory.IsEnabled = false;
+            btnClear.IsEnabled = false;
+        }
+        private void ClearInputs()
+        {
+            lblItemId.Content = string.Empty;
+            txtItemName.Clear();
+            txtSKU.Clear();
+            txtCategory.Clear();
+            txtQuantity.Clear();
+            txtWeight.Clear();
+            txtCostPrice.Clear();
+            txtRetailPrice.Clear();
+            txtCaseSize.Clear();
+            cmbLocation.SelectedIndex = 0;
+            chkActive.IsChecked = false;
+        }
 
+        private void BtnSave_Click(object sender, RoutedEventArgs e)
+        {
+            MessageBox.Show("SAVE");
         }
     }
 }

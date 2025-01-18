@@ -19,7 +19,6 @@ namespace ISDP2025_Parfonov_Zerrou.Forms.AdminUserControls
             LoadInitialData();
             btnClear.IsEnabled = false;
             EnableInputs(false);
-            LoadInventory();
         }
 
         private void LoadLocationsToGlobal()
@@ -193,11 +192,8 @@ namespace ISDP2025_Parfonov_Zerrou.Forms.AdminUserControls
             cmbSearchCategory.SelectedIndex = 0;
             cmbSearchLocation.SelectedIndex = 0;
 
-            // Clear selection and reload data
-            dgInventory.SelectedItem = null;
-            LoadInventory();
-
             btnClear.IsEnabled = false;
+            btnRefresh.Visibility = Visibility.Visible;
         }
 
         private void TxtSearch_TextChanged(object sender, TextChangedEventArgs e)
@@ -218,7 +214,7 @@ namespace ISDP2025_Parfonov_Zerrou.Forms.AdminUserControls
 
         private void BtnClear_Click(object sender, System.Windows.RoutedEventArgs e)
         {
-            RestoreDefaultState();
+            ClearInputs();
         }
 
         private void BtnRefresh_Click(object sender, System.Windows.RoutedEventArgs e)
@@ -271,6 +267,7 @@ namespace ISDP2025_Parfonov_Zerrou.Forms.AdminUserControls
             EnableSearchControls(false);
             btnAdd.Visibility = Visibility.Collapsed;
             btnUpdate.Visibility = Visibility.Collapsed;
+            btnRefresh.Visibility = Visibility.Collapsed;
             btnSave.Visibility = Visibility.Visible;
         }
 
@@ -279,6 +276,7 @@ namespace ISDP2025_Parfonov_Zerrou.Forms.AdminUserControls
             ClearInputs();
             EnableInputs(true);
             EnableSearchControls(false);
+            btnRefresh.Visibility = Visibility.Collapsed;
             btnAdd.Visibility = Visibility.Collapsed;
             btnUpdate.Visibility = Visibility.Collapsed;
             btnSave.Visibility = Visibility.Visible;

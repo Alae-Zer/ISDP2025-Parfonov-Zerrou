@@ -7,20 +7,41 @@ namespace ISDP2025_Parfonov_Zerrou.Forms.AdminUserControls
 {
     public partial class InventoryControl : UserControl
     {
-        private readonly BestContext context;
+        BestContext context;
+        List<Site> locationsList = new List<Site>();
 
         public InventoryControl()
         {
             InitializeComponent();
             context = new BestContext();
+            LoadLocationsToGlobal();
             LoadInitialData();
             btnClear.IsEnabled = false;
+        }
+
+        private void LoadLocationsToGlobal()
+        {
+            Site firstLocation = new Site();
+
+            firstLocation.SiteId = -1;
+            firstLocation.SiteName = "No Location Selected";
+
+            // Add it to list
+            locationsList.Add(firstLocation);
+
+            // Get and add database locations
+            var dbLocations = context.Sites.ToList();
+            foreach (var location in dbLocations)
+            {
+                locationsList.Add(location);
+            }
         }
 
         private void LoadInitialData()
         {
             LoadCategories();
-            LoadLocations();
+            LoadSearchLocations();
+            LoadChooseLocations();
         }
 
         private void LoadCategories()
@@ -36,21 +57,53 @@ namespace ISDP2025_Parfonov_Zerrou.Forms.AdminUserControls
             cmbSearchCategory.SelectedIndex = 0;
         }
 
-        private void LoadLocations()
+        private void LoadChooseLocations()
         {
-            var locations = context.Sites.ToList();
-            cmbSearchLocation.ItemsSource = locations;
+            cmbLocation.ItemsSource = locationsList;
+            cmbLocation.DisplayMemberPath = "SiteName";
+            cmbLocation.SelectedValuePath = "SiteId";
+            cmbLocation.SelectedIndex = 0;
+        }
+
+        private void LoadSearchLocations()
+        {
+            cmbSearchLocation.ItemsSource = locationsList;
             cmbSearchLocation.DisplayMemberPath = "SiteName";
             cmbSearchLocation.SelectedValuePath = "SiteId";
-
-            var allLocations = new Site { SiteId = -1, SiteName = "All Locations" };
-            locations.Insert(0, allLocations);
             cmbSearchLocation.SelectedIndex = 0;
         }
 
+        // Function to show all inventory without any filters
+        private void LoadInventory()
+        {
+            var inventory = context.Inventories
+                .Include(i => i.Item)
+                .Include(i => i.Site)
+                .Select(i => new
+                {
+                    i.ItemId,
+                    i.SiteId,
+                    SiteName = i.Site.SiteName,
+                    ItemName = i.Item.Name,
+                    i.Item.Sku,
+                    i.Item.Category,
+                    i.Quantity,
+                    i.Item.Weight,
+                    i.Item.CaseSize,
+                    i.Item.CostPrice,
+                    i.Item.RetailPrice,
+                    Active = i.Item.Active == 1 ? "Yes" : "No"
+                })
+                .ToList();
+
+            dgInventory.ItemsSource = inventory;
+        }
+
+        // Function to show filtered inventory
         private void ApplyFilters()
         {
-            if (dgInventory.ItemsSource == null) return; // Don't apply filters if grid is empty
+            if (dgInventory.ItemsSource == null)
+                return;
 
             var query = context.Inventories
                 .Include(i => i.Item)
@@ -65,11 +118,11 @@ namespace ISDP2025_Parfonov_Zerrou.Forms.AdminUserControls
                     i.Item.Category,
                     i.Quantity,
                     i.Item.Weight,
+                    i.Item.CaseSize,
                     i.Item.CostPrice,
                     i.Item.RetailPrice,
                     Active = i.Item.Active == 1 ? "Yes" : "No"
-                })
-                .AsQueryable();
+                });
 
             if (!string.IsNullOrWhiteSpace(txtSearch.Text))
             {
@@ -94,30 +147,6 @@ namespace ISDP2025_Parfonov_Zerrou.Forms.AdminUserControls
             dgInventory.ItemsSource = query.ToList();
         }
 
-        private void LoadInventory()
-        {
-            var inventory = context.Inventories
-                .Include(i => i.Item)
-                .Include(i => i.Site)
-                .Select(i => new
-                {
-                    i.ItemId,
-                    i.SiteId,
-                    SiteName = i.Site.SiteName,
-                    ItemName = i.Item.Name,
-                    i.Item.Sku,
-                    i.Item.Category,
-                    i.Quantity,
-                    i.Item.Weight,
-                    i.Item.CaseSize,
-                    i.Item.CostPrice,
-                    i.Item.RetailPrice,
-                    Active = i.Item.Active == 1 ? "Yes" : "No"
-                })
-                .ToList();
-            dgInventory.ItemsSource = inventory;
-        }
-
         private void TxtSearch_TextChanged(object sender, TextChangedEventArgs e)
         {
             btnClear.IsEnabled = !string.IsNullOrWhiteSpace(txtSearch.Text);
@@ -136,10 +165,26 @@ namespace ISDP2025_Parfonov_Zerrou.Forms.AdminUserControls
 
         private void BtnClear_Click(object sender, System.Windows.RoutedEventArgs e)
         {
+            DefaultState();
+        }
+
+        private void DefaultState()
+        {
             txtSearch.Clear();
+            txtCaseSize.Clear();
+            txtCostPrice.Clear();
+            txtRetailPrice.Clear();
+            txtQuantity.Clear();
+            txtWeight.Clear();
+            txtCategory.Clear();
+            txtSKU.Clear();
+            chkActive.IsChecked = false;
+            cmbLocation.SelectedIndex = 0;
+            txtItemName.Clear();
             cmbSearchCategory.SelectedIndex = 0;
             cmbSearchLocation.SelectedIndex = 0;
             btnClear.IsEnabled = false;
+
         }
 
         private void BtnRefresh_Click(object sender, System.Windows.RoutedEventArgs e)
@@ -149,16 +194,12 @@ namespace ISDP2025_Parfonov_Zerrou.Forms.AdminUserControls
 
         private void DgInventory_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            // Check if an item is selected
             if (dgInventory.SelectedItem != null)
             {
-                // Get the selected item using reflection since we're using an anonymous type
                 dynamic selectedItem = dgInventory.SelectedItem;
 
                 try
                 {
-
-                    //// Populate form fields
                     txtItemName.Text = selectedItem.ItemName;
                     txtSKU.Text = selectedItem.Sku;
                     txtCategory.Text = selectedItem.Category;
@@ -167,14 +208,9 @@ namespace ISDP2025_Parfonov_Zerrou.Forms.AdminUserControls
                     txtCostPrice.Text = selectedItem.CostPrice.ToString();
                     txtRetailPrice.Text = selectedItem.RetailPrice.ToString();
                     txtCaseSize.Text = selectedItem.CaseSize.ToString();
-
-                    // Set Location combobox
                     cmbLocation.SelectedValue = selectedItem.SiteId;
-
-                    //// Set Active checkbox
                     chkActive.IsChecked = selectedItem.Active == "Yes";
 
-                    //// Enable/disable buttons as needed
                     btnUpdate.IsEnabled = true;
                     btnClear.IsEnabled = true;
                 }
@@ -185,8 +221,6 @@ namespace ISDP2025_Parfonov_Zerrou.Forms.AdminUserControls
             }
             else
             {
-                // Clear form if nothing is selected
-                //ClearForm();
                 btnUpdate.IsEnabled = false;
             }
         }

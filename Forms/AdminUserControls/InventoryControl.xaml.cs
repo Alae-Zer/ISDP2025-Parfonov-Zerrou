@@ -502,11 +502,16 @@ namespace ISDP2025_Parfonov_Zerrou.Forms.AdminUserControls
 
         private void CmbSearchCategory_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
+            if (cmbSearchCategory.SelectedIndex != 0)
+            {
+                btnClear.IsEnabled = true;
+            }
             ApplyFilters();
         }
 
         private void CmbSearchLocation_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
+            if (cmbSearchLocation.SelectedIndex != 0) { btnClear.IsEnabled = true; }
             ApplyFilters();
         }
 
@@ -549,11 +554,6 @@ namespace ISDP2025_Parfonov_Zerrou.Forms.AdminUserControls
         private void BtnSave_Click(object sender, RoutedEventArgs e)
         {
             SaveChanges();
-        }
-
-        private void txtSearch_KeyDown(object sender, System.Windows.Input.KeyEventArgs e)
-        {
-
         }
     }
 }

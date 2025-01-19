@@ -50,7 +50,7 @@ namespace ISDP2025_Parfonov_Zerrou.Forms.AdminUserControls
             txtCaseSize.Clear();
             cmbLocation.SelectedIndex = 0;
             cmbSupplier.SelectedIndex = 0;
-            chkActive.IsChecked = false;
+            chkActive.IsChecked = true;
             cmbSearchCategory.SelectedIndex = 0;
             cmbSearchLocation.SelectedIndex = 0;
             txtSearch.Clear();
@@ -554,6 +554,27 @@ namespace ISDP2025_Parfonov_Zerrou.Forms.AdminUserControls
         private void BtnSave_Click(object sender, RoutedEventArgs e)
         {
             SaveChanges();
+        }
+
+        private void chkActive_Click(object sender, RoutedEventArgs e)
+        {
+            //Check If User attempt Deactivate
+            if (chkActive.IsChecked == false)
+            {
+                //Declare Result and display Messagebox
+                MessageBoxResult result =
+                MessageBox.Show("You're about to deactivate this item!", "Alert", MessageBoxButton.OKCancel, MessageBoxImage.Warning);
+
+                //Check/Uncheck based on User's decision
+                if (result == MessageBoxResult.OK)
+                {
+                    chkActive.IsChecked = false;
+                }
+                else
+                {
+                    chkActive.IsChecked = true;
+                }
+            }
         }
     }
 }

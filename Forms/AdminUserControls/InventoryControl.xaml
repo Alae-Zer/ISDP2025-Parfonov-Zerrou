@@ -113,7 +113,7 @@
 
                 <Label Content="Active:" Grid.Row="6" Grid.Column="2"/>
                 <CheckBox x:Name="chkActive" Grid.Row="6" Grid.Column="3" Margin="5" 
-                          VerticalAlignment="Center" IsEnabled="False" Cursor="Pen"/>
+                          VerticalAlignment="Center" IsEnabled="False" Cursor="Pen" IsChecked="True" Click="chkActive_Click"/>
             </Grid>
         </GroupBox>
 

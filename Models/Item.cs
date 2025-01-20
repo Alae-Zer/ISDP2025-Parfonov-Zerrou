@@ -1,4 +1,6 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using System;
+using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using Microsoft.EntityFrameworkCore;
 
@@ -53,6 +55,10 @@ public partial class Item
 
     [Column("active")]
     public sbyte Active { get; set; }
+
+    [Column("imageLocation")]
+    [StringLength(255)]
+    public string? ImageLocation { get; set; }
 
     [ForeignKey("Category")]
     [InverseProperty("Items")]

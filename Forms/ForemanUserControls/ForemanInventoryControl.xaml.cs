@@ -1,9 +1,9 @@
-﻿using ISDP2025_Parfonov_Zerrou.Models;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.Win32;
-using System.Windows;
+﻿using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media.Imaging;
+using ISDP2025_Parfonov_Zerrou.Models;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Win32;
 
 namespace ISDP2025_Parfonov_Zerrou.Forms.ForemanUserControls
 {
@@ -73,7 +73,7 @@ namespace ISDP2025_Parfonov_Zerrou.Forms.ForemanUserControls
                 i.Sku,
                 i.Description,
                 i.Notes,
-                //i.ImageLocation,
+                i.ImageLocation,
                 i.CaseSize,
                 i.CostPrice,
                 i.RetailPrice

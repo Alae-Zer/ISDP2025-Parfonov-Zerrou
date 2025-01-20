@@ -1,4 +1,6 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using System;
+using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using Microsoft.EntityFrameworkCore;
 
@@ -7,13 +9,14 @@ namespace ISDP2025_Parfonov_Zerrou.Models;
 [Table("employee")]
 [Index("PositionId", Name = "PositionID")]
 [Index("SiteId", Name = "siteID")]
+[Index("Username", Name = "username_constraint", IsUnique = true)]
 public partial class Employee
 {
     [Key]
     [Column("employeeID")]
     public int EmployeeId { get; set; }
 
-    [StringLength(32)]
+    [StringLength(255)]
     public string Password { get; set; } = null!;
 
     [StringLength(20)]
@@ -32,7 +35,6 @@ public partial class Employee
     public int SiteId { get; set; }
 
     [Column("username")]
-    [StringLength(255)]
     public string Username { get; set; } = null!;
 
     [Column("notes")]

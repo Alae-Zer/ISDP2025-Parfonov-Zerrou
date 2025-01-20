@@ -5,7 +5,7 @@
         Width="1200" Height="800"
         Background="#F7F7F7"
         WindowStartupLocation="CenterScreen"
-        MinWidth="1200" MinHeight="800">
+        MinWidth="1200" MinHeight="800" Loaded="Window_Loaded">
 
     <!-- Resources -->
     <Window.Resources>
@@ -107,7 +107,7 @@
                 <StackPanel Margin="10,10,10,86">
                     <!-- Dashboard Button -->
                     <Button Tag="DashboardPage" Height="41" Margin="0,9" 
-                            Style="{StaticResource SidebarButtonStyle}" Click="Button_Click">
+                            Style="{StaticResource SidebarButtonStyle}">
                         <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
                             <Label Style="{StaticResource SidebarLabelStyle}" Content="&#xf0db;" Padding="7,5,5,5" />
                             <TextBlock Text="Dashboard" VerticalAlignment="Center" />
@@ -130,11 +130,11 @@
                         </StackPanel>
                     </Button>
                     <!-- Inventory Button -->
-                    <Button Tag="InventoryPage" Height="41" Margin="0,9" 
-                            Style="{StaticResource SidebarButtonStyle}">
+                    <Button x:Name="btnEditItems" Tag="InventoryPage" Height="41" Margin="0,9" 
+                            Style="{StaticResource SidebarButtonStyle}" Click="btnEditItems_Click">
                         <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
                             <Label Style="{StaticResource SidebarLabelStyle}" Content="&#xf468;" Padding="6,5,3,5" Margin="10,0,9,0" />
-                            <TextBlock Text="Inventory" VerticalAlignment="Center" />
+                            <TextBlock Text="Edit Items" VerticalAlignment="Center" />
                         </StackPanel>
                     </Button>
                     <!-- Suppliers Button -->
@@ -159,7 +159,7 @@
                 <DockPanel LastChildFill="True" Margin="10" VerticalAlignment="Stretch">
                     <StackPanel DockPanel.Dock="Bottom" Margin="0,20,0,0">
                         <!-- User Label -->
-                        <TextBlock Text="Logged in as: [Current User]" Foreground="White" FontSize="14" 
+                        <TextBlock x:Name="txtLoggedUser" Text="Logged in as: [Current User]" Foreground="White" FontSize="14" 
                                    HorizontalAlignment="Center" Margin="0,0,0,5" />
 
                         <!-- Logout Button -->
@@ -179,13 +179,13 @@
                 <!-- Header -->
                 <DockPanel Background="#EAEAEA" Height="50" VerticalAlignment="Top">
                     <!-- Left-aligned Text -->
-                    <TextBlock Text="Current Location: [Location Name]" 
+                    <TextBlock x:Name="txtUserLocation" Text="Current Location: [Location Name]" 
                Foreground="#333" FontSize="16" FontWeight="Bold" 
                VerticalAlignment="Center" Margin="10,0,0,0" DockPanel.Dock="Left" />
 
 
                     <!-- Help Button -->
-                    <Button Width="32" Height="30" BorderThickness="0" Background="Transparent" Click="Button_Click_1" HorizontalAlignment="Right" Margin="5">
+                    <Button Width="32" Height="30" BorderThickness="0" Background="Transparent" HorizontalAlignment="Right" Margin="5">
                         <Label Style="{StaticResource SidebarLabelStyle}" Content="&#xf05a;" Margin="0" Cursor="Hand"/>
                     </Button>
                 </DockPanel>

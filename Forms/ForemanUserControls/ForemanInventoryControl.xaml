@@ -203,7 +203,7 @@
                         Style="{StaticResource RoundedButton}"
                         Background="#FFF62D2D"
                         Foreground="White" Cursor="Hand"/>
-                <Button x:Name="btnSave" Content="Save" Width="100" Height="30" 
+                <Button x:Name="btnSave" Content="Save/Cancel" Width="100" Height="30" 
                         DockPanel.Dock="Right" Margin="5,0"
                         Click="BtnSave_Click"
                         Style="{StaticResource RoundedButton}"

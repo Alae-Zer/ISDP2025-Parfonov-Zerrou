@@ -7,7 +7,7 @@ using System.Windows.Controls;
 //Mohammed Alae-Zerrou, Serhii Parfonov
 //NBCC, Winter 2025
 //Completed By Equal Share of Mohammed and Serhii
-//Last Modified by Serhii on January 18,2025
+//Last Modified by Serhii on January 20,2025
 namespace ISDP2025_Parfonov_Zerrou.Forms.AdminUserControls
 {
     public partial class InventoryControl : UserControl
@@ -242,6 +242,9 @@ namespace ISDP2025_Parfonov_Zerrou.Forms.AdminUserControls
             return true;
         }
 
+        //Sanve new Item To The Database
+        //Sends Nothing
+        //Returns Nothing
         private void SaveNewItem()
         {
             var item = new Item
@@ -258,9 +261,10 @@ namespace ISDP2025_Parfonov_Zerrou.Forms.AdminUserControls
                 Active = (sbyte)(chkActive.IsChecked == true ? 1 : 0)
             };
 
+            //Add Item and Save
             context.Items.Add(item);
-            context.SaveChanges();
 
+            //Add To Inventory
             var inventory = new Inventory
             {
                 ItemId = item.ItemId,
@@ -268,44 +272,64 @@ namespace ISDP2025_Parfonov_Zerrou.Forms.AdminUserControls
                 Quantity = (int)decimal.Parse(txtQuantity.Text)
             };
 
+            //Add 
             context.Inventories.Add(inventory);
+            context.SaveChanges();
         }
 
+        //Updates Item If Already Exists
+        //Sends Nothing
+        //Returns Nothing
         private void UpdateExistingItem()
         {
-            int itemId = int.Parse(lblItemId.Content.ToString());
-
-            var item = context.Items.Find(itemId);
-            if (item != null)
+            try
             {
-                item.Name = txtItemName.Text;
-                item.Sku = txtSKU.Text;
-                item.Category = cmbEditCategory.Text;
-                item.Weight = decimal.Parse(txtWeight.Text);
-                item.CaseSize = int.Parse(txtCaseSize.Text);
-                item.CostPrice = decimal.Parse(txtCostPrice.Text);
-                item.RetailPrice = decimal.Parse(txtRetailPrice.Text);
-                item.SupplierId = (int)cmbSupplier.SelectedValue;
-                item.Active = (sbyte)(chkActive.IsChecked == true ? 1 : 0);
-            }
+                //Take Item Id
+                int itemId = int.Parse(lblItemId.Content.ToString());
 
-            var inventory = context.Inventories
-                .FirstOrDefault(i => i.ItemId == itemId && i.SiteId == (int)cmbLocation.SelectedValue);
+                //Find in the database
+                var item = context.Items.Find(itemId);
 
-            if (inventory != null)
-            {
-                inventory.Quantity = (int)decimal.Parse(txtQuantity.Text);
-            }
-            else
-            {
-                inventory = new Inventory
+                //If found- procceed
+                if (item != null)
                 {
-                    ItemId = itemId,
-                    SiteId = (int)cmbLocation.SelectedValue,
-                    Quantity = (int)decimal.Parse(txtQuantity.Text)
-                };
-                context.Inventories.Add(inventory);
+                    item.Name = txtItemName.Text;
+                    item.Sku = txtSKU.Text;
+                    item.Category = cmbEditCategory.Text;
+                    item.Weight = decimal.Parse(txtWeight.Text);
+                    item.CaseSize = int.Parse(txtCaseSize.Text);
+                    item.CostPrice = decimal.Parse(txtCostPrice.Text);
+                    item.RetailPrice = decimal.Parse(txtRetailPrice.Text);
+                    item.SupplierId = (int)cmbSupplier.SelectedValue;
+                    item.Active = (sbyte)(chkActive.IsChecked == true ? 1 : 0);
+                }
+
+                //Find Inventory
+                var inventory = context.Inventories
+                    .FirstOrDefault(i => i.ItemId == itemId && i.SiteId == (int)cmbLocation.SelectedValue);
+
+                //If Found - procceed
+                if (inventory != null)
+                {
+                    inventory.Quantity = (int)decimal.Parse(txtQuantity.Text);
+                }
+                //Create New Inventory If not Found
+                else
+                {
+                    inventory = new Inventory
+                    {
+                        ItemId = itemId,
+                        SiteId = (int)cmbLocation.SelectedValue,
+                        Quantity = (int)decimal.Parse(txtQuantity.Text)
+                    };
+                    context.Inventories.Add(inventory);
+                }
             }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Exception " + ex.Message + " found");
+            }
+
         }
 
         //Dynamic Filters

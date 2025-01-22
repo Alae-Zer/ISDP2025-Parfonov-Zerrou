@@ -1,11 +1,11 @@
-﻿using ISDP2025_Parfonov_Zerrou.Models;
-using Microsoft.EntityFrameworkCore;
-using System.Security.Cryptography;
+﻿using System.Security.Cryptography;
 using System.Text;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
+using ISDP2025_Parfonov_Zerrou.Models;
+using Microsoft.EntityFrameworkCore;
 
 //ISDP Project
 //Mohammed Alae-Zerrou, Serhii Parfonov
@@ -334,7 +334,7 @@ namespace ISDP2025_Parfonov_Zerrou
 
         //ComputeSha256Hash will hash and salt the password
         //It takes two parameters the password and the salt
-        static string ComputeSha256Hash(string password, string salt)
+        public static string ComputeSha256Hash(string password, string salt)
         {
             string str = password + salt;
             //Create an SHA256 object

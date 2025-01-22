@@ -6,7 +6,6 @@
              xmlns:local="clr-namespace:ISDP2025_Parfonov_Zerrou.Forms.AdminUserControls"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
-    
     <Grid Background="White" Margin="10">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
@@ -26,12 +25,12 @@
                Margin="0,0,0,20"/>
 
         <!-- Employee Form -->
-        <GroupBox Grid.Row="1" Header="Employee Information" Padding="10" Margin="0,0,0,10">
+        <GroupBox Grid.Row="1" Header="Employee Information" Padding="10" Margin="0,0,0,10" x:Name="employeeFormGroup">
             <Grid>
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="200"/>
                     <ColumnDefinition Width="*"/>
-                    <ColumnDefinition Width="200"/>
+                    <ColumnDefinition Width="100"/>
                     <ColumnDefinition Width="*"/>
                 </Grid.ColumnDefinitions>
                 <Grid.RowDefinitions>
@@ -45,35 +44,40 @@
                 <!-- Left Column Labels -->
                 <Label Content="First Name:" Grid.Row="0" Grid.Column="0"/>
                 <Label Content="Last Name:" Grid.Row="1" Grid.Column="0"/>
-                <Label Content="Employee ID:" Grid.Row="2" Grid.Column="0"/>
-                <Label Content="Position:" Grid.Row="3" Grid.Column="0"/>
-                <Label Content="Email:" Grid.Row="4" Grid.Column="0"/>
+                <Label Content="Location:" Grid.Row="3" Grid.Column="0"/>
+                <Label Content="Position:" Grid.Row="2" Grid.Column="0"/>
+                <Label Content="Notes:" Grid.Row="4" Grid.Column="0"/>
 
                 <!-- Left Column Controls -->
                 <TextBox x:Name="txtFirstName" Grid.Row="0" Grid.Column="1" Margin="6" TextChanged="txtFirstName_TextChanged"/>
                 <TextBox x:Name="txtLastName" Grid.Row="1" Grid.Column="1" Margin="5" TextChanged="txtLastName_TextChanged" />
-                <TextBox x:Name="txtEmployeeID" Grid.Row="2" Grid.Column="1" Margin="5" IsEnabled="False"/>
-                <ComboBox x:Name="cmbPosition" Grid.Row="3" Grid.Column="1" Margin="5"/>
-                <TextBox x:Name="txtEmail" Grid.Row="4" Grid.Column="1" Margin="5"/>
+                <ComboBox x:Name="cmbLocation" Grid.Row="3" Grid.Column="1" Margin="5"/>
+                <ComboBox x:Name="cmbPosition" Grid.Row="2" Grid.Column="1" Margin="5"/>
+                <TextBox x:Name="Notes" Grid.Row="4" Grid.Column="1" VerticalAlignment="Center" TextWrapping="Wrap" AcceptsReturn="True" Height="48" Margin="5,0,5,0"/>
 
                 <!-- Right Column Labels -->
-                <Label Content="Username:" Grid.Row="0" Grid.Column="2"/>
-                <Label Content="Password:" Grid.Row="1" Grid.Column="2"/>
-                <Label Content="Location:" Grid.Row="2" Grid.Column="2"/>
-                <Label Content="Active Status:" Grid.Row="3" Grid.Column="2"/>
+                <Label Content="Username:" Grid.Row="1" Grid.Column="2"/>
+                <Label Content="Password:" Grid.Row="2" Grid.Column="2"/>
+                <Label Content="Employee ID:" Grid.Row="0" Grid.Column="2"/>
+                <Label Content="Email:" Grid.Row="3" Grid.Column="2"/>
+                <Label Content="Active Status:" Grid.Row="4" Grid.Column="2"/>
                 
                 <!-- Right Column Controls -->
-                <TextBox x:Name="txtUsername" Grid.Row="0" Grid.Column="3" Margin="5"/>
-                <Grid Background="#FFF0F0F0"  Grid.Row="1" Grid.Column="3" Margin="3">
-                    <PasswordBox x:Name="pwdPassword" Background="Transparent" BorderThickness="0" 
-                 VerticalContentAlignment="Center" Visibility="Visible"  Password="P@ssw0rd-" />
-                    <TextBox x:Name="txtPassword" Background="Transparent" BorderThickness="0" 
-             VerticalContentAlignment="Center" Visibility="Collapsed"  />
-                    <Label FontFamily="../../icons/#Font Awesome 6 Free Solid" Content="&#xf06e;" FontSize="15" HorizontalAlignment="Right" VerticalAlignment="Center" Margin="0,0,3,0" Foreground="#FF656262" MouseDown="TogglePasswordVisibility" Cursor="Hand" OpacityMask="#FFF0F0F0"/>
-                </Grid>
-                <ComboBox x:Name="cmbLocation" Grid.Row="2" Grid.Column="3" Margin="5"/>
-                <CheckBox x:Name="chkActive" Grid.Row="3" Grid.Column="3" Margin="5" VerticalAlignment="Center" Content="Active"/>
-                
+                <TextBox x:Name="txtUsername" Grid.Row="1" Grid.Column="3" Margin="5" IsEnabled="False" TextChanged="txtUsername_TextChanged"/>
+                <Border Grid.Row="2" Grid.Column="3" Margin="5" 
+        BorderBrush="#FFABADB3" 
+        BorderThickness="1">
+                    <Grid Background="#FFF0F0F0">
+                        <PasswordBox x:Name="pwdPassword" Background="Transparent" BorderThickness="0" 
+                     VerticalContentAlignment="Center" Visibility="Visible"  Password="P@ssw0rd-" IsEnabled="False" />
+                        <TextBox x:Name="txtPassword" Background="Transparent" BorderThickness="0" 
+                 VerticalContentAlignment="Center" Visibility="Collapsed" IsEnabled="False"  />
+                        <Label FontFamily="../../icons/#Font Awesome 6 Free Solid" Content="&#xf06e;" FontSize="15" HorizontalAlignment="Right" VerticalAlignment="Center" Margin="0,0,3,0" Foreground="#FF656262" MouseDown="TogglePasswordVisibility" Cursor="Hand" OpacityMask="#FFF0F0F0" Padding="5,2,5,2"/>
+                    </Grid>
+                </Border>
+                <TextBox x:Name="txtEmployeeID" Grid.Row="0" Grid.Column="3" Margin="5" IsEnabled="False"/>
+                <TextBox x:Name="txtEmail" Grid.Row="3" Grid.Column="3" Margin="5" IsEnabled="False" Height="20" VerticalAlignment="Top"/>
+                <CheckBox x:Name="chkActive" Grid.Row="4" Grid.Column="3" Margin="5" VerticalAlignment="Top" Content="Active"/>
             </Grid>
         </GroupBox>
 
@@ -88,19 +92,63 @@
 
         <!-- Employee List -->
         <DataGrid x:Name="dgEmployees" 
-              Grid.Row="3" 
-              AutoGenerateColumns="False" 
-              IsReadOnly="True"
-              SelectionMode="Single"
-              SelectionChanged="DgEmployees_SelectionChanged" >
+          Grid.Row="3" 
+          AutoGenerateColumns="False" 
+          IsReadOnly="True"
+          SelectionMode="Single"
+          SelectionChanged="DgEmployees_SelectionChanged"
+          RowHeight="23"
+          CanUserResizeRows="False">
             <DataGrid.Columns>
-                <DataGridTextColumn Header="ID" Binding="{Binding EmployeeId}" Width="80"/>
-                <DataGridTextColumn Header="First Name" Binding="{Binding FirstName}" Width="120"/>
-                <DataGridTextColumn Header="Last Name" Binding="{Binding LastName}" Width="120"/>
-                <DataGridTextColumn Header="Email" Binding="{Binding Email}" Width="200"/>
-                <DataGridTextColumn Header="Position" Binding="{Binding Position.PermissionLevel}" Width="126"/>
-                <DataGridTextColumn Header="Location" Binding="{Binding Site.SiteName}" Width="190"/>
-                <DataGridTextColumn Header="Is active" Binding="{Binding Active}" Width="70"/>
+                <DataGridTextColumn Header="ID" Binding="{Binding EmployeeId}" Width="*" MinWidth="20">
+                    <DataGridTextColumn.ElementStyle>
+                        <Style TargetType="TextBlock">
+                            <Setter Property="Padding" Value="7,0,0,0"/>
+                        </Style>
+                    </DataGridTextColumn.ElementStyle>
+                </DataGridTextColumn>
+                <DataGridTextColumn Header="First Name" Binding="{Binding FirstName}" Width="*" MinWidth="100">
+                    <DataGridTextColumn.ElementStyle>
+                        <Style TargetType="TextBlock">
+                            <Setter Property="Padding" Value="7,0,0,0"/>
+                        </Style>
+                    </DataGridTextColumn.ElementStyle>
+                </DataGridTextColumn>
+                <DataGridTextColumn Header="Last Name" Binding="{Binding LastName}" Width="*" MinWidth="100">
+                    <DataGridTextColumn.ElementStyle>
+                        <Style TargetType="TextBlock">
+                            <Setter Property="Padding" Value="7,0,0,0"/>
+                        </Style>
+                    </DataGridTextColumn.ElementStyle>
+                </DataGridTextColumn>
+                <DataGridTextColumn Header="Email" Binding="{Binding Email}" Width="*" MinWidth="145">
+                    <DataGridTextColumn.ElementStyle>
+                        <Style TargetType="TextBlock">
+                            <Setter Property="Padding" Value="7,0,0,0"/>
+                        </Style>
+                    </DataGridTextColumn.ElementStyle>
+                </DataGridTextColumn>
+                <DataGridTextColumn Header="Position" Binding="{Binding Position.PermissionLevel}" Width="*" MinWidth="140">
+                    <DataGridTextColumn.ElementStyle>
+                        <Style TargetType="TextBlock">
+                            <Setter Property="Padding" Value="7,0,0,0"/>
+                        </Style>
+                    </DataGridTextColumn.ElementStyle>
+                </DataGridTextColumn>
+                <DataGridTextColumn Header="Location" Binding="{Binding Site.SiteName}" Width="*" MinWidth="200">
+                    <DataGridTextColumn.ElementStyle>
+                        <Style TargetType="TextBlock">
+                            <Setter Property="Padding" Value="7,0,0,0"/>
+                        </Style>
+                    </DataGridTextColumn.ElementStyle>
+                </DataGridTextColumn>
+                <DataGridTextColumn Header="Is active" Binding="{Binding IsActive}" Width="*" MinWidth="20">
+                    <DataGridTextColumn.ElementStyle>
+                        <Style TargetType="TextBlock">
+                            <Setter Property="Padding" Value="7,0,0,0"/>
+                        </Style>
+                    </DataGridTextColumn.ElementStyle>
+                </DataGridTextColumn>
             </DataGrid.Columns>
         </DataGrid>
     </Grid>

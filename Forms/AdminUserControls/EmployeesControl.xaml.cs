@@ -11,14 +11,33 @@ namespace ISDP2025_Parfonov_Zerrou.Forms.AdminUserControls
     public partial class EmployeesControl : UserControl
     {
         private readonly BestContext context;
+        List<Employee> AllEmployees;
+        Employee employee;
 
         public EmployeesControl()
         {
             InitializeComponent();
             context = new BestContext();
-            LoadInitialData();  // Load data when control initializes
+            disableAll(false);
         }
 
+        private void disableAll(bool state)
+        {
+            if (state)
+            {
+                employeeFormGroup.IsEnabled = true;
+                btnAdd.IsEnabled = true;
+                btnClear.IsEnabled = true;
+                btnUpdate.IsEnabled = true;
+            }
+            else
+            {
+                employeeFormGroup.IsEnabled = false;
+                btnAdd.IsEnabled = false;
+                btnClear.IsEnabled = false;
+                btnUpdate.IsEnabled = false;
+            }
+        }
         private void LoadInitialData()
         {
             LoadPositions();
@@ -44,9 +63,29 @@ namespace ISDP2025_Parfonov_Zerrou.Forms.AdminUserControls
 
         private void LoadEmployees()
         {
+
+            AllEmployees = context.Employees
+        .Include(e => e.Position)
+        .Include(e => e.Site)
+        .ToList();
+
             var employees = context.Employees
-                .Include(e => e.Position)    // Include Position relationship
-                .Include(e => e.Site)    // Include Site relationship
+                .Include(e => e.Position)
+                .Include(e => e.Site)
+                .Select(e => new
+                {
+                    e.EmployeeId,
+                    e.FirstName,
+                    e.LastName,
+                    e.Email,
+                    e.Username,
+                    e.PositionId,
+                    e.SiteId,
+                    e.Active,
+                    Position = e.Position,
+                    Site = e.Site,
+                    IsActive = e.Active == 1 ? "Yes" : "No"
+                })
                 .ToList();
             dgEmployees.ItemsSource = employees;
         }
@@ -59,6 +98,7 @@ namespace ISDP2025_Parfonov_Zerrou.Forms.AdminUserControls
             txtEmail.Clear();
             txtUsername.Clear();
             txtPassword.Clear();
+            txtEmail.Clear();
             cmbPosition.SelectedIndex = -1;
             cmbLocation.SelectedIndex = -1;
             chkActive.IsChecked = false;
@@ -74,23 +114,31 @@ namespace ISDP2025_Parfonov_Zerrou.Forms.AdminUserControls
         {
             try
             {
-                var newEmployee = new Employee
+                if (txtEmployeeID.Text == "")
                 {
-                    FirstName = txtFirstName.Text,
-                    LastName = txtLastName.Text,
-                    Email = txtEmail.Text,
-                    Username = txtUsername.Text,
-                    Password = pwdPassword.Visibility == 0 ? pwdPassword.Password : txtPassword.Text,
-                    PositionId = (int)cmbPosition.SelectedValue,
-                    SiteId = (int)cmbLocation.SelectedValue,
-                    Active = chkActive.IsChecked == true ? (sbyte)1 : (sbyte)0
-                };
+                    var newEmployee = new Employee
+                    {
+                        FirstName = txtFirstName.Text,
+                        LastName = txtLastName.Text,
+                        Email = txtEmail.Text,
+                        Username = txtUsername.Text,
+                        Password = pwdPassword.Visibility == 0 ? pwdPassword.Password : txtPassword.Text,
+                        PositionId = (int)cmbPosition.SelectedValue,
+                        SiteId = (int)cmbLocation.SelectedValue,
+                        Active = chkActive.IsChecked == true ? (sbyte)1 : (sbyte)0,
+                        Locked = 0
+                    };
 
-                context.Employees.Add(newEmployee);
-                context.SaveChanges();
-                LoadEmployees();
-                ClearForm();
-                MessageBox.Show("Employee added successfully!", "Success", MessageBoxButton.OK, MessageBoxImage.Information);
+                    context.Employees.Add(newEmployee);
+                    context.SaveChanges();
+                    LoadEmployees();
+                    ClearForm();
+                    MessageBox.Show("Employee added successfully!", "Success", MessageBoxButton.OK, MessageBoxImage.Information);
+                }
+                else
+                {
+                    MessageBox.Show("Employee already in exist in the Database! \n you can only modify this user", "Success", MessageBoxButton.OK, MessageBoxImage.Information);
+                }
             }
             catch (Exception ex)
             {
@@ -100,43 +148,51 @@ namespace ISDP2025_Parfonov_Zerrou.Forms.AdminUserControls
 
         private void BtnUpdate_Click(object sender, RoutedEventArgs e)
         {
-            if (dgEmployees.SelectedItem is Employee selectedEmployee)
-            {
-                try
-                {
-                    selectedEmployee.FirstName = txtFirstName.Text;
-                    selectedEmployee.LastName = txtLastName.Text;
-                    selectedEmployee.Email = txtEmail.Text;
-                    selectedEmployee.Username = txtUsername.Text;
-                    selectedEmployee.Password = pwdPassword.Visibility == 0 ? pwdPassword.Password : txtPassword.Text;
-                    selectedEmployee.PositionId = (int)cmbPosition.SelectedValue;
-                    selectedEmployee.SiteId = (int)cmbLocation.SelectedValue;
-                    selectedEmployee.Active = chkActive.IsChecked == true ? (sbyte)1 : (sbyte)0;
+            // Get the selected employee from our stored list
+            var selectedEmployee = dgEmployees.SelectedItem as Employee;
 
-                    context.SaveChanges();
-                    LoadEmployees();
-                    MessageBox.Show("Employee updated successfully!", "Success", MessageBoxButton.OK, MessageBoxImage.Information);
-                }
-                catch (Exception ex)
-                {
-                    MessageBox.Show($"Error updating employee: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
-                }
-            }
-            else
+            if (selectedEmployee == null)
             {
-                MessageBox.Show("Please select an employee to update.", "Warning", MessageBoxButton.OK, MessageBoxImage.Warning);
+                MessageBox.Show("Please select an employee to update.", "Warning",
+                    MessageBoxButton.OK, MessageBoxImage.Warning);
+                return;
+            }
+
+            try
+            {
+                // Update employee info
+                selectedEmployee.FirstName = txtFirstName.Text;
+                selectedEmployee.LastName = txtLastName.Text;
+                selectedEmployee.Email = txtEmail.Text;
+                selectedEmployee.Username = txtUsername.Text;
+                selectedEmployee.Password = pwdPassword.Visibility == Visibility.Visible ?
+                    pwdPassword.Password : txtPassword.Text;
+                selectedEmployee.PositionId = (int)cmbPosition.SelectedValue;
+                selectedEmployee.SiteId = (int)cmbLocation.SelectedValue;
+                selectedEmployee.Active = chkActive.IsChecked == true ? (sbyte)1 : (sbyte)0;
+
+                // Save and refresh
+                context.SaveChanges();
+                LoadEmployees();
+                MessageBox.Show("Employee updated successfully!");
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Error updating employee: {ex.Message}");
             }
         }
 
         private void BtnRefresh_Click(object sender, RoutedEventArgs e)
         {
             LoadInitialData();
+            disableAll(true);
         }
 
         private void DgEmployees_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            if (dgEmployees.SelectedItem is Employee employee)
+            if (dgEmployees.SelectedItem != null)
             {
+                dynamic employee = dgEmployees.SelectedItem;
                 txtFirstName.Text = employee.FirstName;
                 txtLastName.Text = employee.LastName;
                 txtEmployeeID.Text = employee.EmployeeId.ToString();
@@ -145,7 +201,7 @@ namespace ISDP2025_Parfonov_Zerrou.Forms.AdminUserControls
                 cmbPosition.SelectedValue = employee.PositionId;
                 cmbLocation.SelectedValue = employee.SiteId;
                 chkActive.IsChecked = employee.Active == 1;
-                txtPassword.Clear(); // Clear password for security
+                txtPassword.Clear();
             }
         }
 
@@ -200,6 +256,12 @@ namespace ISDP2025_Parfonov_Zerrou.Forms.AdminUserControls
             {
                 txtUsername.Text = GenerateUsername(txtFirstName.Text, txtLastName.Text);
             }
+        }
+
+        private void txtUsername_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            txtEmail.Text = txtUsername.Text + "@bullseye.ca";
+            MainWindow.ComputeSha256Hash("P@ssw0rd-", "TheSalt");
         }
     }
 }

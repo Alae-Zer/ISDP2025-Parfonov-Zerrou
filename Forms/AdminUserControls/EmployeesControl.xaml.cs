@@ -114,31 +114,39 @@ namespace ISDP2025_Parfonov_Zerrou.Forms.AdminUserControls
         {
             try
             {
-                if (txtEmployeeID.Text == "")
+                if (CheckAllInputs())
                 {
-                    var newEmployee = new Employee
+                    if (txtEmployeeID.Text == "")
                     {
-                        FirstName = txtFirstName.Text,
-                        LastName = txtLastName.Text,
-                        Email = txtEmail.Text,
-                        Username = txtUsername.Text,
-                        Password = pwdPassword.Visibility == 0 ? pwdPassword.Password : txtPassword.Text,
-                        PositionId = (int)cmbPosition.SelectedValue,
-                        SiteId = (int)cmbLocation.SelectedValue,
-                        Active = chkActive.IsChecked == true ? (sbyte)1 : (sbyte)0,
-                        Locked = 0
-                    };
+                        var newEmployee = new Employee
+                        {
+                            FirstName = txtFirstName.Text,
+                            LastName = txtLastName.Text,
+                            Email = txtEmail.Text,
+                            Username = txtUsername.Text,
+                            Password = pwdPassword.Visibility == 0 ? pwdPassword.Password : txtPassword.Text,
+                            PositionId = (int)cmbPosition.SelectedValue,
+                            SiteId = (int)cmbLocation.SelectedValue,
+                            Active = chkActive.IsChecked == true ? (sbyte)1 : (sbyte)0,
+                            Locked = 0
+                        };
 
-                    context.Employees.Add(newEmployee);
-                    context.SaveChanges();
-                    LoadEmployees();
-                    ClearForm();
-                    MessageBox.Show("Employee added successfully!", "Success", MessageBoxButton.OK, MessageBoxImage.Information);
+                        context.Employees.Add(newEmployee);
+                        context.SaveChanges();
+                        LoadEmployees();
+                        ClearForm();
+                        MessageBox.Show("Employee added successfully!", "Success", MessageBoxButton.OK, MessageBoxImage.Information);
+                    }
+                    else
+                    {
+                        MessageBox.Show("Employee already in exist in the Database! \n you can only modify this user", "Success", MessageBoxButton.OK, MessageBoxImage.Information);
+                    }
                 }
                 else
                 {
-                    MessageBox.Show("Employee already in exist in the Database! \n you can only modify this user", "Success", MessageBoxButton.OK, MessageBoxImage.Information);
+                    MessageBox.Show("Please Fill all the fields.", "Warning", MessageBoxButton.OK, MessageBoxImage.Warning);
                 }
+
             }
             catch (Exception ex)
             {
@@ -146,12 +154,21 @@ namespace ISDP2025_Parfonov_Zerrou.Forms.AdminUserControls
             }
         }
 
+        public bool CheckAllInputs()
+        {
+            if (txtFirstName.Text == "" || txtLastName.Text == "" || cmbLocation.SelectedValue.ToString() == null || cmbPosition.SelectedValue.ToString() == null)
+            {
+                return false;
+            }
+            return true;
+        }
+
         private void BtnUpdate_Click(object sender, RoutedEventArgs e)
         {
             // Get the selected employee from our stored list
-            var selectedEmployee = dgEmployees.SelectedItem as Employee;
+            var selectedEmployee = new Employee();
 
-            if (selectedEmployee == null)
+            if (txtEmployeeID.Text == "")
             {
                 MessageBox.Show("Please select an employee to update.", "Warning",
                     MessageBoxButton.OK, MessageBoxImage.Warning);

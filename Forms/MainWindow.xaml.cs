@@ -25,7 +25,7 @@ namespace ISDP2025_Parfonov_Zerrou
 
         //Global VAriables
         string TheSalt = "TheSalt";
-        int maxPasswordAttempts = 1;
+        int maxPasswordAttempts = 3;
         string defaultPassword = "P@ssw0rd-";
         List<string> usersAttempts = new List<string>();
 
@@ -91,7 +91,7 @@ namespace ISDP2025_Parfonov_Zerrou
             }
             else
             {
-                MessageBox.Show("You need to enter a username", "Warning", MessageBoxButton.OK, MessageBoxImage.Warning);
+                MessageBox.Show("You need to enter a unlocked username", "Warning", MessageBoxButton.OK, MessageBoxImage.Warning);
             }
 
         }

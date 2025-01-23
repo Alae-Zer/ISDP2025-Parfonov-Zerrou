@@ -60,4 +60,8 @@ public partial class Employee
 
     [InverseProperty("Employee")]
     public virtual ICollection<Txn> Txns { get; set; } = new List<Txn>();
+
+    [ForeignKey("EmployeeId")]
+    [InverseProperty("Employees")]
+    public virtual ICollection<Permission> Permissions { get; set; } = new List<Permission>();
 }

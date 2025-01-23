@@ -28,6 +28,8 @@ public partial class BestContext : DbContext
 
     public virtual DbSet<Item> Items { get; set; }
 
+    public virtual DbSet<Permission> Permissions { get; set; }
+
     public virtual DbSet<Posn> Posns { get; set; }
 
     public virtual DbSet<Province> Provinces { get; set; }
@@ -50,7 +52,7 @@ public partial class BestContext : DbContext
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
 #warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see https://go.microsoft.com/fwlink/?LinkId=723263.
-        => optionsBuilder.UseMySql("server=localhost;database=bullseyedb2025;user=admin;password=admin", Microsoft.EntityFrameworkCore.ServerVersion.Parse("8.3.0-mysql"));
+        => optionsBuilder.UseMySql("server=localhost;database=bullseyedb2025;user=admin;password=admin", Microsoft.EntityFrameworkCore.ServerVersion.Parse("8.4.3-mysql"));
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -99,6 +101,28 @@ public partial class BestContext : DbContext
             entity.HasOne(d => d.Site).WithMany(p => p.Employees)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("employee_ibfk_2");
+
+            entity.HasMany(d => d.Permissions).WithMany(p => p.Employees)
+                .UsingEntity<Dictionary<string, object>>(
+                    "EmployeePermission",
+                    r => r.HasOne<Permission>().WithMany()
+                        .HasForeignKey("PermissionId")
+                        .OnDelete(DeleteBehavior.ClientSetNull)
+                        .HasConstraintName("employee_permissions_ibfk_2"),
+                    l => l.HasOne<Employee>().WithMany()
+                        .HasForeignKey("EmployeeId")
+                        .OnDelete(DeleteBehavior.ClientSetNull)
+                        .HasConstraintName("employee_permissions_ibfk_1"),
+                    j =>
+                    {
+                        j.HasKey("EmployeeId", "PermissionId")
+                            .HasName("PRIMARY")
+                            .HasAnnotation("MySql:IndexPrefixLength", new[] { 0, 0 });
+                        j.ToTable("employee_permissions");
+                        j.HasIndex(new[] { "PermissionId" }, "permissionID");
+                        j.IndexerProperty<int>("EmployeeId").HasColumnName("employeeID");
+                        j.IndexerProperty<int>("PermissionId").HasColumnName("permissionID");
+                    });
         });
 
         modelBuilder.Entity<Inventory>(entity =>
@@ -131,6 +155,13 @@ public partial class BestContext : DbContext
             entity.HasOne(d => d.Supplier).WithMany(p => p.Items)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("item_ibfk_1");
+        });
+
+        modelBuilder.Entity<Permission>(entity =>
+        {
+            entity.HasKey(e => e.PermissionId).HasName("PRIMARY");
+
+            entity.Property(e => e.PermissionId).ValueGeneratedNever();
         });
 
         modelBuilder.Entity<Posn>(entity =>

@@ -72,5 +72,10 @@ namespace ISDP2025_Parfonov_Zerrou
         {
 
         }
+
+        private void btnPermissions_Click(object sender, RoutedEventArgs e)
+        {
+            MainContent.Content = new PermissionsControl();
+        }
     }
 }

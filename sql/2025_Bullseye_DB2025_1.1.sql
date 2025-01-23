@@ -26,6 +26,17 @@ SET SQL_SAFE_UPDATES = 0;
 -- ********************************************
 -- category, province, position, site, txnstatus, txntype, employee, vehicle, supplier
 
+
+-- 
+-- Create table `Settings`
+-- 
+CREATE TABLE Settings (
+    setting_type ENUM('global') PRIMARY KEY DEFAULT 'global',
+    LogoutTimeMinutes INT NOT NULL DEFAULT 20
+);
+
+
+
 -- 
 -- Create table `category`
 -- 
@@ -272,6 +283,11 @@ CREATE TABLE `inventory` (
 -- ****       Insert Data                  ****
 -- ********************************************
 -- 
+
+--
+-- Insert data for table `Settings`
+--
+INSERT INTO Settings (LogoutTimeMinutes) VALUES (20);
 
 --
 -- Insert data for table `category`

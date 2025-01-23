@@ -7,14 +7,15 @@ namespace ISDP2025_Parfonov_Zerrou.Forms.AdminUserControls
 {
     public partial class PermissionsControl : UserControl
     {
-        private readonly BestContext _context;
-        private bool isEditMode = false;
-        private readonly List<Posn> permissionsList = new();
+        BestContext context;
+        bool isEditMode = false;
+        List<Posn> permissionsList = new();
+        List<Permission> permissions = new();
 
         public PermissionsControl()
         {
             InitializeComponent();
-            _context = new BestContext();
+            context = new BestContext();
             InitializeControls();
         }
 
@@ -27,7 +28,8 @@ namespace ISDP2025_Parfonov_Zerrou.Forms.AdminUserControls
             btnClear.IsEnabled = false;
             btnEdit.IsEnabled = false;
             cmbAvailablePermissions.IsEnabled = false;
-            LoadPermissionsToList(); // Load permissions on initialization
+            dgvCurrentPermissions.ItemsSource = null;
+            LoadPermissionsToList();
         }
 
         private void LoadPermissionsToList()
@@ -35,7 +37,7 @@ namespace ISDP2025_Parfonov_Zerrou.Forms.AdminUserControls
             try
             {
                 permissionsList.Clear();
-                var dbPermissions = _context.Posns
+                var dbPermissions = context.Posns
                     .Where(p => p.Active == 1)
                     .OrderBy(p => p.PermissionLevel)
                     .ToList();
@@ -52,7 +54,7 @@ namespace ISDP2025_Parfonov_Zerrou.Forms.AdminUserControls
         {
             try
             {
-                var employees = _context.Employees
+                var employees = context.Employees
                     .Include(e => e.Position)
                     .Include(e => e.Permissions)
                     .Select(e => new
@@ -119,7 +121,7 @@ namespace ISDP2025_Parfonov_Zerrou.Forms.AdminUserControls
 
         private void UserControl_Unloaded(object sender, RoutedEventArgs e)
         {
-            _context?.Dispose();
+            context?.Dispose();
         }
 
         private void btnClear_Click(object sender, RoutedEventArgs e)
@@ -129,15 +131,107 @@ namespace ISDP2025_Parfonov_Zerrou.Forms.AdminUserControls
             InitializeControls();
         }
 
+
         private void dgvEmployees_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             btnEdit.IsEnabled = dgvEmployees.SelectedItem != null;
+            if (dgvEmployees.SelectedItem != null)
+            {
+                var employee = (dynamic)dgvEmployees.SelectedItem;
+                int selectedId = int.Parse(employee.EmployeeId.ToString());
+
+                var permissions = context.Employees
+                    .Include(e => e.Permissions)
+                    .Where(e => e.EmployeeId == selectedId)
+                    .SelectMany(e => e.Permissions)
+                    .Select(p => new { Permission = p.PermissionName })
+                    .ToList();
+
+                lblEmployeeId.Text = employee.EmployeeId.ToString();
+                lblEmployeeName.Text = employee.FirstName + " " + employee.LastName;
+                lblPosition.Text = employee.PositionName;
+                lblDefaultPermission.Text = employee.DefaultPermission;
+                dgvCurrentPermissions.ItemsSource = permissions;
+                cmbAvailablePermissions.ItemsSource = permissionsList;
+                cmbAvailablePermissions.DisplayMemberPath = "PermissionLevel";
+            }
+            else
+            {
+                ClearLabels();
+            }
+        }
+
+        private void SaveChanges()
+        {
+            MessageBoxResult result = MessageBox.Show("Permission changes will be saved\nYES - Save changes\n" +
+                "NO - Discard changes\nCANCEL - Continue editing", "Confirm Save",
+                MessageBoxButton.YesNoCancel, MessageBoxImage.Question);
+
+            if (result == MessageBoxResult.Yes)
+            {
+                try
+                {
+                    context.SaveChanges();
+                    LoadEmployees();
+                    ChangeEditMode(false);
+                    MessageBox.Show("Changes saved successfully!", "Success",
+                        MessageBoxButton.OK, MessageBoxImage.Information);
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show($"Error saving changes: {ex.Message}", "Error",
+                        MessageBoxButton.OK, MessageBoxImage.Error);
+                }
+            }
+            else if (result == MessageBoxResult.No)
+            {
+                ChangeEditMode(false);
+                LoadEmployees();
+            }
+            isEditMode = false;
         }
 
         private void txtSearch_TextChanged(object sender, TextChangedEventArgs e)
         {
-            btnClear.IsEnabled = !string.IsNullOrEmpty(txtSearch.Text) ||
-                    (dgvEmployees.Items != null && dgvEmployees.Items.Count > 0);
+            string searchText = txtSearch.Text.ToLower();
+
+            var filteredEmployees = context.Employees
+                .Include(e => e.Position)
+                .Include(e => e.Permissions)
+                .Where(e => e.FirstName.ToLower().Contains(searchText) ||
+                            e.LastName.ToLower().Contains(searchText) ||
+                            e.Username.ToLower().Contains(searchText))
+                .Select(e => new
+                {
+                    e.EmployeeId,
+                    e.FirstName,
+                    e.LastName,
+                    e.Username,
+                    PositionName = e.Position.PermissionLevel,
+                    DefaultPermission = e.Position.PermissionLevel,
+                    AdditionalPermissions = string.Join(", ", e.Permissions.Select(p => p.PermissionId)),
+                    IsActive = e.Active == 1 ? "Yes" : "No"
+                })
+                .ToList();
+
+            dgvEmployees.ItemsSource = filteredEmployees;
+            btnClear.IsEnabled = !string.IsNullOrEmpty(searchText) || filteredEmployees.Any();
+        }
+
+        private void ClearLabels()
+        {
+            lblEmployeeId.Text = string.Empty;
+            lblEmployeeName.Text = string.Empty;
+            lblPosition.Text = string.Empty;
+            lblDefaultPermission.Text = string.Empty;
+            //lblCurrentPermissions.Text = string.Empty;
+            cmbAvailablePermissions.ItemsSource = null;
+            dgvCurrentPermissions.ItemsSource = null;
+        }
+
+        private void btnSave_Click(object sender, RoutedEventArgs e)
+        {
+            SaveChanges();
         }
     }
 }

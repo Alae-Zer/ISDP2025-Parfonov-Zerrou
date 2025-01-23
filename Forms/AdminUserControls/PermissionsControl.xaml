@@ -111,7 +111,7 @@
                             HorizontalAlignment="Left"
                             AutoGenerateColumns="False"
                             IsReadOnly="True"
-                            HeadersVisibility="None">
+                            HeadersVisibility="None" SelectionChanged="dgvCurrentPermissions_SelectionChanged">
                     <DataGrid.Columns>
                         <DataGridTextColumn Binding="{Binding Permission}" Width="*"/>
                     </DataGrid.Columns>
@@ -119,7 +119,7 @@
 
                 <Label Content="Available Permissions:" Grid.Row="5" Grid.Column="0"/>
                 <ComboBox x:Name="cmbAvailablePermissions" Grid.Row="5" Grid.Column="1" Margin="5" 
-                          IsEnabled="False" Cursor="Hand"/>
+                          IsEnabled="False" Cursor="Hand" SelectionChanged="cmbAvailablePermissions_SelectionChanged"/>
             </Grid>
         </GroupBox>
 
@@ -160,9 +160,9 @@
                         Background="#FFF62D2D"
                         Foreground="White" Cursor="Hand"
                         Visibility="Collapsed"/>
-                <Button x:Name="btnSave" Content="Save/Cancel" Width="100" Height="30" 
+                <Button x:Name="btnSave" Content="Leave" Width="100" Height="30" 
                         Style="{StaticResource RoundedButton}"
-                        Background="#4CAF50"
+                        Background="#2196F3"
                         Foreground="White" Cursor="Hand"
                         Visibility="Collapsed" Click="btnSave_Click"/>
             </StackPanel>

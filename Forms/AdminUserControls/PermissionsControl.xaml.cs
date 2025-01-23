@@ -21,14 +21,15 @@ namespace ISDP2025_Parfonov_Zerrou.Forms.AdminUserControls
 
         private void InitializeControls()
         {
-            btnAddPermission.IsEnabled = false;
-            btnRemovePermission.IsEnabled = false;
+            //btnAddPermission.IsEnabled = false;
+            //btnRemovePermission.IsEnabled = false;
             dgvEmployees.ItemsSource = null;
             txtSearch.IsEnabled = false;
             btnClear.IsEnabled = false;
             btnEdit.IsEnabled = false;
             cmbAvailablePermissions.IsEnabled = false;
             dgvCurrentPermissions.ItemsSource = null;
+            dgvCurrentPermissions.IsEnabled = false;
             LoadPermissionsToList();
         }
 
@@ -108,6 +109,14 @@ namespace ISDP2025_Parfonov_Zerrou.Forms.AdminUserControls
             btnClear.IsEnabled = !isEditing && !string.IsNullOrWhiteSpace(txtSearch.Text);
             btnRefresh.Visibility = isEditing ? Visibility.Collapsed : Visibility.Visible;
             btnClear.Visibility = isEditing ? Visibility.Collapsed : Visibility.Visible;
+            dgvCurrentPermissions.IsEnabled = isEditing;
+
+            if (!isEditing)
+            {
+                btnAddPermission.Visibility = Visibility.Collapsed;
+                btnRemovePermission.Visibility = Visibility.Collapsed;
+                cmbAvailablePermissions.SelectedIndex = -1;
+            }
         }
 
         private void BtnRefresh_Click(object sender, RoutedEventArgs e)
@@ -163,27 +172,17 @@ namespace ISDP2025_Parfonov_Zerrou.Forms.AdminUserControls
 
         private void SaveChanges()
         {
-            MessageBoxResult result = MessageBox.Show("Permission changes will be saved\nYES - Save changes\n" +
-                "NO - Discard changes\nCANCEL - Continue editing", "Confirm Save",
-                MessageBoxButton.YesNoCancel, MessageBoxImage.Question);
+            MessageBoxResult result = MessageBox.Show("You're About to Live Edition Mode\nYES - Leave Edit Mode\n" +
+                "NO - Keep Editing", "Would You like to Leave",
+                MessageBoxButton.YesNo, MessageBoxImage.Question);
 
-            if (result == MessageBoxResult.Yes)
+            if (result == MessageBoxResult.No)
             {
-                try
-                {
-                    context.SaveChanges();
-                    LoadEmployees();
-                    ChangeEditMode(false);
-                    MessageBox.Show("Changes saved successfully!", "Success",
-                        MessageBoxButton.OK, MessageBoxImage.Information);
-                }
-                catch (Exception ex)
-                {
-                    MessageBox.Show($"Error saving changes: {ex.Message}", "Error",
-                        MessageBoxButton.OK, MessageBoxImage.Error);
-                }
+                LoadEmployees();
+                ChangeEditMode(false);
+
             }
-            else if (result == MessageBoxResult.No)
+            else if (result == MessageBoxResult.Yes)
             {
                 ChangeEditMode(false);
                 LoadEmployees();
@@ -232,6 +231,44 @@ namespace ISDP2025_Parfonov_Zerrou.Forms.AdminUserControls
         private void btnSave_Click(object sender, RoutedEventArgs e)
         {
             SaveChanges();
+        }
+
+        private void btnAddPermission_Click(object sender, RoutedEventArgs e)
+        {
+
+        }
+
+        private void cmbAvailablePermissions_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if (!isEditMode) return;
+
+            if (cmbAvailablePermissions.SelectedItem is Posn selectedPermission)
+            {
+                var defaultPermission = lblDefaultPermission.Text;
+                var currentPermissions = dgvCurrentPermissions.Items
+                    .Cast<dynamic>()
+                    .Select(p => p.Permission.ToString())
+                    .ToList();
+
+                btnAddPermission.Visibility =
+                    (selectedPermission.PermissionLevel != defaultPermission &&
+                    !currentPermissions.Contains(selectedPermission.PermissionLevel))
+                    ? Visibility.Visible : Visibility.Collapsed;
+
+                btnRemovePermission.Visibility = Visibility.Collapsed;
+                dgvCurrentPermissions.SelectedIndex = -1;
+            }
+        }
+
+        private void dgvCurrentPermissions_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if (!isEditMode) return;
+
+            btnRemovePermission.Visibility = dgvCurrentPermissions.SelectedItem != null ?
+                Visibility.Visible : Visibility.Collapsed;
+
+            btnAddPermission.Visibility = Visibility.Collapsed;
+            cmbAvailablePermissions.SelectedIndex = -1;
         }
     }
 }

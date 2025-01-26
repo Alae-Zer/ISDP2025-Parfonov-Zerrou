@@ -95,6 +95,7 @@ namespace ISDP2025_Parfonov_Zerrou.Forms
             {
                 isCancelled = false;
                 employee.PositionId = defaultPositionId;
+                context.Dispose();
                 OpenNextForm();
             }
         }

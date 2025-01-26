@@ -10,7 +10,7 @@
       Width="400"
       WindowStartupLocation="CenterScreen"
       ResizeMode="NoResize"
-      WindowStyle="ToolWindow">
+      WindowStyle="ToolWindow" Closing="Window_Closing">
     <Window.Resources>
         <Style x:Key="RoundedButton" TargetType="Button">
             <Setter Property="Template">

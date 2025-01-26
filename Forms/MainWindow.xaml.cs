@@ -398,6 +398,10 @@ namespace ISDP2025_Parfonov_Zerrou
                 MessageBox.Show($"An error occurred while resetting the password: {ex.Message}", "Error!", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
+
+        //Clears Inputs
+        //Sends Nothing
+        //Returns Nothing
         private void clearAllPasswords()
         {
             pwdConfirmPassword.Password = "";
@@ -427,7 +431,6 @@ namespace ISDP2025_Parfonov_Zerrou
         private void txtConfirmPassword_KeyUp(object sender, KeyEventArgs e)
         {
             MatchPassword();
-
         }
 
         //Compares two Password Inputs For Matching Passwords
@@ -579,6 +582,11 @@ namespace ISDP2025_Parfonov_Zerrou
             {
                 MessageBox.Show("Error opening dashboard: " + ex.Message);
             }
+        }
+
+        private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
+        {
+            context.Dispose();
         }
     }
 }

@@ -10,7 +10,8 @@
       Width="400"
       WindowStartupLocation="CenterScreen"
       ResizeMode="NoResize"
-      WindowStyle="ToolWindow" Closing="Window_Closing">
+      WindowStyle="ToolWindow" 
+      Closing="Window_Closing">
     <Window.Resources>
         <Style x:Key="RoundedButton" TargetType="Button">
             <Setter Property="Template">
@@ -21,7 +22,8 @@
                               BorderThickness="1"
                               BorderBrush="{TemplateBinding BorderBrush}">
                             <ContentPresenter HorizontalAlignment="Center" 
-                                          VerticalAlignment="Center"/>
+                                          VerticalAlignment="Center"
+                                          Margin="10,0"/>
                         </Border>
                     </ControlTemplate>
                 </Setter.Value>
@@ -85,7 +87,8 @@
                     AutoGenerateColumns="False"
                     IsReadOnly="True"
                     SelectionMode="Single"
-                    HeadersVisibility="None">
+                    HeadersVisibility="None" 
+                    SelectionChanged="dgvPermissions_SelectionChanged">
                 <DataGrid.Columns>
                     <DataGridTextColumn Header="Permission" 
                                     Binding="{Binding PermissionName}"
@@ -98,23 +101,25 @@
                   HorizontalAlignment="Right">
             <Button x:Name="btnLogin"
                   Content="Login"
-                  Width="150"
+                  MinWidth="150"
                   Height="30"
                   HorizontalAlignment="Left"
                   Margin="0,0,10,0"
                   Style="{StaticResource RoundedButton}"
                   Background="#4CAF50"
                   Foreground="White"
-                  Cursor="Hand" Click="btnLogin_Click"/>
+                  Cursor="Hand" 
+                  Click="btnLogin_Click"/>
             <Button x:Name="btnCancel"
                   Content="Cancel"
-                  Width="100" 
+                  MinWidth="100" 
                   HorizontalAlignment="Right"
                   Height="30"
                   Style="{StaticResource RoundedButton}"
                   Background="#FFF62D2D"
                   Foreground="White"
-                  Cursor="Hand" Click="btnCancel_Click"/>
+                  Cursor="Hand" 
+                  Click="btnCancel_Click"/>
         </StackPanel>
     </Grid>
 </Window>

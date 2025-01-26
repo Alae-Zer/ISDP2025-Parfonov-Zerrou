@@ -14,21 +14,19 @@ namespace ISDP2025_Parfonov_Zerrou.Forms
     {
         int defaultPositionId;
         int selectedPositionId;
-        bool isCancelled;
         BestContext context;
         Employee employee;
+        bool formOpened;
 
         public CustomMessageBox(Employee emp)
         {
             InitializeComponent();
             context = new BestContext();
             employee = emp;
+            formOpened = false;
             LoadPermissions();
         }
 
-        //Loads Permissions To DGV
-        //Sends Nothing
-        //Returns Nothing
         private void LoadPermissions()
         {
             try
@@ -50,11 +48,13 @@ namespace ISDP2025_Parfonov_Zerrou.Forms
                     .Select(e => new { PositionId = e.PositionId, PermissionName = e.Position.PermissionLevel })
                     .FirstOrDefault();
 
-                lblDefaultPermission.Text = defaultPermission.PermissionName;
-                defaultPositionId = defaultPermission.PositionId;
-                selectedPositionId = defaultPositionId;
-
-                btnLogin.Content = $"Login as {lblDefaultPermission.Text}";
+                if (defaultPermission != null)
+                {
+                    lblDefaultPermission.Text = defaultPermission.PermissionName;
+                    defaultPositionId = defaultPermission.PositionId;
+                    selectedPositionId = defaultPositionId;
+                    btnLogin.Content = $"Login as {lblDefaultPermission.Text}";
+                }
             }
             catch (Exception ex)
             {
@@ -64,49 +64,60 @@ namespace ISDP2025_Parfonov_Zerrou.Forms
 
         private void dgvPermissions_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            if (dgvPermissions.SelectedItem != null)
+            try
             {
-                dynamic selected = dgvPermissions.SelectedItem;
-                selectedPositionId = selected.PositionId;
-                btnLogin.Content = $"Login as {selected.PermissionName}";
+                if (dgvPermissions.SelectedItem != null)
+                {
+                    // When an item is selected in DataGrid
+                    var selected = (dynamic)dgvPermissions.SelectedItem;
+                    selectedPositionId = selected.PositionId;
+                    btnLogin.Content = $"Login as {selected.PermissionName}";
+                    btnCancel.Content = $"Login as {lblDefaultPermission.Text}";
+                }
+                else
+                {
+                    // When no item is selected (default state)
+                    selectedPositionId = defaultPositionId;
+                    btnLogin.Content = $"Login as {lblDefaultPermission.Text}";
+                    btnCancel.Content = $"Login as {lblDefaultPermission.Text}";
+                }
             }
-            else
+            catch (Exception ex)
             {
-                selectedPositionId = defaultPositionId;
-                btnLogin.Content = $"Login as {lblDefaultPermission.Text}";
+                MessageBox.Show($"Error updating button text: {ex.Message}");
             }
         }
 
         private void btnLogin_Click(object sender, RoutedEventArgs e)
         {
-            isCancelled = false;
-            employee.PositionId = selectedPositionId;
-            OpenNextForm();
+            if (!formOpened)
+            {
+                formOpened = true;
+                employee.PositionId = selectedPositionId;
+                OpenNextForm();
+            }
         }
 
         private void btnCancel_Click(object sender, RoutedEventArgs e)
         {
-            isCancelled = false;
-            employee.PositionId = defaultPositionId;
-            OpenNextForm();
+            if (!formOpened)
+            {
+                formOpened = true;
+                employee.PositionId = defaultPositionId;
+                OpenNextForm();
+            }
         }
 
         private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
-            if (!this.DialogResult.HasValue)
-            {
-                isCancelled = false;
-                employee.PositionId = defaultPositionId;
-                context.Dispose();
-                OpenNextForm();
-            }
+            context.Dispose();
         }
 
         private void OpenNextForm()
         {
             try
             {
-                Window nextForm;
+                Window nextForm = null;
 
                 switch (employee.PositionId)
                 {
@@ -130,21 +141,28 @@ namespace ISDP2025_Parfonov_Zerrou.Forms
                         break;
                     case 6:
                         MessageBox.Show("Delivery Is Online");
+                        this.Close();
                         return;
                     case 10000:
                         MessageBox.Show("Shopping Online");
+                        this.Close();
                         return;
                     default:
                         MessageBox.Show("Unknown position type");
+                        this.Close();
                         return;
                 }
 
-                nextForm.Show();
-                this.Close();
+                if (nextForm != null)
+                {
+                    nextForm.Show();
+                    this.Close();
+                }
             }
             catch (Exception ex)
             {
                 MessageBox.Show("Error opening form: " + ex.Message);
+                this.Close();
             }
         }
     }

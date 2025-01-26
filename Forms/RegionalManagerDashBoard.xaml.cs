@@ -1,13 +1,19 @@
-﻿using System.Windows;
+﻿using ISDP2025_Parfonov_Zerrou.Models;
+using System.Windows;
 
 namespace ISDP2025_Parfonov_Zerrou
 {
     /// <summary>
     /// Interaction logic for AdminDashBoard.xaml
     /// </summary>
-    public partial class StoreManagerDashBoard : Window
+    public partial class RegionalManagerDashboard : Window
     {
-        public StoreManagerDashBoard()
+        public RegionalManagerDashboard()
+        {
+            InitializeComponent();
+        }
+
+        public RegionalManagerDashboard(Employee employee)
         {
             InitializeComponent();
         }

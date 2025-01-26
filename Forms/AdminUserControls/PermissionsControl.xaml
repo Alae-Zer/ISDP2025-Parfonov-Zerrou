@@ -100,7 +100,7 @@
                 <Label Content="Default Permission:" Grid.Row="3" Grid.Column="0"/>
                 <TextBlock x:Name="lblDefaultPermission" Grid.Row="3" Grid.Column="1" Margin="5"/>
 
-                <Label Content="Current Permissions:" Grid.Row="4" Grid.Column="0"/>
+                <Label Content="Additional Permissions:" Grid.Row="4" Grid.Column="0"/>
                 <DataGrid x:Name="dgvCurrentPermissions" 
                             Grid.Row="4" 
                             Grid.Column="1" 
@@ -159,7 +159,7 @@
                         Style="{StaticResource RoundedButton}"
                         Background="#FFF62D2D"
                         Foreground="White" Cursor="Hand"
-                        Visibility="Collapsed"/>
+                        Visibility="Collapsed" Click="btnRemovePermission_Click"/>
                 <Button x:Name="btnSave" Content="Leave" Width="100" Height="30" 
                         Style="{StaticResource RoundedButton}"
                         Background="#2196F3"

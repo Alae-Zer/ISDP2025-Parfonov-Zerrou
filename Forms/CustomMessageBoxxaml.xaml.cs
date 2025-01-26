@@ -3,15 +3,20 @@ using Microsoft.EntityFrameworkCore;
 using System.Windows;
 using System.Windows.Controls;
 
+//ISDP Project
+//Mohammed Alae-Zerrou, Serhii Parfonov
+//NBCC, Winter 2025
+//Completed By Equal Share of Mohammed and Serhii
+//Last Modified by Serhii on January 26,2025
 namespace ISDP2025_Parfonov_Zerrou.Forms
 {
     public partial class CustomMessageBox : Window
     {
-        private int defaultPositionId;
-        private int selectedPositionId;
-        private bool isCancelled;
-        private BestContext context;
-        private Employee employee;
+        int defaultPositionId;
+        int selectedPositionId;
+        bool isCancelled;
+        BestContext context;
+        Employee employee;
 
         public CustomMessageBox(Employee emp)
         {
@@ -21,6 +26,9 @@ namespace ISDP2025_Parfonov_Zerrou.Forms
             LoadPermissions();
         }
 
+        //Loads Permissions To DGV
+        //Sends Nothing
+        //Returns Nothing
         private void LoadPermissions()
         {
             try
@@ -41,12 +49,6 @@ namespace ISDP2025_Parfonov_Zerrou.Forms
                     .Where(e => e.EmployeeID == employee.EmployeeID)
                     .Select(e => new { PositionId = e.PositionId, PermissionName = e.Position.PermissionLevel })
                     .FirstOrDefault();
-
-                if (defaultPermission == null)
-                {
-                    MessageBox.Show("Default permission not found");
-                    return;
-                }
 
                 lblDefaultPermission.Text = defaultPermission.PermissionName;
                 defaultPositionId = defaultPermission.PositionId;

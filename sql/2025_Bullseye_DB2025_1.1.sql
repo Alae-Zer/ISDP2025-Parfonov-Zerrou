@@ -35,6 +35,34 @@ CREATE TABLE Settings (
     LogoutTimeMinutes INT NOT NULL DEFAULT 20
 );
 
+-- 
+-- Create table `permissions`
+--
+CREATE TABLE permissions (
+   permissionID INT PRIMARY KEY,
+   permissionName VARCHAR(50)
+);
+
+-- 
+-- Create table `employee_permissions`
+--
+CREATE TABLE employee_permissions (
+   employeeID INT,
+   permissionID INT,
+   FOREIGN KEY (employeeID) REFERENCES employee(employeeID),
+   FOREIGN KEY (permissionID) REFERENCES permissions(permissionID),
+   PRIMARY KEY (employeeID, permissionID)
+);
+
+
+
+
+
+
+
+
+
+
 
 
 -- 
@@ -288,6 +316,33 @@ CREATE TABLE `inventory` (
 -- Insert data for table `Settings`
 --
 INSERT INTO Settings (LogoutTimeMinutes) VALUES (20);
+
+
+--
+-- Insert data for table `permissions`
+--
+INSERT INTO permissions (permissionID, permissionName) VALUES
+(1, 'Regional Manager'),
+(2, 'Financial Manager'),
+(3, 'Warehouse Manager'),
+(4, 'Store Manager'),
+(5, 'Warehouse Worker'),
+(6, 'Delivery'),
+(9999, 'Administrator'),
+(10000, 'Online Customer');
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 --
 -- Insert data for table `category`

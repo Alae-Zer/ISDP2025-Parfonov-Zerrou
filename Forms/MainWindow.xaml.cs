@@ -1,22 +1,20 @@
-﻿using System.Security.Cryptography;
+﻿using ISDP2025_Parfonov_Zerrou.Forms;
+using ISDP2025_Parfonov_Zerrou.Models;
+using Microsoft.EntityFrameworkCore;
+using System.Security.Cryptography;
 using System.Text;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
-using ISDP2025_Parfonov_Zerrou.Models;
-using Microsoft.EntityFrameworkCore;
 
 //ISDP Project
 //Mohammed Alae-Zerrou, Serhii Parfonov
 //NBCC, Winter 2025
+//Completed By Equal Share of Mohammed and Serhii
+//Last Modified by Serhii on January 26,2025
 namespace ISDP2025_Parfonov_Zerrou
 {
-    //TO DO
-    //CHANGE THE PANEL YOU SEE AFTER THE PASSWORD GOT CHANGED
-    //BEFORE CHANGING THE CODE IN THE DATABASE YOU NEED TO HASH IT USING THE ComputeSha256Hash SEND IN THE PASSWORD AND "TheSalt"
-    //Reset the password box and textbox before genrating a password
-
 
     //Main
     public partial class MainWindow : Window
@@ -400,6 +398,10 @@ namespace ISDP2025_Parfonov_Zerrou
                 MessageBox.Show($"An error occurred while resetting the password: {ex.Message}", "Error!", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
+
+        //Clears Inputs
+        //Sends Nothing
+        //Returns Nothing
         private void clearAllPasswords()
         {
             pwdConfirmPassword.Password = "";
@@ -429,7 +431,6 @@ namespace ISDP2025_Parfonov_Zerrou
         private void txtConfirmPassword_KeyUp(object sender, KeyEventArgs e)
         {
             MatchPassword();
-
         }
 
         //Compares two Password Inputs For Matching Passwords
@@ -516,69 +517,76 @@ namespace ISDP2025_Parfonov_Zerrou
             return hasUpper && hasDigit && hasSpecialChar;
         }
 
+        //Sends User To The Next Available for Him Form
+        //SWends Nothing
+        //Returns Nothing
         private void OpenNextForm()
         {
             try
             {
-                Window nextForm;
+                //Initialize nextForm
+                Window nextForm = null;
 
-                switch (employee.PositionId)
+                //Query If Employee Has Additional Permissions
+                bool hasAdditionalPermissions = context.Employees
+                    .Include(e => e.Permissions)
+                    .Where(e => e.EmployeeID == employee.EmployeeID)
+                    .SelectMany(e => e.Permissions)
+                    .Any();
+
+                //Assign NextForm Value
+                if (hasAdditionalPermissions)
                 {
-                    //Administrator
-                    case 9999:
-                        nextForm = new AdminDashBoard(employee);
-                        break;
-
-                    //Regional Manager
-                    case 1:
-                    //nextForm = new RegionalManagerDashBoard(employee);
-                    //break;
-
-                    //Financial Manager
-                    case 2:
-                    //nextForm = new FinanceManagerDashboard(employee);
-                    //break;
-
-                    //Warehouse Foreman
-                    case 3:
-                    //nextForm = new WarehouseForemanDashBoard(employee);
-                    //break;
-
-                    //Store Manager
-                    case 4:
-                    //nextForm = new StoreManagerDashBoard(employee); 
-                    //break;
-
-                    //Warehouse Worker
-                    case 5:
-                    //nextForm = new WarehouseWorkerDashBoard(employee); 
-                    //break;
-
-                    //Delivery
-                    case 6:
-                    //nextForm = new DeliveryDashboard(employee);
-                    //break;
-
-                    //Online Customer
-                    case 10000:
-                    //nextForm = new OnlineCustomerDashboard(employee);
-                    //break;
-
-                    //Default
-                    default:
-                        MessageBox.Show("Unknown position type. Please contact administrator.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
-                        return;
+                    nextForm = new CustomMessageBox(employee);
                 }
-
-                nextForm.Show();
-                this.Close();
+                else
+                {
+                    switch (employee.PositionId)
+                    {
+                        case 9999:
+                            nextForm = new AdminDashBoard(employee);
+                            break;
+                        case 1:
+                            nextForm = new RegionalManagerDashboard(employee);
+                            break;
+                        case 2:
+                            nextForm = new FinanceManagerDashBoard(employee);
+                            break;
+                        case 3:
+                            nextForm = new WarehouseFormanDashBoard(employee);
+                            break;
+                        case 4:
+                            nextForm = new StoreManagerDashBoard(employee);
+                            break;
+                        case 5:
+                            nextForm = new WarehouseWorkerDashBoard(employee);
+                            break;
+                        case 6:
+                            MessageBox.Show("Delivery Is Online");
+                            break;
+                        case 10000:
+                            MessageBox.Show("Shopping Online");
+                            break;
+                        default:
+                            MessageBox.Show("Unknown position type. Please contact administrator.");
+                            break;
+                    }
+                }
+                if (nextForm != null)
+                {
+                    nextForm.Show();
+                    this.Close();
+                }
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Error opening dashboard: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                MessageBox.Show("Error opening dashboard: " + ex.Message);
             }
         }
 
+        private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
+        {
+            context.Dispose();
+        }
     }
-
 }

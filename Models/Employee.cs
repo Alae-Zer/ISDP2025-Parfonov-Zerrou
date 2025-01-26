@@ -14,7 +14,7 @@ public partial class Employee
 {
     [Key]
     [Column("employeeID")]
-    public int EmployeeId { get; set; }
+    public int EmployeeID { get; set; }
 
     [StringLength(255)]
     public string Password { get; set; } = null!;

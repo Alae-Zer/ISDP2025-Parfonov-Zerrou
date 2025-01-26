@@ -1,4 +1,5 @@
-﻿using System.Windows;
+﻿using ISDP2025_Parfonov_Zerrou.Models;
+using System.Windows;
 
 namespace ISDP2025_Parfonov_Zerrou
 {
@@ -8,6 +9,11 @@ namespace ISDP2025_Parfonov_Zerrou
     public partial class WarehouseWorkerDashBoard : Window
     {
         public WarehouseWorkerDashBoard()
+        {
+            InitializeComponent();
+        }
+
+        public WarehouseWorkerDashBoard(Employee employee)
         {
             InitializeComponent();
         }

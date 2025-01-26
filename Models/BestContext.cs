@@ -89,7 +89,7 @@ public partial class BestContext : DbContext
 
         modelBuilder.Entity<Employee>(entity =>
         {
-            entity.HasKey(e => e.EmployeeId).HasName("PRIMARY");
+            entity.HasKey(e => e.EmployeeID).HasName("PRIMARY");
 
             entity.Property(e => e.Active).HasDefaultValueSql("'1'");
             entity.Property(e => e.Locked).HasDefaultValueSql("'0'");
@@ -104,21 +104,21 @@ public partial class BestContext : DbContext
 
             entity.HasMany(d => d.Permissions).WithMany(p => p.Employees)
                 .UsingEntity<Dictionary<string, object>>(
-                    "EmployeePermission",
+                    "Additionalpermissionsmapping",
                     r => r.HasOne<Permission>().WithMany()
                         .HasForeignKey("PermissionId")
                         .OnDelete(DeleteBehavior.ClientSetNull)
-                        .HasConstraintName("employee_permissions_ibfk_2"),
+                        .HasConstraintName("additionalpermissionsmapping_ibfk_2"),
                     l => l.HasOne<Employee>().WithMany()
                         .HasForeignKey("EmployeeId")
                         .OnDelete(DeleteBehavior.ClientSetNull)
-                        .HasConstraintName("employee_permissions_ibfk_1"),
+                        .HasConstraintName("additionalpermissionsmapping_ibfk_1"),
                     j =>
                     {
                         j.HasKey("EmployeeId", "PermissionId")
                             .HasName("PRIMARY")
                             .HasAnnotation("MySql:IndexPrefixLength", new[] { 0, 0 });
-                        j.ToTable("employee_permissions");
+                        j.ToTable("additionalpermissionsmapping");
                         j.HasIndex(new[] { "PermissionId" }, "permissionID");
                         j.IndexerProperty<int>("EmployeeId").HasColumnName("employeeID");
                         j.IndexerProperty<int>("PermissionId").HasColumnName("permissionID");

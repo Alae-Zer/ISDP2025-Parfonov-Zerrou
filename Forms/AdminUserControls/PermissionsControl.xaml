@@ -100,12 +100,26 @@
                 <Label Content="Default Permission:" Grid.Row="3" Grid.Column="0"/>
                 <TextBlock x:Name="lblDefaultPermission" Grid.Row="3" Grid.Column="1" Margin="5"/>
 
-                <Label Content="Current Permissions:" Grid.Row="4" Grid.Column="0"/>
-                <TextBlock x:Name="lblCurrentPermissions" Grid.Row="4" Grid.Column="1" Margin="5"/>
+                <Label Content="Additional Permissions:" Grid.Row="4" Grid.Column="0"/>
+                <DataGrid x:Name="dgvCurrentPermissions" 
+                            Grid.Row="4" 
+                            Grid.Column="1" 
+                            Margin="5"
+                            Height="Auto"
+                            MaxHeight="300"
+                            MaxWidth="250"
+                            HorizontalAlignment="Left"
+                            AutoGenerateColumns="False"
+                            IsReadOnly="True"
+                            HeadersVisibility="None" SelectionChanged="dgvCurrentPermissions_SelectionChanged">
+                    <DataGrid.Columns>
+                        <DataGridTextColumn Binding="{Binding Permission}" Width="*"/>
+                    </DataGrid.Columns>
+                </DataGrid>
 
                 <Label Content="Available Permissions:" Grid.Row="5" Grid.Column="0"/>
                 <ComboBox x:Name="cmbAvailablePermissions" Grid.Row="5" Grid.Column="1" Margin="5" 
-                          IsEnabled="False" Cursor="Hand"/>
+                          IsEnabled="False" Cursor="Hand" SelectionChanged="cmbAvailablePermissions_SelectionChanged"/>
             </Grid>
         </GroupBox>
 
@@ -139,18 +153,18 @@
                         Style="{StaticResource RoundedButton}"
                         Background="#4CAF50"
                         Foreground="White" Cursor="Hand"
-                        Visibility="Collapsed"/>
+                        Visibility="Collapsed" Click="btnAddPermission_Click"/>
                 <Button x:Name="btnRemovePermission" Content="Remove Permission" Width="120" Height="30" 
                         Margin="0,0,10,0"
                         Style="{StaticResource RoundedButton}"
                         Background="#FFF62D2D"
                         Foreground="White" Cursor="Hand"
-                        Visibility="Collapsed"/>
-                <Button x:Name="btnSave" Content="Save/Cancel" Width="100" Height="30" 
+                        Visibility="Collapsed" Click="btnRemovePermission_Click"/>
+                <Button x:Name="btnSave" Content="Leave" Width="100" Height="30" 
                         Style="{StaticResource RoundedButton}"
-                        Background="#4CAF50"
+                        Background="#2196F3"
                         Foreground="White" Cursor="Hand"
-                        Visibility="Collapsed"/>
+                        Visibility="Collapsed" Click="btnSave_Click"/>
             </StackPanel>
         </Grid>
 

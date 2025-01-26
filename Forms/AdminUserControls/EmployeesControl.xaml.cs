@@ -75,7 +75,7 @@ namespace ISDP2025_Parfonov_Zerrou.Forms.AdminUserControls
                 .Include(e => e.Site)
                 .Select(e => new
                 {
-                    e.EmployeeId,
+                    e.EmployeeID,
                     e.FirstName,
                     e.LastName,
                     e.Email,

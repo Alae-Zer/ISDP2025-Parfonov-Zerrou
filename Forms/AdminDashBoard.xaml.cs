@@ -1,7 +1,7 @@
-﻿using ISDP2025_Parfonov_Zerrou.Forms.AdminUserControls;
+﻿using System.Windows;
+using ISDP2025_Parfonov_Zerrou.Forms.AdminUserControls;
 using ISDP2025_Parfonov_Zerrou.Models;
 using Microsoft.EntityFrameworkCore;
-using System.Windows;
 
 namespace ISDP2025_Parfonov_Zerrou
 {
@@ -21,6 +21,7 @@ namespace ISDP2025_Parfonov_Zerrou
             InitializeComponent();
             this.employee = employee;
         }
+
 
         private void InitializeWindow()
         {
@@ -76,6 +77,24 @@ namespace ISDP2025_Parfonov_Zerrou
         private void btnPermissions_Click(object sender, RoutedEventArgs e)
         {
             MainContent.Content = new PermissionsControl();
+        }
+
+        private void btnSettings_Click(object sender, RoutedEventArgs e)
+        {
+            MainContent.Content = new SettingsControl();
+        }
+
+        private void Window_MouseMove(object sender, System.Windows.Input.MouseEventArgs e)
+        {
+        }
+
+        private void Window_KeyDown(object sender, System.Windows.Input.KeyEventArgs e)
+        {
+        }
+
+        private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
+        {
+            new MainWindow().Show();
         }
     }
 }

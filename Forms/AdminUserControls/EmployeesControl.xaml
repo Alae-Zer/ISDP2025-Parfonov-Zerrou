@@ -28,12 +28,13 @@
         <GroupBox Grid.Row="1" Header="Employee Information" Padding="10" Margin="0,0,0,10" x:Name="employeeFormGroup">
             <Grid>
                 <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="200"/>
-                    <ColumnDefinition Width="*"/>
-                    <ColumnDefinition Width="100"/>
-                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="40*"/>
+                    <ColumnDefinition Width="57*"/>
+                    <ColumnDefinition Width="40*"/>
+                    <ColumnDefinition Width="50*"/>
                 </Grid.ColumnDefinitions>
                 <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
                     <RowDefinition Height="Auto"/>
                     <RowDefinition Height="Auto"/>
                     <RowDefinition Height="Auto"/>
@@ -56,12 +57,14 @@
                 <TextBox x:Name="Notes" Grid.Row="4" Grid.Column="1" VerticalAlignment="Center" TextWrapping="Wrap" AcceptsReturn="True" Height="48" Margin="5,0,5,0"/>
 
                 <!-- Right Column Labels -->
-                <Label Content="Username:" Grid.Row="1" Grid.Column="2"/>
-                <Label Content="Password:" Grid.Row="2" Grid.Column="2"/>
-                <Label Content="Employee ID:" Grid.Row="0" Grid.Column="2"/>
-                <Label Content="Email:" Grid.Row="3" Grid.Column="2"/>
-                <Label Content="Active Status:" Grid.Row="4" Grid.Column="2"/>
-                
+                <Label Content="Username:" Grid.Row="1" Grid.Column="2" Margin="4,0,0,0"/>
+                <Label Content="Password:" Grid.Row="2" Grid.Column="2" Margin="4,0,0,0"/>
+                <Label FontFamily="../../icons/#Font Awesome 6 Free Solid"  Content="&#xe2ca;" Width="25" Grid.Row="2" Grid.Column="2" HorizontalAlignment="Right" VerticalAlignment="Center" Cursor="Hand" MouseDown="Label_MouseDown" FontSize="13" Foreground="#FF565656" />
+                <Label Content="Employee ID:" Grid.Row="0" Grid.Column="2" Margin="4,0,0,0"/>
+                <Label Content="Email:" Grid.Row="3" Grid.Column="2" Margin="4,0,0,0"/>
+                <Label Content="Active Status:" Grid.Row="4" Grid.Column="2" Margin="4,8,0,0"/>
+                <Label Content="Locked Status:" Grid.Row="4" Grid.Column="3" HorizontalAlignment="Left" Margin="40,8,60,0"/>
+
                 <!-- Right Column Controls -->
                 <TextBox x:Name="txtUsername" Grid.Row="1" Grid.Column="3" Margin="5" IsEnabled="False" TextChanged="txtUsername_TextChanged"/>
                 <Border Grid.Row="2" Grid.Column="3" Margin="5" 
@@ -76,8 +79,10 @@
                     </Grid>
                 </Border>
                 <TextBox x:Name="txtEmployeeID" Grid.Row="0" Grid.Column="3" Margin="5" IsEnabled="False"/>
-                <TextBox x:Name="txtEmail" Grid.Row="3" Grid.Column="3" Margin="5" IsEnabled="False" Height="20" VerticalAlignment="Top"/>
-                <CheckBox x:Name="chkActive" Grid.Row="4" Grid.Column="3" Margin="5" VerticalAlignment="Top" Content="Active"/>
+                <TextBox x:Name="txtEmail" Grid.Row="3" Grid.Column="3" Margin="5" Height="20" VerticalAlignment="Top"/>
+                <CheckBox x:Name="chkActive" Grid.Row="4" Grid.Column="2" Margin="90,15,0,0" HorizontalAlignment="Left" VerticalAlignment="Top" RenderTransformOrigin="0.5,0.5" IsChecked="True" />
+                <CheckBox x:Name="chkLocked" Grid.Row="4" Grid.Column="3" Margin="127,15,0,0" HorizontalAlignment="Left" VerticalAlignment="Top" RenderTransformOrigin="0.5,0.5" />
+
             </Grid>
         </GroupBox>
 

@@ -10,7 +10,7 @@
         Background="#F7F7F7"
         WindowStartupLocation="CenterScreen"
         MinWidth="1200" MinHeight="800" 
-        Loaded="Window_Loaded">
+        Loaded="Window_Loaded" MouseMove="Window_MouseMove" KeyDown="Window_KeyDown" Closing="Window_Closing">
 
     <!-- Resources -->
     <Window.Resources>
@@ -168,6 +168,15 @@
                         <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
                             <Label Style="{StaticResource SidebarLabelStyle}" Content="&#xF4FF;" Padding="9,5,0,5" Margin="10,0,10,0" Width="34" />
                             <TextBlock Text="Permissions" VerticalAlignment="Center" />
+                        </StackPanel>
+                    </Button>
+
+
+                    <Button x:Name="btnSettings" Tag="Settings" Height="41" Margin="0,9" 
+                            Style="{StaticResource SidebarButtonStyle}" Click="btnSettings_Click">
+                        <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                            <Label Style="{StaticResource SidebarLabelStyle}" Content="&#xF013;" Padding="9,5,0,5"/>
+                            <TextBlock Text="Settings" VerticalAlignment="Center"/>
                         </StackPanel>
                     </Button>
                 </StackPanel>

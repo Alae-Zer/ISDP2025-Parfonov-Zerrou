@@ -132,7 +132,7 @@ namespace ISDP2025_Parfonov_Zerrou
             GeneratePassword();
         }
 
-        private string GeneratePassword()
+        public string GeneratePassword()
         {
             //Available Character Storage
             const string capitalLetters = "QWERTYUIOPASDFGHJKLZXCVBNM";
@@ -334,7 +334,7 @@ namespace ISDP2025_Parfonov_Zerrou
 
         //ComputeSha256Hash will hash and salt the password
         //It takes two parameters the password and the salt
-        public static string ComputeSha256Hash(string password, string salt)
+        public string ComputeSha256Hash(string password, string salt)
         {
             string str = password + salt;
             //Create an SHA256 object

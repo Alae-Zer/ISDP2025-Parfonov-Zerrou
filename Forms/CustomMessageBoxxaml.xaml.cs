@@ -12,18 +12,18 @@ namespace ISDP2025_Parfonov_Zerrou.Forms
 {
     public partial class CustomMessageBox : Window
     {
+        //Class Level Variables Initializing
         int defaultPositionId;
         int selectedPositionId;
         BestContext context;
         Employee employee;
-        bool formOpened;
 
         public CustomMessageBox(Employee emp)
         {
+            //Assigning Values, Load Employee Permissions
             InitializeComponent();
             context = new BestContext();
             employee = emp;
-            formOpened = false;
             LoadPermissions();
         }
 
@@ -90,22 +90,14 @@ namespace ISDP2025_Parfonov_Zerrou.Forms
 
         private void btnLogin_Click(object sender, RoutedEventArgs e)
         {
-            if (!formOpened)
-            {
-                formOpened = true;
-                employee.PositionId = selectedPositionId;
-                OpenNextForm();
-            }
+            employee.PositionId = selectedPositionId;
+            OpenNextForm();
         }
 
         private void btnCancel_Click(object sender, RoutedEventArgs e)
         {
-            if (!formOpened)
-            {
-                formOpened = true;
-                employee.PositionId = defaultPositionId;
-                OpenNextForm();
-            }
+            employee.PositionId = defaultPositionId;
+            OpenNextForm();
         }
 
         private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)

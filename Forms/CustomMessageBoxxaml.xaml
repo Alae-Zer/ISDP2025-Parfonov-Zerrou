@@ -111,7 +111,7 @@
                   Cursor="Hand" 
                   Click="btnLogin_Click"/>
             <Button x:Name="btnCancel"
-                  Content="Cancel"
+                  Content="Procceed As Default"
                   MinWidth="100" 
                   HorizontalAlignment="Right"
                   Height="30"

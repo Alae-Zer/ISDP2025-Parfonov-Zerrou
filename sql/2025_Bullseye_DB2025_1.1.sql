@@ -27,32 +27,7 @@ SET SQL_SAFE_UPDATES = 0;
 -- category, province, position, site, txnstatus, txntype, employee, vehicle, supplier
 
 
--- 
--- Create table `Settings`
--- 
-CREATE TABLE Settings (
-    setting_type ENUM('global') PRIMARY KEY DEFAULT 'global',
-    LogoutTimeMinutes INT NOT NULL DEFAULT 20
-);
 
--- 
--- Create table `permissions`
---
-CREATE TABLE permissions (
-   permissionID INT PRIMARY KEY,
-   permissionName VARCHAR(50)
-);
-
--- 
--- Create table `employee_permissions`
---
-CREATE TABLE employee_permissions (
-   employeeID INT,
-   permissionID INT,
-   FOREIGN KEY (employeeID) REFERENCES employee(employeeID),
-   FOREIGN KEY (permissionID) REFERENCES permissions(permissionID),
-   PRIMARY KEY (employeeID, permissionID)
-);
 
 
 
@@ -305,6 +280,38 @@ CREATE TABLE `inventory` (
   FOREIGN KEY (`itemID`) REFERENCES `item` (`itemID`),
   FOREIGN KEY (`siteID`) REFERENCES `site` (`siteID`)
 ); 
+
+
+
+
+
+
+-- 
+-- Create table `Settings`
+-- 
+CREATE TABLE Settings (
+    setting_type ENUM('global') PRIMARY KEY DEFAULT 'global',
+    LogoutTimeMinutes INT NOT NULL DEFAULT 20
+);
+
+-- 
+-- Create table `permissions`
+--
+CREATE TABLE permissions (
+   permissionID INT PRIMARY KEY,
+   permissionName VARCHAR(50)
+);
+
+-- 
+-- Create table `employee_permissions`
+--
+CREATE TABLE employee_permissions (
+   employeeID INT,
+   permissionID INT,
+   FOREIGN KEY (employeeID) REFERENCES employee(employeeID),
+   FOREIGN KEY (permissionID) REFERENCES permissions(permissionID),
+   PRIMARY KEY (employeeID, permissionID)
+);
 
 -- 
 -- ********************************************

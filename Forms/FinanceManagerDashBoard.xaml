@@ -192,7 +192,9 @@
 
 
                 <!-- Content -->
-                <ContentControl x:Name="MainContent" Margin="0,50,0,0" />
+                <ContentControl x:Name="MainContent" Margin="0,50,0,0" >
+                    <Button Content="BIG BUTTON" HorizontalAlignment="Left" Margin="474,436,0,0" VerticalAlignment="Top" FontSize="36"/>
+                </ContentControl>
             </Grid>
         </DockPanel>
     </Grid>

@@ -1,5 +1,6 @@
 ﻿using System.Windows;
 using ISDP2025_Parfonov_Zerrou.Forms.AdminUserControls;
+using ISDP2025_Parfonov_Zerrou.Functionality;
 using ISDP2025_Parfonov_Zerrou.Models;
 using Microsoft.EntityFrameworkCore;
 
@@ -9,6 +10,7 @@ namespace ISDP2025_Parfonov_Zerrou
     {
         BestContext context = new BestContext();
         Employee employee;
+        private LogoutManager logoutManager;
 
         public AdminDashBoard()
         {
@@ -20,6 +22,8 @@ namespace ISDP2025_Parfonov_Zerrou
         {
             InitializeComponent();
             this.employee = employee;
+            logoutManager = new LogoutManager(this, context);
+            logoutManager.StartTimer();
         }
 
 
@@ -94,6 +98,7 @@ namespace ISDP2025_Parfonov_Zerrou
 
         private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
+            logoutManager.Cleanup();
             context.Dispose();
             new MainWindow().Show();
         }

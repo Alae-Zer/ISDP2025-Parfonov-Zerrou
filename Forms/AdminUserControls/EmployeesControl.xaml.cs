@@ -28,15 +28,17 @@ namespace ISDP2025_Parfonov_Zerrou.Forms.AdminUserControls
             {
                 employeeFormGroup.IsEnabled = true;
                 btnAdd.IsEnabled = true;
-                btnClear.IsEnabled = true;
                 btnUpdate.IsEnabled = true;
+                txtSearch.IsEnabled = true;
+                cmbSearchCategory.IsEnabled = true;
             }
             else
             {
                 employeeFormGroup.IsEnabled = false;
                 btnAdd.IsEnabled = false;
-                btnClear.IsEnabled = false;
                 btnUpdate.IsEnabled = false;
+                txtSearch.IsEnabled = false;
+                cmbSearchCategory.IsEnabled = false;
             }
         }
         private void LoadInitialData()
@@ -44,6 +46,9 @@ namespace ISDP2025_Parfonov_Zerrou.Forms.AdminUserControls
             LoadPositions();
             LoadLocations();
             LoadEmployees();
+            cmbSearchCategory.SelectedIndex = 1;
+            cmbLocation.SelectedIndex = 1;
+            cmbPosition.SelectedIndex = 1;
         }
 
         private void LoadPositions()
@@ -64,31 +69,25 @@ namespace ISDP2025_Parfonov_Zerrou.Forms.AdminUserControls
 
         private void LoadEmployees()
         {
+            AllEmployees = context.Employees.Include(e => e.Position).Include(e => e.Site).ToList();
 
-            AllEmployees = context.Employees
-        .Include(e => e.Position)
-        .Include(e => e.Site)
-        .ToList();
+            var employees = AllEmployees.Select(e => new
+            {
+                e.EmployeeID,
+                e.FirstName,
+                e.LastName,
+                e.Email,
+                e.Username,
+                e.PositionId,
+                e.SiteId,
+                e.Active,
+                e.Password,
+                Position = e.Position,
+                Site = e.Site,
+                IsActive = e.Active == 1 ? "Yes" : "No",
+                e.Locked
+            }).ToList();
 
-            var employees = context.Employees
-                .Include(e => e.Position)
-                .Include(e => e.Site)
-                .Select(e => new
-                {
-                    e.EmployeeID,
-                    e.FirstName,
-                    e.LastName,
-                    e.Email,
-                    e.Username,
-                    e.PositionId,
-                    e.SiteId,
-                    e.Active,
-                    Position = e.Position,
-                    Site = e.Site,
-                    IsActive = e.Active == 1 ? "Yes" : "No",
-                    e.Locked
-                })
-                .ToList();
             dgEmployees.ItemsSource = employees;
         }
 
@@ -100,6 +99,7 @@ namespace ISDP2025_Parfonov_Zerrou.Forms.AdminUserControls
             txtEmail.Clear();
             txtUsername.Clear();
             txtPassword.Clear();
+            pwdPassword.Clear();
             txtEmail.Clear();
             cmbPosition.SelectedIndex = -1;
             cmbLocation.SelectedIndex = -1;
@@ -121,25 +121,31 @@ namespace ISDP2025_Parfonov_Zerrou.Forms.AdminUserControls
                 {
                     if (txtEmployeeID.Text == "")
                     {
-                        string password = pwdPassword.Visibility == 0 ? mainWindow.ComputeSha256Hash(pwdPassword.Password, "TheSalt") : mainWindow.ComputeSha256Hash(txtPassword.Text, "TheSalt");
-                        var newEmployee = new Employee
-                        {
-                            FirstName = txtFirstName.Text,
-                            LastName = txtLastName.Text,
-                            Email = txtEmail.Text,
-                            Username = txtUsername.Text,
-                            Password = password,
-                            PositionId = (int)cmbPosition.SelectedValue,
-                            SiteId = (int)cmbLocation.SelectedValue,
-                            Active = chkActive.IsChecked == true ? (sbyte)1 : (sbyte)0,
-                            Locked = 0
-                        };
+                        var result = MessageBox.Show("Are you sure you want to update this employee?",
+                "Confirm Delete", MessageBoxButton.YesNo, MessageBoxImage.Question);
 
-                        context.Employees.Add(newEmployee);
-                        context.SaveChanges();
-                        LoadEmployees();
-                        ClearForm();
-                        MessageBox.Show("Employee added successfully!", "Success", MessageBoxButton.OK, MessageBoxImage.Information);
+                        if (result == MessageBoxResult.Yes)
+                        {
+                            string password = pwdPassword.Visibility == 0 ? mainWindow.ComputeSha256Hash(pwdPassword.Password, "TheSalt") : mainWindow.ComputeSha256Hash(txtPassword.Text, "TheSalt");
+                            var newEmployee = new Employee
+                            {
+                                FirstName = txtFirstName.Text,
+                                LastName = txtLastName.Text,
+                                Email = txtEmail.Text,
+                                Username = txtUsername.Text,
+                                Password = password,
+                                PositionId = (int)cmbPosition.SelectedValue,
+                                SiteId = (int)cmbLocation.SelectedValue,
+                                Active = chkActive.IsChecked == true ? (sbyte)1 : (sbyte)0,
+                                Locked = 0
+                            };
+
+                            context.Employees.Add(newEmployee);
+                            context.SaveChanges();
+                            LoadEmployees();
+                            ClearForm();
+                            MessageBox.Show("Employee added successfully!", "Success", MessageBoxButton.OK, MessageBoxImage.Information);
+                        }
                     }
                     else
                     {
@@ -176,35 +182,41 @@ namespace ISDP2025_Parfonov_Zerrou.Forms.AdminUserControls
                     MessageBoxButton.OK, MessageBoxImage.Warning);
                 return;
             }
+            var result = MessageBox.Show("Are you sure you want to update this employee?",
+                "Confirm Delete", MessageBoxButton.YesNo, MessageBoxImage.Question);
 
-            try
+            if (result == MessageBoxResult.Yes)
             {
-                int employeeId = int.Parse(txtEmployeeID.Text);
-                var selectedEmployee = context.Employees.Find(employeeId);
-
-                if (selectedEmployee == null)
+                try
                 {
-                    MessageBox.Show("Employee not found.");
-                    return;
-                }
-                string password = pwdPassword.Visibility == 0 ? mainWindow.ComputeSha256Hash(pwdPassword.Password, "TheSalt") : mainWindow.ComputeSha256Hash(txtPassword.Text, "TheSalt");
-                selectedEmployee.FirstName = txtFirstName.Text;
-                selectedEmployee.LastName = txtLastName.Text;
-                selectedEmployee.Email = txtEmail.Text;
-                selectedEmployee.Password = password;
-                selectedEmployee.PositionId = (int)cmbPosition.SelectedValue;
-                selectedEmployee.SiteId = (int)cmbLocation.SelectedValue;
-                selectedEmployee.Active = chkActive.IsChecked == true ? (sbyte)1 : (sbyte)0;
-                selectedEmployee.Locked = chkLocked.IsChecked == true ? (sbyte)1 : (sbyte)0;
+                    int employeeId = int.Parse(txtEmployeeID.Text);
+                    var selectedEmployee = context.Employees.Find(employeeId);
 
-                context.SaveChanges();
-                LoadEmployees();
-                MessageBox.Show("Employee updated successfully!");
+                    if (selectedEmployee == null)
+                    {
+                        MessageBox.Show("Employee not found.");
+                        return;
+                    }
+                    string password = pwdPassword.Visibility == 0 ? mainWindow.ComputeSha256Hash(pwdPassword.Password, "TheSalt") : mainWindow.ComputeSha256Hash(txtPassword.Text, "TheSalt");
+                    selectedEmployee.FirstName = txtFirstName.Text;
+                    selectedEmployee.LastName = txtLastName.Text;
+                    selectedEmployee.Email = txtEmail.Text;
+                    selectedEmployee.Password = password;
+                    selectedEmployee.PositionId = (int)cmbPosition.SelectedValue;
+                    selectedEmployee.SiteId = (int)cmbLocation.SelectedValue;
+                    selectedEmployee.Active = chkActive.IsChecked == true ? (sbyte)1 : (sbyte)0;
+                    selectedEmployee.Locked = chkLocked.IsChecked == true ? (sbyte)1 : (sbyte)0;
+
+                    context.SaveChanges();
+                    LoadEmployees();
+                    MessageBox.Show("Employee updated successfully!");
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show($"Error updating employee: {ex.Message}");
+                }
             }
-            catch (Exception ex)
-            {
-                MessageBox.Show($"Error updating employee: {ex.Message}");
-            }
+
         }
 
         private void BtnRefresh_Click(object sender, RoutedEventArgs e)
@@ -217,10 +229,11 @@ namespace ISDP2025_Parfonov_Zerrou.Forms.AdminUserControls
         {
             if (dgEmployees.SelectedItem != null)
             {
-                dynamic employee = dgEmployees.SelectedItem;
+                int employeeId = ((dynamic)dgEmployees.SelectedItem).EmployeeID;
+                Employee employee = AllEmployees.First(e => e.EmployeeID == employeeId);
                 txtFirstName.Text = employee.FirstName;
                 txtLastName.Text = employee.LastName;
-                txtEmployeeID.Text = employee.EmployeeId.ToString();
+                txtEmployeeID.Text = employee.EmployeeID.ToString();
                 txtEmail.Text = employee.Email;
                 txtUsername.Text = employee.Username;
                 cmbPosition.SelectedValue = employee.PositionId;
@@ -298,6 +311,98 @@ namespace ISDP2025_Parfonov_Zerrou.Forms.AdminUserControls
             string password = mainWindow.GeneratePassword();
             pwdPassword.Password = password;
             txtPassword.Text = password;
+        }
+
+        private void TxtSearch_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            FilterEmployees();
+        }
+
+        private void CmbSearchCategory_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            FilterEmployees();
+        }
+
+        private void FilterEmployees()
+        {
+
+            var searchText = txtSearch.Text.ToLower();
+            var searchCategory = cmbSearchCategory.SelectedItem as ComboBoxItem;
+
+            var filteredEmployees = AllEmployees.Where(emp =>
+            {
+                switch (searchCategory.Content.ToString())
+                {
+                    case "Employee ID":
+                        return emp.EmployeeID.ToString().Contains(searchText);
+                    case "First Name":
+                        return emp.FirstName.ToLower().Contains(searchText);
+                    case "Last Name":
+                        return emp.LastName.ToLower().Contains(searchText);
+                    case "Email":
+                        return emp.Email.ToLower().Contains(searchText);
+                    case "Position":
+                        return emp.Position.PermissionLevel.ToLower().Contains(searchText);
+                    case "Location":
+                        return emp.Site.SiteName.ToLower().Contains(searchText);
+                    case "Is Active":
+                        return (emp.Active == 1 ? "Yes" : "No").ToLower().Contains(searchText);
+                    default:
+                        return false;
+                }
+            });
+
+            dgEmployees.ItemsSource = filteredEmployees.Select(e => new
+            {
+                e.EmployeeID,
+                e.FirstName,
+                e.LastName,
+                e.Email,
+                e.Username,
+                e.PositionId,
+                e.SiteId,
+                e.Active,
+                Position = e.Position,
+                Site = e.Site,
+                IsActive = e.Active == 1 ? "Yes" : "No",
+                e.Locked
+            });
+        }
+
+        private void BtnDelete_Click(object sender, RoutedEventArgs e)
+        {
+            if (dgEmployees.SelectedItem == null)
+            {
+                MessageBox.Show("Please select an employee to delete.", "Warning",
+                    MessageBoxButton.OK, MessageBoxImage.Warning);
+                return;
+            }
+
+            dynamic selectedEmployee = dgEmployees.SelectedItem;
+            int employeeId = selectedEmployee.EmployeeID;
+
+            var result = MessageBox.Show("Are you sure you want to delete this employee?",
+                "Confirm Delete", MessageBoxButton.YesNo, MessageBoxImage.Question);
+
+            if (result == MessageBoxResult.Yes)
+            {
+                try
+                {
+                    var employee = context.Employees.Find(employeeId);
+                    if (employee != null)
+                    {
+                        employee.Active = 0;
+                        context.SaveChanges();
+                        LoadEmployees();
+                        ClearForm();
+                        MessageBox.Show("Employee deleted successfully!");
+                    }
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show($"Error deleting employee: {ex.Message}");
+                }
+            }
         }
     }
 }

@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using Microsoft.EntityFrameworkCore;
-using Pomelo.EntityFrameworkCore.MySql.Scaffolding.Internal;
+﻿using Microsoft.EntityFrameworkCore;
 
 namespace ISDP2025_Parfonov_Zerrou.Models;
 
@@ -34,6 +31,8 @@ public partial class BestContext : DbContext
 
     public virtual DbSet<Province> Provinces { get; set; }
 
+    public virtual DbSet<Setting> Settings { get; set; }
+
     public virtual DbSet<Site> Sites { get; set; }
 
     public virtual DbSet<Supplier> Suppliers { get; set; }
@@ -52,7 +51,7 @@ public partial class BestContext : DbContext
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
 #warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see https://go.microsoft.com/fwlink/?LinkId=723263.
-        => optionsBuilder.UseMySql("server=localhost;database=bullseyedb2025;user=admin;password=admin", Microsoft.EntityFrameworkCore.ServerVersion.Parse("8.4.3-mysql"));
+        => optionsBuilder.UseMySql("server=localhost;database=bullseyedb2025;user=admin;password=admin", Microsoft.EntityFrameworkCore.ServerVersion.Parse("8.3.0-mysql"));
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -104,21 +103,21 @@ public partial class BestContext : DbContext
 
             entity.HasMany(d => d.Permissions).WithMany(p => p.Employees)
                 .UsingEntity<Dictionary<string, object>>(
-                    "Additionalpermissionsmapping",
+                    "EmployeePermission",
                     r => r.HasOne<Permission>().WithMany()
                         .HasForeignKey("PermissionId")
                         .OnDelete(DeleteBehavior.ClientSetNull)
-                        .HasConstraintName("additionalpermissionsmapping_ibfk_2"),
+                        .HasConstraintName("employee_permissions_ibfk_2"),
                     l => l.HasOne<Employee>().WithMany()
                         .HasForeignKey("EmployeeId")
                         .OnDelete(DeleteBehavior.ClientSetNull)
-                        .HasConstraintName("additionalpermissionsmapping_ibfk_1"),
+                        .HasConstraintName("employee_permissions_ibfk_1"),
                     j =>
                     {
                         j.HasKey("EmployeeId", "PermissionId")
                             .HasName("PRIMARY")
                             .HasAnnotation("MySql:IndexPrefixLength", new[] { 0, 0 });
-                        j.ToTable("additionalpermissionsmapping");
+                        j.ToTable("employee_permissions");
                         j.HasIndex(new[] { "PermissionId" }, "permissionID");
                         j.IndexerProperty<int>("EmployeeId").HasColumnName("employeeID");
                         j.IndexerProperty<int>("PermissionId").HasColumnName("permissionID");
@@ -176,6 +175,14 @@ public partial class BestContext : DbContext
             entity.HasKey(e => e.ProvinceId).HasName("PRIMARY");
 
             entity.Property(e => e.Active).HasDefaultValueSql("'1'");
+        });
+
+        modelBuilder.Entity<Setting>(entity =>
+        {
+            entity.HasKey(e => e.SettingType).HasName("PRIMARY");
+
+            entity.Property(e => e.SettingType).HasDefaultValueSql("'global'");
+            entity.Property(e => e.LogoutTimeMinutes).HasDefaultValueSql("'20'");
         });
 
         modelBuilder.Entity<Site>(entity =>

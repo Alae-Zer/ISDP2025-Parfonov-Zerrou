@@ -10,7 +10,7 @@
         Background="#F7F7F7"
         WindowStartupLocation="CenterScreen"
         MinWidth="1200" MinHeight="800" 
-        Loaded="Window_Loaded" MouseMove="Window_MouseMove" KeyDown="Window_KeyDown" Closing="Window_Closing">
+        Loaded="Window_Loaded" Closing="Window_Closing" Icon="/Forms/bullseye.png">
 
     <!-- Resources -->
     <Window.Resources>

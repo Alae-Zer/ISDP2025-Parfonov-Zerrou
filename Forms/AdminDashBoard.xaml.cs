@@ -94,6 +94,7 @@ namespace ISDP2025_Parfonov_Zerrou
 
         private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
+            context.Dispose();
             new MainWindow().Show();
         }
     }

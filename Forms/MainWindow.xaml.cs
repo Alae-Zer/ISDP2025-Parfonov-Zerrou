@@ -547,7 +547,7 @@ namespace ISDP2025_Parfonov_Zerrou
                             nextForm = new AdminDashBoard(employee);
                             break;
                         case 1:
-                            nextForm = new RegionalManagerDashboard(employee);
+                            nextForm = new RegionalManagerDashBoard(employee);
                             break;
                         case 2:
                             nextForm = new FinanceManagerDashBoard(employee);

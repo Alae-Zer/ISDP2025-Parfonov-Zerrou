@@ -380,7 +380,39 @@ namespace ISDP2025_Parfonov_Zerrou.Forms.AdminUserControls
 
         private void btnResetPassword_Click(object sender, RoutedEventArgs e)
         {
+            if (string.IsNullOrEmpty(txtEmployeeID.Text))
+            {
+                MessageBox.Show("Please select an employee to update.", "Warning",
+                    MessageBoxButton.OK, MessageBoxImage.Warning);
+                return;
+            }
 
+            var result = MessageBox.Show("Are you sure you want to reset the password?", "Confirm reset", MessageBoxButton.YesNo, MessageBoxImage.Question);
+
+            if (result == MessageBoxResult.Yes)
+            {
+                try
+                {
+                    int employeeId = int.Parse(txtEmployeeID.Text);
+                    var selectedEmployee = context.Employees.Find(employeeId);
+
+                    if (selectedEmployee == null)
+                    {
+                        MessageBox.Show("Employee not found.");
+                        return;
+                    }
+                    selectedEmployee.Password = "P@ssw0rd-";
+
+                    context.SaveChanges();
+                    LoadEmployees();
+                    MessageBox.Show("Employee updated successfully!");
+                    ClearForm();
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show($"Error updating employee: {ex.Message}");
+                }
+            }
         }
     }
 }

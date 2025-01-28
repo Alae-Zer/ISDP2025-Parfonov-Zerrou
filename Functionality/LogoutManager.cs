@@ -26,7 +26,7 @@ namespace ISDP2025_Parfonov_Zerrou.Functionality
 
                     // Create and configure the timer
                     logoutTimer = new DispatcherTimer();
-                    logoutTimer.Interval = TimeSpan.FromMinutes(0.2);
+                    logoutTimer.Interval = TimeSpan.FromMinutes(logoutTimeInMinutes);
                     logoutTimer.Tick += LogoutTimer_Tick;
 
                     // Add event handlers for user activity

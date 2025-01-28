@@ -102,5 +102,10 @@ namespace ISDP2025_Parfonov_Zerrou
             context.Dispose();
             new MainWindow().Show();
         }
+
+        private void Button_Click(object sender, RoutedEventArgs e)
+        {
+            this.Close();
+        }
     }
 }

@@ -113,10 +113,10 @@
                     <Grid Margin="0,0,10,20">
                         <Border BorderThickness="1" BorderBrush="#CCCCCC">
                             <Image x:Name="imgProduct" 
-                                   Height="200" 
-                                   Stretch="Uniform"
-                                   Margin="5"
-                                   Style="{StaticResource ImageWithZoom}"/>
+                                Height="200" 
+                                Stretch="Uniform"
+                                Margin="5"
+                                Style="{StaticResource ImageWithZoom}"/>
                         </Border>
                         <Button x:Name="btnBrowseImage" 
                             Content="Change Image" 

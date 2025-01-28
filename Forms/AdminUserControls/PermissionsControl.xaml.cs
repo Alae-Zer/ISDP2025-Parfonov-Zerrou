@@ -316,22 +316,24 @@ namespace ISDP2025_Parfonov_Zerrou.Forms.AdminUserControls
                         {
                             MessageBox.Show("Employee or permission not found", "Error",
                                 MessageBoxButton.OK, MessageBoxImage.Error);
-                            return;
                         }
+                        else
+                        {
+                            //Add And Save
+                            employee.Permissions.Add(permission);
+                            context.SaveChanges();
 
-                        //Add And Save
-                        employee.Permissions.Add(permission);
-                        context.SaveChanges();
-
-                        //Query Again And Update DataGrid With All Permissions
-                        var permissions = context.Employees
-                            .Include(e => e.Permissions)
-                            .Where(e => e.EmployeeID == employeeId)
-                            .SelectMany(e => e.Permissions)
-                            .Select(p => new { Permission = p.PermissionName })
-                            .ToList();
-                        dgvCurrentPermissions.ItemsSource = permissions;
-                        cmbAvailablePermissions.SelectedIndex = -1;
+                            //Query Again And Update DataGrid With All Permissions
+                            var permissions = context.Employees
+                                .Include(e => e.Permissions)
+                                .Where(e => e.EmployeeID == employeeId)
+                                .SelectMany(e => e.Permissions)
+                                .Select(p => new { Permission = p.PermissionName })
+                                .ToList();
+                            dgvCurrentPermissions.ItemsSource = permissions;
+                            btnAddPermission.Visibility = Visibility.Collapsed;
+                            cmbAvailablePermissions.SelectedIndex = -1;
+                        }
                     }
                 }
             }
@@ -488,7 +490,7 @@ namespace ISDP2025_Parfonov_Zerrou.Forms.AdminUserControls
 
         private void UserControl_Unloaded(object sender, RoutedEventArgs e)
         {
-            context?.Dispose();
+            context.Dispose();
         }
 
         private void btnClear_Click(object sender, RoutedEventArgs e)

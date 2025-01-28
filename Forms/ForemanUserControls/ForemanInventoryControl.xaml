@@ -211,7 +211,7 @@
                         Foreground="White"
                         Visibility="Collapsed"
                         Cursor="Hand"/>
-                <Button x:Name="btnUpdate" Content="Update" Width="100" Height="30" 
+                <Button x:Name="btnUpdate" Content="Edit" Width="100" Height="30" 
                         DockPanel.Dock="Right" Margin="5,0"
                         Click="BtnUpdate_Click"
                         Style="{StaticResource RoundedButton}"

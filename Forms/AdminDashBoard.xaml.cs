@@ -1,9 +1,14 @@
-﻿using System.Windows;
-using ISDP2025_Parfonov_Zerrou.Forms.AdminUserControls;
+﻿using ISDP2025_Parfonov_Zerrou.Forms.AdminUserControls;
 using ISDP2025_Parfonov_Zerrou.Functionality;
 using ISDP2025_Parfonov_Zerrou.Models;
 using Microsoft.EntityFrameworkCore;
+using System.Windows;
 
+//ISDP Project
+//Mohammed Alae-Zerrou, Serhii Parfonov
+//NBCC, Winter 2025
+//Completed By Equal Share of Mohammed and Serhii
+//Last Modified by Mohammed on January 26,2025
 namespace ISDP2025_Parfonov_Zerrou
 {
     public partial class AdminDashBoard : Window
@@ -37,7 +42,7 @@ namespace ISDP2025_Parfonov_Zerrou
                 currentSite = context.Sites.FirstOrDefault(s => s.SiteId == employee.SiteId);
 
 
-                txtLoggedUser.Text = "Logged in as: " + employee.Username;
+                txtLoggedUser.Text = "Your Username is : " + employee.Username;
                 txtUserLocation.Text = "Current Location: " + (currentSite != null ? currentSite.SiteName : "Unknown");
             }
             catch (Exception ex)

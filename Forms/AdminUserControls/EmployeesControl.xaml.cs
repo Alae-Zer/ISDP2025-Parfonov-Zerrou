@@ -102,8 +102,6 @@ namespace ISDP2025_Parfonov_Zerrou.Forms.AdminUserControls
             txtEmployeeID.Clear();
             txtEmail.Clear();
             txtUsername.Clear();
-            txtPassword.Clear();
-            pwdPassword.Clear();
             txtEmail.Clear();
             cmbPosition.SelectedIndex = -1;
             cmbLocation.SelectedIndex = -1;
@@ -130,14 +128,12 @@ namespace ISDP2025_Parfonov_Zerrou.Forms.AdminUserControls
 
                         if (result == MessageBoxResult.Yes)
                         {
-                            string password = pwdPassword.Visibility == 0 ? mainWindow.ComputeSha256Hash(pwdPassword.Password, "TheSalt") : mainWindow.ComputeSha256Hash(txtPassword.Text, "TheSalt");
                             var newEmployee = new Employee
                             {
                                 FirstName = txtFirstName.Text,
                                 LastName = txtLastName.Text,
                                 Email = txtEmail.Text,
                                 Username = txtUsername.Text,
-                                Password = password,
                                 PositionId = (int)cmbPosition.SelectedValue,
                                 SiteId = (int)cmbLocation.SelectedValue,
                                 Active = chkActive.IsChecked == true ? (sbyte)1 : (sbyte)0,
@@ -202,11 +198,9 @@ namespace ISDP2025_Parfonov_Zerrou.Forms.AdminUserControls
                         MessageBox.Show("Employee not found.");
                         return;
                     }
-                    string password = pwdPassword.Visibility == 0 ? mainWindow.ComputeSha256Hash(pwdPassword.Password, "TheSalt") : mainWindow.ComputeSha256Hash(txtPassword.Text, "TheSalt");
                     selectedEmployee.FirstName = txtFirstName.Text;
                     selectedEmployee.LastName = txtLastName.Text;
                     selectedEmployee.Email = txtEmail.Text;
-                    selectedEmployee.Password = password;
                     selectedEmployee.PositionId = (int)cmbPosition.SelectedValue;
                     selectedEmployee.SiteId = (int)cmbLocation.SelectedValue;
                     selectedEmployee.Active = chkActive.IsChecked == true ? (sbyte)1 : (sbyte)0;
@@ -244,27 +238,8 @@ namespace ISDP2025_Parfonov_Zerrou.Forms.AdminUserControls
                 txtUsername.Text = employee.Username;
                 cmbPosition.SelectedValue = employee.PositionId;
                 cmbLocation.SelectedValue = employee.SiteId;
-                pwdPassword.Password = employee.Password;
-                txtPassword.Text = employee.Password;
                 chkActive.IsChecked = employee.Active == 1;
                 chkLocked.IsChecked = employee.Locked == 1;
-                txtPassword.Clear();
-            }
-        }
-
-        private void TogglePasswordVisibility(object sender, System.Windows.Input.MouseButtonEventArgs e)
-        {
-            if (pwdPassword.Visibility == Visibility.Visible)
-            {
-                txtPassword.Text = pwdPassword.Password;
-                pwdPassword.Visibility = Visibility.Collapsed;
-                txtPassword.Visibility = Visibility.Visible;
-            }
-            else
-            {
-                pwdPassword.Password = txtPassword.Text;
-                pwdPassword.Visibility = Visibility.Visible;
-                txtPassword.Visibility = Visibility.Collapsed;
             }
         }
 
@@ -309,14 +284,6 @@ namespace ISDP2025_Parfonov_Zerrou.Forms.AdminUserControls
         {
             txtEmail.Text = txtUsername.Text + "@bullseye.ca";
             mainWindow.ComputeSha256Hash("P@ssw0rd-", "TheSalt");
-        }
-
-        private void Label_MouseDown(object sender, System.Windows.Input.MouseButtonEventArgs e)
-        {
-
-            string password = mainWindow.GeneratePassword();
-            pwdPassword.Password = password;
-            txtPassword.Text = password;
         }
 
         private void TxtSearch_TextChanged(object sender, TextChangedEventArgs e)
@@ -409,6 +376,11 @@ namespace ISDP2025_Parfonov_Zerrou.Forms.AdminUserControls
                     MessageBox.Show($"Error deleting employee: {ex.Message}");
                 }
             }
+        }
+
+        private void btnResetPassword_Click(object sender, RoutedEventArgs e)
+        {
+
         }
     }
 }

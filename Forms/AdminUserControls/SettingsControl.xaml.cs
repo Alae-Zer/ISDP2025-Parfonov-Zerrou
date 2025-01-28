@@ -1,6 +1,6 @@
-﻿using ISDP2025_Parfonov_Zerrou.Models;
-using System.Windows;
+﻿using System.Windows;
 using System.Windows.Controls;
+using ISDP2025_Parfonov_Zerrou.Models;
 
 //ISDP Project
 //Mohammed Alae-Zerrou, Serhii Parfonov

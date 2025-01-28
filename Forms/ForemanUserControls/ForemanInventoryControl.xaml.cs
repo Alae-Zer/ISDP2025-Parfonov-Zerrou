@@ -18,7 +18,7 @@ namespace ISDP2025_Parfonov_Zerrou.Forms.ForemanUserControls
         BestContext context;
         List<string> categoriesList = new List<string>();
         string selectedImagePath;
-        string defaultImagePath = @"../../Images\default.png";
+        string defaultImagePath = @"C:\Users\School\Desktop\ISPD\ISDP2025-Parfonov-Zerrou\Images\default.png";
         BitmapImage defaultImage;
 
         public ForemanInventoryControl()

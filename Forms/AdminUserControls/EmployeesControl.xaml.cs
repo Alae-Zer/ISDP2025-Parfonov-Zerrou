@@ -29,16 +29,20 @@ namespace ISDP2025_Parfonov_Zerrou.Forms.AdminUserControls
                 employeeFormGroup.IsEnabled = true;
                 btnAdd.IsEnabled = true;
                 btnUpdate.IsEnabled = true;
+                btnDelete.IsEnabled = true;
                 txtSearch.IsEnabled = true;
                 cmbSearchCategory.IsEnabled = true;
+                stcClear.IsEnabled = true;
             }
             else
             {
                 employeeFormGroup.IsEnabled = false;
                 btnAdd.IsEnabled = false;
                 btnUpdate.IsEnabled = false;
+                btnDelete.IsEnabled = false;
                 txtSearch.IsEnabled = false;
                 cmbSearchCategory.IsEnabled = false;
+                stcClear.IsEnabled = false;
             }
         }
         private void LoadInitialData()
@@ -145,6 +149,7 @@ namespace ISDP2025_Parfonov_Zerrou.Forms.AdminUserControls
                             LoadEmployees();
                             ClearForm();
                             MessageBox.Show("Employee added successfully!", "Success", MessageBoxButton.OK, MessageBoxImage.Information);
+                            ClearForm();
                         }
                     }
                     else
@@ -210,6 +215,7 @@ namespace ISDP2025_Parfonov_Zerrou.Forms.AdminUserControls
                     context.SaveChanges();
                     LoadEmployees();
                     MessageBox.Show("Employee updated successfully!");
+                    ClearForm();
                 }
                 catch (Exception ex)
                 {

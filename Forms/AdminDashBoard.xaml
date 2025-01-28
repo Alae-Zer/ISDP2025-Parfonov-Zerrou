@@ -113,7 +113,11 @@
     </Window.Resources>
 
     <Grid>
-        <DockPanel>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="43*"/>
+            <ColumnDefinition Width="557*"/>
+        </Grid.ColumnDefinitions>
+        <DockPanel Grid.ColumnSpan="2">
             <!-- Sidebar -->
             <StackPanel Background="#333" Width="250" DockPanel.Dock="Left" VerticalAlignment="Stretch">
                 <!-- Logo -->
@@ -192,7 +196,7 @@
 
                         <!-- Logout Button -->
                         <Button Tag="Logout" Height="42" 
-                                Style="{StaticResource SidebarButtonStyle}" VerticalAlignment="Bottom">
+                                Style="{StaticResource SidebarButtonStyle}" VerticalAlignment="Bottom" Click="Button_Click">
                             <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
                                 <Label Style="{StaticResource SidebarLabelStyle}" Content="&#xF2F5;" />
                                 <TextBlock Text="Logout" VerticalAlignment="Center" />

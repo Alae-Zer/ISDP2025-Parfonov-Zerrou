@@ -8,14 +8,14 @@ namespace ISDP2025_Parfonov_Zerrou.Forms.AdminUserControls
     /// <summary>
     /// Interaction logic for EmployeesControl.xaml
     /// </summary>
-    public partial class EmployeesControl : UserControl
+    public partial class AdminEmployeesControl : UserControl
     {
         MainWindow mainWindow = new MainWindow();
         private readonly BestContext context;
         List<Employee> AllEmployees;
         Employee employee;
 
-        public EmployeesControl()
+        public AdminEmployeesControl()
         {
             InitializeComponent();
             context = new BestContext();

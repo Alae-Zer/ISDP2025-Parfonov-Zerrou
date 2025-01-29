@@ -1,7 +1,9 @@
-﻿using ISDP2025_Parfonov_Zerrou.Forms.ForemanUserControls;
+﻿using System.Windows;
+using ISDP2025_Parfonov_Zerrou.Forms.AdminUserControls;
+using ISDP2025_Parfonov_Zerrou.Forms.ForemanUserControls;
+using ISDP2025_Parfonov_Zerrou.Functionality;
 using ISDP2025_Parfonov_Zerrou.Models;
 using Microsoft.EntityFrameworkCore;
-using System.Windows;
 
 namespace ISDP2025_Parfonov_Zerrou
 {
@@ -12,6 +14,7 @@ namespace ISDP2025_Parfonov_Zerrou
     {
         BestContext context = new BestContext();
         Employee employee;
+        private LogoutManager logoutManager;
 
         public WarehouseFormanDashBoard()
         {
@@ -23,6 +26,8 @@ namespace ISDP2025_Parfonov_Zerrou
         {
             InitializeComponent();
             this.employee = employee;
+            logoutManager = new LogoutManager(this, context);
+            logoutManager.StartTimer();
         }
 
         private void InitializeWindow()
@@ -52,6 +57,23 @@ namespace ISDP2025_Parfonov_Zerrou
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
             InitializeWindow();
+        }
+
+        private void btnEmployee_Click(object sender, RoutedEventArgs e)
+        {
+            MainContent.Content = new AdminEmployeesControl();
+        }
+
+        private void Window_Closed(object sender, EventArgs e)
+        {
+            logoutManager.Cleanup();
+            context.Dispose();
+            new MainWindow().Show();
+        }
+
+        private void btnLogout_Click(object sender, RoutedEventArgs e)
+        {
+            this.Close();
         }
     }
 }

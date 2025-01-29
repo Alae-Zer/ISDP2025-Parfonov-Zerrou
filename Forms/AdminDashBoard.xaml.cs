@@ -55,7 +55,7 @@ namespace ISDP2025_Parfonov_Zerrou
 
         private void btnEmployees_Click(object sender, RoutedEventArgs e)
         {
-            MainContent.Content = new EmployeesControl();
+            MainContent.Content = new AdminEmployeesControl();
         }
 
         private void btnLocations_Click(object sender, RoutedEventArgs e)
@@ -103,7 +103,7 @@ namespace ISDP2025_Parfonov_Zerrou
             new MainWindow().Show();
         }
 
-        private void Button_Click(object sender, RoutedEventArgs e)
+        private void btnLogout_Click(object sender, RoutedEventArgs e)
         {
             this.Close();
         }

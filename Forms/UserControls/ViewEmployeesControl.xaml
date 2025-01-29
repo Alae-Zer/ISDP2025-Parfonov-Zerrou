@@ -105,11 +105,11 @@
                 <Label Content="Notes:" Grid.Row="4" Grid.Column="0"/>
 
                 <!-- Left Column Controls -->
-                <TextBox x:Name="txtFirstName" Grid.Row="0" Grid.Column="1" Margin="6" TextChanged="txtFirstName_TextChanged" ToolTip="Enter the employee first name"/>
-                <TextBox x:Name="txtLastName" Grid.Row="1" Grid.Column="1" Margin="5" TextChanged="txtLastName_TextChanged" ToolTip="Enter the employee last name" />
-                <ComboBox x:Name="cmbLocation" Grid.Row="3" Grid.Column="1" Margin="5" ToolTip="Choose the Location of the employee"/>
-                <ComboBox x:Name="cmbPosition" Grid.Row="2" Grid.Column="1" Margin="5" ToolTip="Choose the Permition of the employee"/>
-                <TextBox x:Name="Notes" Grid.Row="4" Grid.Column="1" VerticalAlignment="Center" TextWrapping="Wrap" AcceptsReturn="True" Height="48" Margin="5,0,5,0" ToolTip="Add any notes to the employee account"/>
+                <TextBox x:Name="txtFirstName" Grid.Row="0" Grid.Column="1" Margin="6" TextChanged="txtFirstName_TextChanged" ToolTip="Enter the employee first name" IsEnabled="False"/>
+                <TextBox x:Name="txtLastName" Grid.Row="1" Grid.Column="1" Margin="5" TextChanged="txtLastName_TextChanged" ToolTip="Enter the employee last name" IsEnabled="False" />
+                <ComboBox x:Name="cmbLocation" Grid.Row="3" Grid.Column="1" Margin="5" ToolTip="Choose the Location of the employee" IsEnabled="False"/>
+                <ComboBox x:Name="cmbPosition" Grid.Row="2" Grid.Column="1" Margin="5" ToolTip="Choose the Permition of the employee" IsEnabled="False"/>
+                <TextBox x:Name="Notes" Grid.Row="4" Grid.Column="1" VerticalAlignment="Center" TextWrapping="Wrap" AcceptsReturn="True" Height="48" Margin="5,0,5,0" ToolTip="Add any notes to the employee account" IsEnabled="False"/>
 
                 <!-- Right Column Labels -->
                 <Label Content="Username:" Grid.Row="1" Grid.Column="2" Margin="4,0,0,0"/>
@@ -120,10 +120,10 @@
 
                 <!-- Right Column Controls -->
                 <TextBox x:Name="txtUsername" Grid.Row="1" Grid.Column="3" Margin="5" IsEnabled="False" TextChanged="txtUsername_TextChanged" ToolTip="The Username is auto set, No action is needed" />
-                <TextBox x:Name="txtEmployeeID" Grid.Row="0" Grid.Column="3" Margin="5" IsEnabled="False" ToolTip="The employeeID is auto set, No action is needed"/>
-                <TextBox x:Name="txtEmail" Grid.Row="2" Grid.Column="3" Margin="5" Height="20" VerticalAlignment="Top" ToolTip="The employeeID is auto set, or you can change it"/>
-                <CheckBox x:Name="chkActive" Grid.Row="3" Grid.Column="2" Margin="90,15,0,0" HorizontalAlignment="Left" VerticalAlignment="Top" RenderTransformOrigin="0.5,0.5" IsChecked="True" ToolTip="Change the status of Active field" />
-                <CheckBox x:Name="chkLocked" Grid.Row="3" Grid.Column="3" Margin="127,15,0,0" HorizontalAlignment="Left" VerticalAlignment="Top" RenderTransformOrigin="0.5,0.5" ToolTip="Change the status of Locked field" />
+                <TextBox x:Name="txtEmployeeID" Grid.Row="0" Grid.Column="3" Margin="5" ToolTip="The employeeID is auto set, No action is needed" IsEnabled="False"/>
+                <TextBox x:Name="txtEmail" Grid.Row="2" Grid.Column="3" Margin="5" Height="20" VerticalAlignment="Top" ToolTip="The employeeID is auto set, or you can change it" IsEnabled="False"/>
+                <CheckBox x:Name="chkActive" Grid.Row="3" Grid.Column="2" Margin="90,15,0,0" HorizontalAlignment="Left" VerticalAlignment="Top" RenderTransformOrigin="0.5,0.5" IsChecked="True" ToolTip="Change the status of Active field" IsEnabled="False" />
+                <CheckBox x:Name="chkLocked" Grid.Row="3" Grid.Column="3" Margin="127,15,0,0" HorizontalAlignment="Left" VerticalAlignment="Top" RenderTransformOrigin="0.5,0.5" ToolTip="Change the status of Locked field" IsEnabled="False" />
 
             </Grid>
         </GroupBox>

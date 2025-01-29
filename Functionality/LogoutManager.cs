@@ -1,6 +1,6 @@
-﻿using System.Windows;
+﻿using ISDP2025_Parfonov_Zerrou.Models;
+using System.Windows;
 using System.Windows.Threading;
-using ISDP2025_Parfonov_Zerrou.Models;
 
 namespace ISDP2025_Parfonov_Zerrou.Functionality
 {

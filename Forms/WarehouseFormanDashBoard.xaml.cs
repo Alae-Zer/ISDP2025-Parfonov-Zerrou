@@ -41,6 +41,7 @@ namespace ISDP2025_Parfonov_Zerrou
 
 
                 txtLoggedUser.Text = "Logged in as: " + employee.Username;
+                txtUserRole.Text = "Your Permission is: \nWarehouse Foreman";
                 txtUserLocation.Text = "Current Location: " + (currentSite != null ? currentSite.SiteName : "Unknown");
             }
             catch (Exception ex)

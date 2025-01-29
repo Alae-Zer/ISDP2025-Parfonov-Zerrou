@@ -190,7 +190,9 @@
                     <StackPanel DockPanel.Dock="Bottom" Margin="0,20,0,0">
                         <!-- User Label -->
                         <TextBlock x:Name="txtLoggedUser" Text="Logged in as: [Current User]" Foreground="White" FontSize="14" 
-                                 HorizontalAlignment="Center" Margin="0,0,0,5" />
+                                HorizontalAlignment="Center" Margin="0,0,0,5" />
+                        <TextBlock x:Name="txtUserRole" Text="Your Permission is:" Foreground="White" FontSize="14" 
+                                HorizontalAlignment="Center" Margin="0,0,0,10" />
 
                         <!-- Logout Button -->
                         <Button x:Name="btnLogout" Tag="Logout" Height="42" 

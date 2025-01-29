@@ -22,6 +22,7 @@ namespace ISDP2025_Parfonov_Zerrou
             this.employee = employee;
             logoutManager = new LogoutManager(this, context);
             logoutManager.StartTimer();
+            txtLoggedUser.Text = "Your Username is : " + employee.Username;
         }
 
         private void InitializeWindow()

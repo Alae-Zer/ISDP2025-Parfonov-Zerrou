@@ -1,9 +1,8 @@
-﻿using ISDP2025_Parfonov_Zerrou.Models;
-using Microsoft.EntityFrameworkCore;
-using System.Windows;
+﻿using System.Windows;
 using ISDP2025_Parfonov_Zerrou.Forms.AdminUserControls;
 using ISDP2025_Parfonov_Zerrou.Functionality;
 using ISDP2025_Parfonov_Zerrou.Models;
+using Microsoft.EntityFrameworkCore;
 
 //ISDP Project
 //Mohammed Alae-Zerrou, Serhii Parfonov
@@ -28,6 +27,7 @@ namespace ISDP2025_Parfonov_Zerrou
             InitializeComponent();
             this.employee = employee;
             logoutManager = new LogoutManager(this, context);
+            txtLoggedUser.Text = "Your Username is : " + employee.Username;
             logoutManager.StartTimer();
         }
 

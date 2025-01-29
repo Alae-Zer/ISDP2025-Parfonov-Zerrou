@@ -263,7 +263,6 @@ namespace ISDP2025_Parfonov_Zerrou.Forms.AdminUserControls
             return username;
         }
 
-        // Add this method to automatically update username when first or last name changes
         private void txtFirstName_TextChanged(object sender, TextChangedEventArgs e)
         {
             if (!string.IsNullOrEmpty(txtFirstName.Text) && !string.IsNullOrEmpty(txtLastName.Text))

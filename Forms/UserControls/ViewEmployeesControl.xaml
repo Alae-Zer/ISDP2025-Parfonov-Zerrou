@@ -70,63 +70,6 @@
                FontWeight="Bold" 
                Margin="0,0,0,20"/>
 
-        <!-- Employee Form -->
-        <GroupBox Grid.Row="1" Padding="10" Margin="0,0,0,10" x:Name="employeeFormGroup">
-            <GroupBox.Header>
-                <Grid>
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="*"/>
-                        <ColumnDefinition Width="Auto"/>
-                    </Grid.ColumnDefinitions>
-                    <TextBlock Text="Employee Information" VerticalAlignment="Center"/>
-                </Grid>
-            </GroupBox.Header>
-            <Grid>
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="40*"/>
-                    <ColumnDefinition Width="57*"/>
-                    <ColumnDefinition Width="40*"/>
-                    <ColumnDefinition Width="50*"/>
-                </Grid.ColumnDefinitions>
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="Auto"/>
-                    <RowDefinition Height="Auto"/>
-                    <RowDefinition Height="Auto"/>
-                    <RowDefinition Height="Auto"/>
-                    <RowDefinition Height="Auto"/>
-                    <RowDefinition Height="Auto"/>
-                </Grid.RowDefinitions>
-
-                <!-- Left Column Labels -->
-                <Label Content="First Name:" Grid.Row="0" Grid.Column="0"/>
-                <Label Content="Last Name:" Grid.Row="1" Grid.Column="0"/>
-                <Label Content="Location:" Grid.Row="3" Grid.Column="0"/>
-                <Label Content="Position:" Grid.Row="2" Grid.Column="0"/>
-                <Label Content="Notes:" Grid.Row="4" Grid.Column="0"/>
-
-                <!-- Left Column Controls -->
-                <TextBox x:Name="txtFirstName" Grid.Row="0" Grid.Column="1" Margin="6" TextChanged="txtFirstName_TextChanged" ToolTip="Enter the employee first name"/>
-                <TextBox x:Name="txtLastName" Grid.Row="1" Grid.Column="1" Margin="5" TextChanged="txtLastName_TextChanged" ToolTip="Enter the employee last name" />
-                <ComboBox x:Name="cmbLocation" Grid.Row="3" Grid.Column="1" Margin="5" ToolTip="Choose the Location of the employee"/>
-                <ComboBox x:Name="cmbPosition" Grid.Row="2" Grid.Column="1" Margin="5" ToolTip="Choose the Permition of the employee"/>
-                <TextBox x:Name="Notes" Grid.Row="4" Grid.Column="1" VerticalAlignment="Center" TextWrapping="Wrap" AcceptsReturn="True" Height="48" Margin="5,0,5,0" ToolTip="Add any notes to the employee account"/>
-
-                <!-- Right Column Labels -->
-                <Label Content="Username:" Grid.Row="1" Grid.Column="2" Margin="4,0,0,0"/>
-                <Label Content="Employee ID:" Grid.Row="0" Grid.Column="2" Margin="4,0,0,0"/>
-                <Label Content="Email:" Grid.Row="2" Grid.Column="2" Margin="4,0,0,0"/>
-                <Label Content="Active Status:" Grid.Row="3" Grid.Column="2" Margin="4,8,0,0"/>
-                <Label Content="Locked Status:" Grid.Row="3" Grid.Column="3" HorizontalAlignment="Left" Margin="40,8,60,0"/>
-
-                <!-- Right Column Controls -->
-                <TextBox x:Name="txtUsername" Grid.Row="1" Grid.Column="3" Margin="5" IsEnabled="False" TextChanged="txtUsername_TextChanged" ToolTip="The Username is auto set, No action is needed" />
-                <TextBox x:Name="txtEmployeeID" Grid.Row="0" Grid.Column="3" Margin="5" IsEnabled="False" ToolTip="The employeeID is auto set, No action is needed"/>
-                <TextBox x:Name="txtEmail" Grid.Row="2" Grid.Column="3" Margin="5" Height="20" VerticalAlignment="Top" ToolTip="The employeeID is auto set, or you can change it"/>
-                <CheckBox x:Name="chkActive" Grid.Row="3" Grid.Column="2" Margin="90,15,0,0" HorizontalAlignment="Left" VerticalAlignment="Top" RenderTransformOrigin="0.5,0.5" IsChecked="True" ToolTip="Change the status of Active field" />
-                <CheckBox x:Name="chkLocked" Grid.Row="3" Grid.Column="3" Margin="127,15,0,0" HorizontalAlignment="Left" VerticalAlignment="Top" RenderTransformOrigin="0.5,0.5" ToolTip="Change the status of Locked field" />
-
-            </Grid>
-        </GroupBox>
 
         <!-- Row 2 (Buttons and Search) -->
         <Grid Grid.Row="3" Margin="2,10,29,10">
@@ -144,7 +87,6 @@
                     <ComboBoxItem Content="Email"/>
                     <ComboBoxItem Content="Position"/>
                     <ComboBoxItem Content="Location"/>
-                    <ComboBoxItem Content="Is Active"/>
                 </ComboBox>
                 <TextBox x:Name="txtSearch" Width="150" Height="30" TextChanged="TxtSearch_TextChanged"/>
             </StackPanel>
@@ -169,7 +111,6 @@
                   AutoGenerateColumns="False" 
                   IsReadOnly="True"
                   SelectionMode="Single"
-                  SelectionChanged="DgEmployees_SelectionChanged"
                   RowHeight="23"
                   CanUserResizeRows="False">
             <DataGrid.Columns>
@@ -224,21 +165,5 @@
                 </DataGridTextColumn>
             </DataGrid.Columns>
         </DataGrid>
-        <StackPanel x:Name="stcClear" Grid.Row="2" Grid.Column="3" 
-            Orientation="Horizontal" 
-            HorizontalAlignment="Right" 
-            Margin="0,-39,10,0" MouseDown="BtnClear_Click"
-            ToolTip="Clear Form"
-            Cursor="Hand">
-            
-            <Label FontFamily="../../icons/#Font Awesome 6 Free Solid"
-                   Content="&#xf1f8;"
-                   Foreground="#FF565656"
-                   FontSize="15"/>
-            <TextBlock Text="Clear Form" 
-                       VerticalAlignment="Center" 
-                       Foreground="#FF565656" 
-                       Margin="0,-7,0,5"/>
-        </StackPanel>
     </Grid>
 </UserControl>

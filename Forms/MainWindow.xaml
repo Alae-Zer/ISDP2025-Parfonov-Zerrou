@@ -9,11 +9,12 @@
         Background="#F7F7F7" Loaded="Window_Loaded" Closing="Window_Closing" Icon="/Forms/bullseye.png">
     <Grid>
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="933*"/>
+            <ColumnDefinition Width="67*"/>
+            <ColumnDefinition Width="866*"/>
             <ColumnDefinition Width="67*"/>
         </Grid.ColumnDefinitions>
         <!-- Centered Content -->
-        <Grid HorizontalAlignment="Left" VerticalAlignment="Top" Margin="300,219,0,0">
+        <Grid HorizontalAlignment="Center" VerticalAlignment="Top" Margin="0,219,0,0" Grid.Column="1">
             <!-- Logo and Title -->
             <StackPanel HorizontalAlignment="Center" VerticalAlignment="Top" Margin="0,-146,0,0">
                 <Image Source="/bullseye.png" Width="100" Height="100" />

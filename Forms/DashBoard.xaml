@@ -231,7 +231,7 @@
                    Height="300" 
                    Margin="0,0,0,20"/>
                             <TextBlock Text="Welcome to Bullseye WMS" 
-                      FontSize="48"
+                      FontSize="44"
                       FontWeight="Bold"
                       HorizontalAlignment="Center"
                       VerticalAlignment="Center"

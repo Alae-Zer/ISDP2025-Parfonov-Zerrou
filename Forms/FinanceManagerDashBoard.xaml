@@ -5,13 +5,12 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
         mc:Ignorable="av" 
         x:Class="ISDP2025_Parfonov_Zerrou.FinanceManagerDashBoard"
-        Title="ADMIN - Bullseye IMS"
+        Title="Finance Manager - Bullseye IMS"
         Width="1200" Height="800"
         Background="#F7F7F7"
         WindowStartupLocation="CenterScreen"
         MinWidth="1200" MinHeight="800" 
-        Icon="/Forms/bullseye.png">
-        MinWidth="1200" MinHeight="800" Closing="Window_Closing">
+        Icon="/Forms/bullseye.png" Closing="Window_Closing">
 
     <!-- Resources -->
     <Window.Resources>
@@ -187,11 +186,11 @@
 
                 <!-- Footer -->
                 <DockPanel LastChildFill="True" Margin="10" VerticalAlignment="Stretch">
-                    <StackPanel DockPanel.Dock="Bottom" Margin="0,20,0,0">
+                    <StackPanel DockPanel.Dock="Bottom" Margin="0,10,0,0">
                         <!-- User Label -->
                         <TextBlock x:Name="txtLoggedUser" Text="Logged in as: [Current User]" Foreground="White" FontSize="14" 
                                 HorizontalAlignment="Center" Margin="0,0,0,5" />
-                        <TextBlock x:Name="txtUserRole" Text="Your Permission is:" Foreground="White" FontSize="14" 
+                        <TextBlock x:Name="txtUserRole" Text="Your Permission is:&#x0a;Finanace Manager" Foreground="White" FontSize="14" 
                                 HorizontalAlignment="Center" Margin="0,0,0,10" />
 
                         <!-- Logout Button -->
@@ -231,7 +230,7 @@
                    Height="300" 
                    Margin="0,0,0,20"/>
                             <TextBlock Text="Welcome to Bullseye WMS" 
-                      FontSize="48"
+                      FontSize="44"
                       FontWeight="Bold"
                       HorizontalAlignment="Center"
                       VerticalAlignment="Center"

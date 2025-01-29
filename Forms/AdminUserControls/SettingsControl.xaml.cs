@@ -16,10 +16,16 @@ namespace ISDP2025_Parfonov_Zerrou.Forms.AdminUserControls
     public partial class SettingsControl : UserControl
     {
         BestContext context = new BestContext();
+        Setting setting;
         public SettingsControl()
         {
             InitializeComponent();
-
+            Reset();
+        }
+        private void Reset()
+        {
+            setting = context.Settings.FirstOrDefault(s => s.SettingType == "global");
+            txtLogoutMinutes.Text = setting.LogoutTimeMinutes.ToString();
         }
 
         private void btnClear_Click(object sender, RoutedEventArgs e)
@@ -29,7 +35,7 @@ namespace ISDP2025_Parfonov_Zerrou.Forms.AdminUserControls
 
         private void btnSave_Click(object sender, RoutedEventArgs e)
         {
-            Setting setting;
+
             var result = MessageBox.Show("Are you sure you want to update the Auto Logout time?",
                 "Confirm Delete", MessageBoxButton.YesNo, MessageBoxImage.Question);
 
@@ -39,11 +45,12 @@ namespace ISDP2025_Parfonov_Zerrou.Forms.AdminUserControls
                 {
                     context.Sites.Load();
                     // Updated to match the exact column names from the database schema
-                    setting = context.Settings.FirstOrDefault(s => s.SettingType == "global");
+
 
                     setting.LogoutTimeMinutes = int.Parse(txtLogoutMinutes.Text);
                     context.SaveChanges();
                     MessageBox.Show("The time got changed succesefuly", "Success", MessageBoxButton.OK, MessageBoxImage.Information);
+                    Reset();
                 }
                 catch (Exception ex)
                 {

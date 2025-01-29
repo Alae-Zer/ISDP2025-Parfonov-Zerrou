@@ -62,19 +62,19 @@ namespace ISDP2025_Parfonov_Zerrou
 
         private void btnEmployee_Click(object sender, RoutedEventArgs e)
         {
-            MainContent.Content = new AdminEmployeesControl();
-        }
-
-        private void Window_Closed(object sender, EventArgs e)
-        {
-            logoutManager.Cleanup();
-            context.Dispose();
-            new MainWindow().Show();
+            MainContent.Content = new ViewEmployeesControl();
         }
 
         private void btnLogout_Click(object sender, RoutedEventArgs e)
         {
             this.Close();
+        }
+
+        private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
+        {
+            logoutManager.Cleanup();
+            context.Dispose();
+            new MainWindow().Show();
         }
     }
 }

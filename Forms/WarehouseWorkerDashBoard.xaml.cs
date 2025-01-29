@@ -1,9 +1,8 @@
-﻿using ISDP2025_Parfonov_Zerrou.Models;
-using Microsoft.EntityFrameworkCore;
-using System.Windows;
+﻿using System.Windows;
 using ISDP2025_Parfonov_Zerrou.Forms.AdminUserControls;
 using ISDP2025_Parfonov_Zerrou.Functionality;
 using ISDP2025_Parfonov_Zerrou.Models;
+using Microsoft.EntityFrameworkCore;
 
 namespace ISDP2025_Parfonov_Zerrou
 {
@@ -49,7 +48,7 @@ namespace ISDP2025_Parfonov_Zerrou
 
         private void btnEmployee_Click(object sender, RoutedEventArgs e)
         {
-            MainContent.Content = new AdminEmployeesControl();
+            MainContent.Content = new ViewEmployeesControl();
         }
 
         private void btnLogout_Click(object sender, RoutedEventArgs e)

@@ -1,7 +1,7 @@
-﻿using ISDP2025_Parfonov_Zerrou.Models;
-using Microsoft.EntityFrameworkCore;
-using System.Windows;
+﻿using System.Windows;
 using System.Windows.Controls;
+using ISDP2025_Parfonov_Zerrou.Models;
+using Microsoft.EntityFrameworkCore;
 
 //ISDP Project
 //Mohammed Alae-Zerrou, Serhii Parfonov
@@ -62,6 +62,8 @@ namespace ISDP2025_Parfonov_Zerrou.Forms.AdminUserControls
                 {
                     permissionsList.Add(dbPermission);
                 }
+                permissionsList.RemoveAt(5);
+                permissionsList.RemoveAt(6);
 
             }
             catch (Exception ex)
@@ -167,6 +169,7 @@ namespace ISDP2025_Parfonov_Zerrou.Forms.AdminUserControls
                     dgvCurrentPermissions.ItemsSource = permissions;
                     cmbAvailablePermissions.ItemsSource = permissionsList;
                     cmbAvailablePermissions.DisplayMemberPath = "PermissionLevel";
+
                 }
                 else
                 {

@@ -1,9 +1,8 @@
-﻿using ISDP2025_Parfonov_Zerrou.Models;
-using Microsoft.EntityFrameworkCore;
-using System.Windows;
+﻿using System.Windows;
 using ISDP2025_Parfonov_Zerrou.Forms.AdminUserControls;
 using ISDP2025_Parfonov_Zerrou.Functionality;
 using ISDP2025_Parfonov_Zerrou.Models;
+using Microsoft.EntityFrameworkCore;
 
 //ISDP Project
 //Mohammed Alae-Zerrou, Serhii Parfonov
@@ -17,7 +16,7 @@ namespace ISDP2025_Parfonov_Zerrou
         BestContext context = new BestContext();
         Employee employee;
         private LogoutManager logoutManager;
-        public RegionalManagerDashboard()
+        public RegionalManagerDashBoard()
         {
             InitializeComponent();
         }
@@ -54,7 +53,7 @@ namespace ISDP2025_Parfonov_Zerrou
 
         private void btnEmployee_Click(object sender, RoutedEventArgs e)
         {
-            MainContent.Content = new AdminEmployeesControl();
+            MainContent.Content = new ViewEmployeesControl();
         }
 
         private void btnLogout_Click(object sender, RoutedEventArgs e)

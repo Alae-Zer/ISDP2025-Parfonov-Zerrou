@@ -53,38 +53,38 @@
         </Style>
 
         <Style x:Key="ImageWithZoom" TargetType="Image">
-    <Setter Property="RenderTransformOrigin" Value="0.5,0.5"/>
-    <Setter Property="RenderTransform">
-        <Setter.Value>
-            <ScaleTransform ScaleX="1" ScaleY="1"/>
-        </Setter.Value>
-    </Setter>
-    <Style.Triggers>
-        <Trigger Property="IsMouseOver" Value="True">
-            <Trigger.EnterActions>
-                <BeginStoryboard>
-                    <Storyboard>
-                        <DoubleAnimation Storyboard.TargetProperty="RenderTransform.ScaleX"
-                                       To="1.25" Duration="0:0:0.1"/>
-                        <DoubleAnimation Storyboard.TargetProperty="RenderTransform.ScaleY"
-                                       To="1.25" Duration="0:0:0.1"/>
-                    </Storyboard>
-                </BeginStoryboard>
-            </Trigger.EnterActions>
-            <Trigger.ExitActions>
-                <BeginStoryboard>
-                    <Storyboard>
-                        <DoubleAnimation Storyboard.TargetProperty="RenderTransform.ScaleX"
-                                       To="1" Duration="0:0:0.1"/>
-                        <DoubleAnimation Storyboard.TargetProperty="RenderTransform.ScaleY"
-                                       To="1" Duration="0:0:0.1"/>
-                    </Storyboard>
-                </BeginStoryboard>
-            </Trigger.ExitActions>
-            <Setter Property="Cursor" Value="Hand"/>
-        </Trigger>
-    </Style.Triggers>
-</Style>
+            <Setter Property="RenderTransformOrigin" Value="0.5,0.5"/>
+            <Setter Property="RenderTransform">
+                <Setter.Value>
+                    <ScaleTransform ScaleX="1" ScaleY="1"/>
+                </Setter.Value>
+            </Setter>
+            <Style.Triggers>
+                <Trigger Property="IsMouseOver" Value="True">
+                    <Trigger.EnterActions>
+                        <BeginStoryboard>
+                            <Storyboard>
+                                <DoubleAnimation Storyboard.TargetProperty="RenderTransform.ScaleX"
+                                           To="1.25" Duration="0:0:0.1"/>
+                                <DoubleAnimation Storyboard.TargetProperty="RenderTransform.ScaleY"
+                                           To="1.25" Duration="0:0:0.1"/>
+                            </Storyboard>
+                        </BeginStoryboard>
+                    </Trigger.EnterActions>
+                    <Trigger.ExitActions>
+                        <BeginStoryboard>
+                            <Storyboard>
+                                <DoubleAnimation Storyboard.TargetProperty="RenderTransform.ScaleX"
+                                           To="1" Duration="0:0:0.1"/>
+                                <DoubleAnimation Storyboard.TargetProperty="RenderTransform.ScaleY"
+                                           To="1" Duration="0:0:0.1"/>
+                            </Storyboard>
+                        </BeginStoryboard>
+                    </Trigger.ExitActions>
+                    <Setter Property="Cursor" Value="Hand"/>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
     </UserControl.Resources>
 
     <Grid Background="White" Margin="10">
@@ -149,6 +149,7 @@
                                 <RowDefinition Height="Auto"/>
                                 <RowDefinition Height="Auto"/>
                                 <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
                             </Grid.RowDefinitions>
 
                             <!-- Row 0 -->
@@ -184,6 +185,29 @@
                             <TextBox x:Name="txtNotes" Grid.Row="5" Grid.Column="1" 
                                     Grid.ColumnSpan="3" Margin="5" TextWrapping="Wrap" 
                                     AcceptsReturn="True" Height="60" Cursor="Pen" ToolTip="Enter Notes Here"/>
+
+                            <!-- Row 6 -->
+                            <Label Content="Active:" Grid.Row="6" Grid.Column="0"/>
+                            <CheckBox x:Name="chkActive" 
+                                    Grid.Row="6" 
+                                    Grid.Column="1" 
+                                    VerticalAlignment="Center" 
+                                    HorizontalAlignment="Left"
+                                    Margin="5" 
+                                    IsEnabled="False" 
+                                    Cursor="Hand" 
+                                    Unchecked="ChkActive_Unchecked"
+                                    ToolTip="Toggle Item Active Status" >
+                                <CheckBox.Style>
+                                    <Style TargetType="CheckBox">
+                                        <Style.Triggers>
+                                            <Trigger Property="IsEnabled" Value="True">
+                                                <Setter Property="Cursor" Value="Hand"/>
+                                            </Trigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </CheckBox.Style>
+                            </CheckBox>
                         </Grid>
                     </GroupBox>
                 </StackPanel>
@@ -258,6 +282,7 @@
                     <DataGridTextColumn Header="Item Name" Binding="{Binding ItemName}" Width="*"/>
                     <DataGridTextColumn Header="Category" Binding="{Binding Category}" Width="100"/>
                     <DataGridTextColumn Header="Supplier" Binding="{Binding SupplierName}" Width="120"/>
+                    <DataGridTextColumn Header="Active" Binding="{Binding Active}" Width="70"/>
                 </DataGrid.Columns>
             </DataGrid>
         </Grid>

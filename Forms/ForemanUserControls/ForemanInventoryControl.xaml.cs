@@ -1,9 +1,9 @@
-﻿using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Media.Imaging;
-using ISDP2025_Parfonov_Zerrou.Models;
+﻿using ISDP2025_Parfonov_Zerrou.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Win32;
+using System.Windows;
+using System.Windows.Controls;
+using System.Windows.Media.Imaging;
 
 //ISDP Project
 //Mohammed Alae-Zerrou, Serhii Parfonov
@@ -18,7 +18,7 @@ namespace ISDP2025_Parfonov_Zerrou.Forms.ForemanUserControls
         BestContext context;
         List<string> categoriesList = new List<string>();
         string selectedImagePath;
-        string defaultImagePath = @"C:\Users\School\Desktop\ISPD\ISDP2025-Parfonov-Zerrou\Images\default.png";
+        string defaultImagePath = @"D:\WINTER 2025\ISDP\CODE\Images\default.png";
         BitmapImage defaultImage;
 
         public ForemanInventoryControl()
@@ -145,6 +145,7 @@ namespace ISDP2025_Parfonov_Zerrou.Forms.ForemanUserControls
             //Common Properties
             txtDescription.IsEnabled = enableEditFeatures;
             txtNotes.IsEnabled = enableEditFeatures;
+            chkActive.IsEnabled = enableEditFeatures;
             btnBrowseImage.IsEnabled = enableEditFeatures;
 
             //Make Selection Based On Function Input and Collaps Unnecessary Things
@@ -237,6 +238,7 @@ namespace ISDP2025_Parfonov_Zerrou.Forms.ForemanUserControls
                     lblRetailPrice.Content = selectedItem.RetailPrice.ToString("C");
                     txtDescription.Text = selectedItem.Description;
                     txtNotes.Text = selectedItem.Notes;
+                    chkActive.IsChecked = selectedItem.Active == "Yes";
 
                     //If Location is not set-Try to load the image using the path from the database
                     if (!string.IsNullOrEmpty(selectedItem.ImageLocation))
@@ -287,6 +289,7 @@ namespace ISDP2025_Parfonov_Zerrou.Forms.ForemanUserControls
             lblSupplier.Content = string.Empty;
             lblCaseSize.Content = string.Empty;
             lblRetailPrice.Content = string.Empty;
+            chkActive.IsChecked = false;
             txtDescription.Clear();
             txtNotes.Clear();
             imgProduct.Source = defaultImage;
@@ -329,6 +332,7 @@ namespace ISDP2025_Parfonov_Zerrou.Forms.ForemanUserControls
                         //Assign Values and Save Changes
                         item.Description = txtDescription.Text;
                         item.Notes = txtNotes.Text;
+                        item.Active = (sbyte)(chkActive.IsChecked == true ? 1 : 0);
 
                         //If Image Was Selected
                         if (!string.IsNullOrEmpty(selectedImagePath))
@@ -450,6 +454,23 @@ namespace ISDP2025_Parfonov_Zerrou.Forms.ForemanUserControls
             if (context != null)
             {
                 context.Dispose();
+            }
+        }
+
+        private void ChkActive_Unchecked(object sender, RoutedEventArgs e)
+        {
+            if (chkActive.IsEnabled)
+            {
+                MessageBoxResult result = MessageBox.Show(
+                    "Are you sure you want to make this item inactive?",
+                    "Confirmation Needed",
+                    MessageBoxButton.YesNo,
+                    MessageBoxImage.Question);
+
+                if (result == MessageBoxResult.No)
+                {
+                    chkActive.IsChecked = true;
+                }
             }
         }
     }

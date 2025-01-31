@@ -1,12 +1,12 @@
-﻿using System.Security.Cryptography;
+﻿using ISDP2025_Parfonov_Zerrou.Forms;
+using ISDP2025_Parfonov_Zerrou.Models;
+using Microsoft.EntityFrameworkCore;
+using System.Security.Cryptography;
 using System.Text;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
-using ISDP2025_Parfonov_Zerrou.Forms;
-using ISDP2025_Parfonov_Zerrou.Models;
-using Microsoft.EntityFrameworkCore;
 
 //ISDP Project
 //Mohammed Alae-Zerrou, Serhii Parfonov
@@ -463,10 +463,15 @@ namespace ISDP2025_Parfonov_Zerrou
             bool hasUpper = false;
             bool hasDigit = false;
             bool hasSpecialChar = false;
-            string specialCharacters = "!@#^&_=+<,>.";
+            bool hasRequiredLength = false;
+            string specialCharacters = "!@#^&_-=+<,>.$";
 
             //Assembly Message
             string message = "Your Password must contain:\n";
+            if (inputString.Length >= 8)
+            {
+                hasRequiredLength = true;
+            }
 
             //LOOP Through Input, if single condition is met - Flag Changes 
             foreach (char character in inputString)
@@ -495,6 +500,10 @@ namespace ISDP2025_Parfonov_Zerrou
             }
 
             //Assembly message based on What neeeded to Add
+            if (!hasRequiredLength)
+            {
+                message += "- Minimum Length is 8 characters\n";
+            }
             if (!hasUpper)
             {
                 message += "- At least one uppercase letter\n";
@@ -508,13 +517,13 @@ namespace ISDP2025_Parfonov_Zerrou
                 message += "- At least one special character\n";
             }
 
-            if (!hasUpper || !hasDigit || !hasSpecialChar)
+            if (!hasUpper || !hasDigit || !hasSpecialChar || !hasRequiredLength)
             {
                 MessageBox.Show(message, "Password Validation", MessageBoxButton.OK, MessageBoxImage.Information);
             }
 
             //LOL, found if one of them is false - it will return false
-            return hasUpper && hasDigit && hasSpecialChar;
+            return hasUpper && hasDigit && hasSpecialChar && hasRequiredLength;
         }
 
         //Sends User To The Next Available for Him Form

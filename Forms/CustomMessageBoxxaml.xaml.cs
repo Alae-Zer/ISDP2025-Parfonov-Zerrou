@@ -7,7 +7,7 @@ using System.Windows.Controls;
 //Mohammed Alae-Zerrou, Serhii Parfonov
 //NBCC, Winter 2025
 //Completed By Equal Share of Mohammed and Serhii
-//Last Modified by Serhii on January 26,2025
+//Last Modified by Serhii on February 2,2025
 namespace ISDP2025_Parfonov_Zerrou.Forms
 {
     public partial class CustomMessageBox : Window
@@ -27,6 +27,9 @@ namespace ISDP2025_Parfonov_Zerrou.Forms
             LoadPermissions();
         }
 
+        //Loads Employee Permissions
+        //Sends nothing
+        //Returns Nothing
         private void LoadPermissions()
         {
             try
@@ -68,7 +71,7 @@ namespace ISDP2025_Parfonov_Zerrou.Forms
             {
                 if (dgvPermissions.SelectedItem != null)
                 {
-                    // When an item is selected in DataGrid
+                    //When an item is selected in DataGrid
                     var selected = (dynamic)dgvPermissions.SelectedItem;
                     selectedPositionId = selected.PositionId;
                     btnLogin.Content = $"Login as {selected.PermissionName}";
@@ -76,7 +79,7 @@ namespace ISDP2025_Parfonov_Zerrou.Forms
                 }
                 else
                 {
-                    // When no item is selected (default state)
+                    //When no item is selected (default state)
                     selectedPositionId = defaultPositionId;
                     btnLogin.Content = $"Login as {lblDefaultPermission.Text}";
                     btnCancel.Content = $"Login as {lblDefaultPermission.Text}";
@@ -90,27 +93,35 @@ namespace ISDP2025_Parfonov_Zerrou.Forms
 
         private void btnLogin_Click(object sender, RoutedEventArgs e)
         {
+            //Login
             employee.PositionId = selectedPositionId;
             OpenNextForm();
         }
 
         private void btnCancel_Click(object sender, RoutedEventArgs e)
         {
+            //Login as default
             employee.PositionId = defaultPositionId;
             OpenNextForm();
         }
 
         private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
+            //Close connection on closing
             context.Dispose();
         }
 
+        //Opens next form
+        //
+        //
         private void OpenNextForm()
         {
             try
             {
+                //Initialize new object and assign to null
                 Window nextForm = null;
 
+                //Check employees position ID and assign to the next form
                 switch (employee.PositionId)
                 {
                     case 9999:
@@ -145,6 +156,7 @@ namespace ISDP2025_Parfonov_Zerrou.Forms
                         return;
                 }
 
+                //Jump to the next form
                 if (nextForm != null)
                 {
                     nextForm.Show();
@@ -153,6 +165,7 @@ namespace ISDP2025_Parfonov_Zerrou.Forms
             }
             catch (Exception ex)
             {
+                //If something is wrong- form closes
                 MessageBox.Show("Error opening form: " + ex.Message);
                 this.Close();
             }

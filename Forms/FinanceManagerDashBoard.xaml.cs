@@ -29,6 +29,7 @@ namespace ISDP2025_Parfonov_Zerrou
             logoutManager = new LogoutManager(this, context);
             txtLoggedUser.Text = "Your Username is : " + employee.Username;
             logoutManager.StartTimer();
+            InitializeWindow();
         }
 
         private void InitializeWindow()
@@ -39,7 +40,6 @@ namespace ISDP2025_Parfonov_Zerrou
                 context.Sites.Load();
                 currentSite = context.Sites.FirstOrDefault(s => s.SiteId == employee.SiteId);
                 txtLoggedUser.Text = "Logged in as: " + employee.Username;
-                txtUserRole.Text = "Your Permission is: \nFinance Manager";
                 txtUserLocation.Text = "Current Location: " + (currentSite != null ? currentSite.SiteName : "Unknown");
             }
             catch (Exception ex)

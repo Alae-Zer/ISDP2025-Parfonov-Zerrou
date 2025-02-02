@@ -44,7 +44,7 @@ namespace ISDP2025_Parfonov_Zerrou.Forms.AdminUserControls
         private void LoadInitialData()
         {
             LoadEmployees();
-            cmbSearchCategory.SelectedIndex = 1;
+            cmbSearchCategory.SelectedIndex = 0;
         }
 
 

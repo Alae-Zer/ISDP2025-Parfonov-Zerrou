@@ -81,7 +81,6 @@
             <!-- Search Panel (Left) -->
             <StackPanel Grid.Column="0" Orientation="Horizontal" Margin="16,0,0,0">
                 <ComboBox x:Name="cmbSearchCategory" Width="120" Height="30" Margin="0,0,10,0" SelectionChanged="CmbSearchCategory_SelectionChanged">
-                    <ComboBoxItem Content="Employee ID"/>
                     <ComboBoxItem Content="First Name"/>
                     <ComboBoxItem Content="Last Name"/>
                     <ComboBoxItem Content="Email"/>
@@ -114,13 +113,6 @@
                   RowHeight="23"
                   CanUserResizeRows="False">
             <DataGrid.Columns>
-                <DataGridTextColumn Header="ID" Binding="{Binding EmployeeID}" Width="*" MinWidth="20">
-                    <DataGridTextColumn.ElementStyle>
-                        <Style TargetType="TextBlock">
-                            <Setter Property="Padding" Value="7,0,0,0"/>
-                        </Style>
-                    </DataGridTextColumn.ElementStyle>
-                </DataGridTextColumn>
                 <DataGridTextColumn Header="First Name" Binding="{Binding FirstName}" Width="*" MinWidth="100">
                     <DataGridTextColumn.ElementStyle>
                         <Style TargetType="TextBlock">
@@ -156,13 +148,7 @@
                         </Style>
                     </DataGridTextColumn.ElementStyle>
                 </DataGridTextColumn>
-                <DataGridTextColumn Header="Is active" Binding="{Binding IsActive}" Width="*" MinWidth="20">
-                    <DataGridTextColumn.ElementStyle>
-                        <Style TargetType="TextBlock">
-                            <Setter Property="Padding" Value="7,0,0,0"/>
-                        </Style>
-                    </DataGridTextColumn.ElementStyle>
-                </DataGridTextColumn>
+                
             </DataGrid.Columns>
         </DataGrid>
     </Grid>

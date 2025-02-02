@@ -27,7 +27,7 @@ namespace ISDP2025_Parfonov_Zerrou
             this.employee = employee;
             logoutManager = new LogoutManager(this, context);
             logoutManager.StartTimer();
-            txtLoggedUser.Text = "Your Username is : " + employee.Username;
+            InitializeWindow();
         }
 
         private void InitializeWindow()
@@ -38,7 +38,6 @@ namespace ISDP2025_Parfonov_Zerrou
                 context.Sites.Load();
                 currentSite = context.Sites.FirstOrDefault(s => s.SiteId == employee.SiteId);
                 txtLoggedUser.Text = "Logged in as: " + employee.Username;
-                txtUserRole.Text = "Your Permission is: \nStore Manager";
                 txtUserLocation.Text = "Current Location: " + (currentSite != null ? currentSite.SiteName : "Unknown");
             }
             catch (Exception ex)

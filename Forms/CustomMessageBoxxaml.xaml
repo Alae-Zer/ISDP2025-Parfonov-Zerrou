@@ -11,7 +11,7 @@
       WindowStartupLocation="CenterScreen"
       ResizeMode="NoResize"
       WindowStyle="ToolWindow" 
-      Closing="Window_Closing">
+      Closing="Window_Closing" Icon="/Forms/bullseye.png">
     <Window.Resources>
         <Style x:Key="RoundedButton" TargetType="Button">
             <Setter Property="Template">

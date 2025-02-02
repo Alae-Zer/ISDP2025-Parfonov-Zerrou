@@ -1,12 +1,12 @@
-﻿using ISDP2025_Parfonov_Zerrou.Forms;
-using ISDP2025_Parfonov_Zerrou.Models;
-using Microsoft.EntityFrameworkCore;
-using System.Security.Cryptography;
+﻿using System.Security.Cryptography;
 using System.Text;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
+using ISDP2025_Parfonov_Zerrou.Forms;
+using ISDP2025_Parfonov_Zerrou.Models;
+using Microsoft.EntityFrameworkCore;
 
 //ISDP Project
 //Mohammed Alae-Zerrou, Serhii Parfonov
@@ -77,7 +77,7 @@ namespace ISDP2025_Parfonov_Zerrou
 
             if (employee.Username == txtUserName.Text)
             {
-                if (employee.Locked != 1)
+                if (employee.Locked != 1 && employee.Active != 0)
                 {
                     ShowPasswordResetForm("Forgot Your Password? No Problem!");
                 }

@@ -1,9 +1,10 @@
-﻿using ISDP2025_Parfonov_Zerrou.Models;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.Win32;
+﻿using System.IO;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media.Imaging;
+using ISDP2025_Parfonov_Zerrou.Models;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Win32;
 
 //ISDP Project
 //Mohammed Alae-Zerrou, Serhii Parfonov
@@ -18,12 +19,21 @@ namespace ISDP2025_Parfonov_Zerrou.Forms.ForemanUserControls
         BestContext context;
         List<string> categoriesList = new List<string>();
         string selectedImagePath;
-        string defaultImagePath = @"D:\WINTER 2025\ISDP\CODE\Images\default.png";
+
+        string imagePath;
+        string fullPath;
+
         BitmapImage defaultImage;
 
         public ForemanInventoryControl()
         {
             //Load Defaults
+            imagePath = Path.Combine(
+            AppDomain.CurrentDomain.BaseDirectory,
+            @"..\..\..\Images\default.png"
+        );
+            fullPath = Path.GetFullPath(imagePath);
+
             InitializeComponent();
             context = new BestContext();
             LoadCategoriesToList();
@@ -81,7 +91,7 @@ namespace ISDP2025_Parfonov_Zerrou.Forms.ForemanUserControls
                 //Create and Initialize BitMap Object
                 defaultImage = new BitmapImage();
                 defaultImage.BeginInit();
-                defaultImage.UriSource = new Uri(defaultImagePath);
+                defaultImage.UriSource = new Uri(fullPath);
                 defaultImage.CacheOption = BitmapCacheOption.OnLoad;
                 defaultImage.EndInit();
                 //Set Control To The Loaded Object

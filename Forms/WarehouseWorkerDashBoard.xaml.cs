@@ -33,7 +33,6 @@ namespace ISDP2025_Parfonov_Zerrou
                 context.Sites.Load();
                 currentSite = context.Sites.FirstOrDefault(s => s.SiteId == employee.SiteId);
                 txtLoggedUser.Text = "Logged in as: " + employee.Username;
-                txtUserRole.Text = "Your Permission is: \nWarehouse Worker";
                 txtUserLocation.Text = "Current Location: " + (currentSite != null ? currentSite.SiteName : "Unknown");
             }
             catch (Exception ex)

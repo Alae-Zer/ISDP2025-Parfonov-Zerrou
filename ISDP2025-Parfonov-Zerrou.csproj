@@ -10,14 +10,14 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <None Remove="bullseye.jpg" />
-    <None Remove="bullseye.png" />
     <None Remove="Forms\bullseye - Copy.png" />
     <None Remove="Forms\bullseye.ico" />
     <None Remove="Forms\bullseye.png" />
     <None Remove="icons\Font Awesome 6 Brands-Regular-400.otf" />
     <None Remove="icons\Font Awesome 6 Free-Regular-400.otf" />
     <None Remove="icons\Font Awesome 6 Free-Solid-900.otf" />
+    <None Remove="Images\bullseye - Copy.png" />
+    <None Remove="Images\bullseye.png" />
   </ItemGroup>
 
   <ItemGroup>
@@ -34,13 +34,9 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Resource Include="bullseye.jpg" />
-    <Resource Include="bullseye.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Resource>
-    <Resource Include="Forms\bullseye - Copy.png" />
-    <Resource Include="Forms\bullseye.ico" />
     <Resource Include="Forms\bullseye.png" />
+    <Resource Include="Images\bullseye - Copy.png" />
+    <Resource Include="Images\bullseye.ico" />
     <Resource Include="icons\Font Awesome 6 Brands-Regular-400.otf">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Resource>
@@ -50,6 +46,7 @@
     <Resource Include="icons\Font Awesome 6 Free-Solid-900.otf">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Resource>
+    <Resource Include="Images\bullseye.png" />
   </ItemGroup>
 
   <ItemGroup>
@@ -59,10 +56,6 @@
     <Compile Update="Forms\UserControls\ViewEmployeesControl.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="Images\" />
   </ItemGroup>
 
 </Project>

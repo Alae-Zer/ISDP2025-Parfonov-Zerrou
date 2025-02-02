@@ -123,7 +123,7 @@ namespace ISDP2025_Parfonov_Zerrou.Forms.AdminUserControls
                 {
                     if (txtEmployeeID.Text == "")
                     {
-                        var result = MessageBox.Show("Are you sure you want to update this employee?",
+                        var result = MessageBox.Show("Are you sure you want to add this employee?",
                 "Confirm Delete", MessageBoxButton.YesNo, MessageBoxImage.Question);
 
                         if (result == MessageBoxResult.Yes)
@@ -134,6 +134,7 @@ namespace ISDP2025_Parfonov_Zerrou.Forms.AdminUserControls
                                 LastName = txtLastName.Text,
                                 Email = txtEmail.Text,
                                 Username = txtUsername.Text,
+                                Password = "P@ssw0rd-",
                                 PositionId = (int)cmbPosition.SelectedValue,
                                 SiteId = (int)cmbLocation.SelectedValue,
                                 Active = chkActive.IsChecked == true ? (sbyte)1 : (sbyte)0,

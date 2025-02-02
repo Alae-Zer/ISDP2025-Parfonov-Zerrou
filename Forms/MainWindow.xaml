@@ -17,7 +17,7 @@
         <Grid HorizontalAlignment="Center" VerticalAlignment="Top" Margin="0,219,0,0" Grid.Column="1">
             <!-- Logo and Title -->
             <StackPanel HorizontalAlignment="Center" VerticalAlignment="Top" Margin="0,-146,0,0">
-                <Image Source="/bullseye.png" Width="100" Height="100" />
+                <Image Source="/Forms/bullseye.png" Width="100" Height="100" />
                 <TextBlock Text="Bullseye IMS" FontSize="24" FontWeight="Bold" 
                            HorizontalAlignment="Center" Foreground="#444" />
             </StackPanel>

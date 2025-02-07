@@ -5,9 +5,11 @@ using Microsoft.EntityFrameworkCore;
 
 namespace ISDP2025_Parfonov_Zerrou.Forms.AdminUserControls
 {
-    /// <summary>
-    /// Interaction logic for EmployeesControl.xaml
-    /// </summary>
+    //ISDP Project
+    //Mohammed Alae-Zerrou, Serhii Parfonov
+    //NBCC, Winter 2025
+    //Completed By Mohammed with some changes from serhii
+    //Last Modified by Mohammed on Feb 02,2025
     public partial class AdminEmployeesControl : UserControl
     {
         MainWindow mainWindow = new MainWindow();
@@ -124,7 +126,7 @@ namespace ISDP2025_Parfonov_Zerrou.Forms.AdminUserControls
                     if (txtEmployeeID.Text == "")
                     {
                         var result = MessageBox.Show("Are you sure you want to add this employee?",
-                "Confirm Delete", MessageBoxButton.YesNo, MessageBoxImage.Question);
+                        "Confirm Delete", MessageBoxButton.YesNo, MessageBoxImage.Question);
 
                         if (result == MessageBoxResult.Yes)
                         {
@@ -189,32 +191,39 @@ namespace ISDP2025_Parfonov_Zerrou.Forms.AdminUserControls
 
             if (result == MessageBoxResult.Yes)
             {
-                try
+                if (CheckAllInputs())
                 {
-                    int employeeId = int.Parse(txtEmployeeID.Text);
-                    var selectedEmployee = context.Employees.Find(employeeId);
-
-                    if (selectedEmployee == null)
+                    try
                     {
-                        MessageBox.Show("Employee not found.");
-                        return;
-                    }
-                    selectedEmployee.FirstName = txtFirstName.Text;
-                    selectedEmployee.LastName = txtLastName.Text;
-                    selectedEmployee.Email = txtEmail.Text;
-                    selectedEmployee.PositionId = (int)cmbPosition.SelectedValue;
-                    selectedEmployee.SiteId = (int)cmbLocation.SelectedValue;
-                    selectedEmployee.Active = chkActive.IsChecked == true ? (sbyte)1 : (sbyte)0;
-                    selectedEmployee.Locked = chkLocked.IsChecked == true ? (sbyte)1 : (sbyte)0;
+                        int employeeId = int.Parse(txtEmployeeID.Text);
+                        var selectedEmployee = context.Employees.Find(employeeId);
 
-                    context.SaveChanges();
-                    LoadEmployees();
-                    MessageBox.Show("Employee updated successfully!");
-                    ClearForm();
+                        if (selectedEmployee == null)
+                        {
+                            MessageBox.Show("Employee not found.");
+                            return;
+                        }
+                        selectedEmployee.FirstName = txtFirstName.Text;
+                        selectedEmployee.LastName = txtLastName.Text;
+                        selectedEmployee.Email = txtEmail.Text;
+                        selectedEmployee.PositionId = (int)cmbPosition.SelectedValue;
+                        selectedEmployee.SiteId = (int)cmbLocation.SelectedValue;
+                        selectedEmployee.Active = chkActive.IsChecked == true ? (sbyte)1 : (sbyte)0;
+                        selectedEmployee.Locked = chkLocked.IsChecked == true ? (sbyte)1 : (sbyte)0;
+
+                        context.SaveChanges();
+                        LoadEmployees();
+                        MessageBox.Show("Employee updated successfully!");
+                        ClearForm();
+                    }
+                    catch (Exception ex)
+                    {
+                        MessageBox.Show($"Error updating employee: {ex.Message}");
+                    }
                 }
-                catch (Exception ex)
+                else
                 {
-                    MessageBox.Show($"Error updating employee: {ex.Message}");
+                    MessageBox.Show("Please Fill all the fields.", "Warning", MessageBoxButton.OK, MessageBoxImage.Warning);
                 }
             }
 

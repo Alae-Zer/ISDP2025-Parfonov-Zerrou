@@ -2,9 +2,11 @@
 
 namespace ISDP2025_Parfonov_Zerrou
 {
-    /// <summary>
-    /// Interaction logic for AdminDashBoard.xaml
-    /// </summary>
+    //ISDP Project
+    //Mohammed Alae-Zerrou, Serhii Parfonov
+    //NBCC, Winter 2025
+    //Completed By Mohammed with some changes from serhii
+    //Last Modified by Mohammed on Jan 28,2025
     public partial class DashBoard : Window
     {
         public DashBoard()

@@ -2,8 +2,16 @@
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:local="clr-namespace:ISDP2025_Parfonov_Zerrou"
-             xmlns:ui="http://schemas.modernwpf.com/2019"
-             StartupUri="/Forms/AdminDashBoard.xaml">
+             xmlns:hc="https://handyorg.github.io/handycontrol"
+             StartupUri="/Forms/MainWindow.xaml">
     <Application.Resources>
-    </Application.Resources>
+            <ResourceDictionary>
+                <ResourceDictionary.MergedDictionaries>
+                    <hc:ThemeResources/>
+             	    <hc:Theme/>
+                    <!-- Other merged dictionaries here -->
+                </ResourceDictionary.MergedDictionaries>
+                <!-- Other app resources here -->
+            </ResourceDictionary>
+        </Application.Resources>
 </Application>

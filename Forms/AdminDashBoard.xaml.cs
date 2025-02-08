@@ -65,7 +65,7 @@ namespace ISDP2025_Parfonov_Zerrou
 
         private void btnLocations_Click(object sender, RoutedEventArgs e)
         {
-
+            MainContent.Content = new LocationControl();
         }
 
         private void btnInventory_Click(object sender, RoutedEventArgs e)
@@ -103,7 +103,7 @@ namespace ISDP2025_Parfonov_Zerrou
 
         private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
-            logoutManager.Cleanup();
+            //logoutManager.Cleanup();
             context.Dispose();
             new MainWindow().Show();
         }

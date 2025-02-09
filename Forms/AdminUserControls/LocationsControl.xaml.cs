@@ -1,4 +1,5 @@
-﻿using ISDP2025_Parfonov_Zerrou.Models;
+﻿using ISDP2025_Parfonov_Zerrou.Functionality;
+using ISDP2025_Parfonov_Zerrou.Models;
 using Microsoft.EntityFrameworkCore;
 using System.Windows;
 using System.Windows.Controls;
@@ -28,9 +29,9 @@ namespace ISDP2025_Parfonov_Zerrou.Forms.AdminUserControls
                     .ToList();
 
                 var searchProvinces = new List<Province>
-                {
-                    new Province { ProvinceId = "-1", ProvinceName = "All Provinces" }
-                };
+               {
+                   new Province { ProvinceId = "-1", ProvinceName = "All Provinces" }
+               };
                 searchProvinces.AddRange(provinces);
 
                 cmbSearchProvince.ItemsSource = searchProvinces;
@@ -67,8 +68,8 @@ namespace ISDP2025_Parfonov_Zerrou.Forms.AdminUserControls
                         s.ProvinceId,
                         ProvinceName = s.Province.ProvinceName,
                         s.Country,
-                        s.PostalCode,
-                        s.Phone,
+                        PostalCode = ValidatorsFormatters.FormatPostalCode(s.PostalCode),
+                        Phone = ValidatorsFormatters.FormatPhoneNumber(s.Phone),
                         s.DayOfWeek,
                         s.DistanceFromWh,
                         s.Notes,
@@ -131,8 +132,8 @@ namespace ISDP2025_Parfonov_Zerrou.Forms.AdminUserControls
                         s.ProvinceId,
                         ProvinceName = s.Province.ProvinceName,
                         s.Country,
-                        s.PostalCode,
-                        s.Phone,
+                        PostalCode = ValidatorsFormatters.FormatPostalCode(s.PostalCode),
+                        Phone = ValidatorsFormatters.FormatPhoneNumber(s.Phone),
                         s.DayOfWeek,
                         s.DistanceFromWh,
                         s.Notes,
@@ -171,28 +172,15 @@ namespace ISDP2025_Parfonov_Zerrou.Forms.AdminUserControls
 
         private void UpdateAddButtonState()
         {
-            if (dgvLocations.ItemsSource != null)
-            {
-                int count = ((System.Collections.IEnumerable)dgvLocations.ItemsSource).Cast<object>().Count();
-                btnAdd.IsEnabled = count > 0;
-            }
-            else
-            {
-                btnAdd.IsEnabled = false;
-            }
+            var items = dgvLocations.ItemsSource as IEnumerable<object>;
+            btnAdd.IsEnabled = items?.Any() == true;
         }
 
         private void UpdateRecordCount()
         {
-            if (dgvLocations.ItemsSource != null)
-            {
-                int count = ((System.Collections.IEnumerable)dgvLocations.ItemsSource).Cast<object>().Count();
-                lblRecordCount.Text = $"Total Records: {count}";
-            }
-            else
-            {
-                lblRecordCount.Text = "Total Records: 0";
-            }
+            var items = dgvLocations.ItemsSource as IEnumerable<object>;
+            int count = items?.Count() ?? 0;
+            lblRecordCount.Text = $"Total Records: {count}";
         }
 
         private void ClearInputs()
@@ -200,7 +188,6 @@ namespace ISDP2025_Parfonov_Zerrou.Forms.AdminUserControls
             lblSiteId.Content = string.Empty;
             txtSiteName.Clear();
             txtAddress.Clear();
-            chkActive.IsChecked = false;
             txtAddress2.Clear();
             txtCity.Clear();
             cmbProvince.SelectedIndex = -1;
@@ -229,7 +216,30 @@ namespace ISDP2025_Parfonov_Zerrou.Forms.AdminUserControls
                 return false;
             }
 
-            if (distance < 0)
+            if (!ValidatorsFormatters.IsValidName(txtSiteName.Text))
+            {
+                MessageBox.Show("Please enter a valid site name.",
+                    "Validation Error", MessageBoxButton.OK, MessageBoxImage.Warning);
+                return false;
+            }
+
+            string cleanPostalCode = ValidatorsFormatters.CleanPostalCode(txtPostalCode.Text);
+            if (!ValidatorsFormatters.IsValidPostalCode(cleanPostalCode))
+            {
+                MessageBox.Show("Please enter a valid postal code (A1A 1A1 format).",
+                    "Validation Error", MessageBoxButton.OK, MessageBoxImage.Warning);
+                return false;
+            }
+
+            string cleanPhone = ValidatorsFormatters.CleanPhoneNumber(txtPhone.Text);
+            if (!ValidatorsFormatters.IsValidPhoneNumber(cleanPhone))
+            {
+                MessageBox.Show("Please enter a valid 10-digit phone number.",
+                    "Validation Error", MessageBoxButton.OK, MessageBoxImage.Warning);
+                return false;
+            }
+
+            if (!ValidatorsFormatters.IsValidInteger(txtDistanceFromWH.Text, 0))
             {
                 MessageBox.Show("Distance must be a positive number.",
                     "Validation Error", MessageBoxButton.OK, MessageBoxImage.Warning);
@@ -239,16 +249,14 @@ namespace ISDP2025_Parfonov_Zerrou.Forms.AdminUserControls
             return true;
         }
 
-        private Site previousSelection = null;
-
         private void SaveChanges()
         {
             try
             {
                 if (!ValidateInputs()) return;
 
-                int savedSiteId;
-                Site savedSite;
+                string cleanPostalCode = ValidatorsFormatters.CleanPostalCode(txtPostalCode.Text);
+                string cleanPhone = ValidatorsFormatters.CleanPhoneNumber(txtPhone.Text);
 
                 if (string.IsNullOrEmpty(lblSiteId.Content?.ToString()))
                 {
@@ -260,22 +268,19 @@ namespace ISDP2025_Parfonov_Zerrou.Forms.AdminUserControls
                         City = txtCity.Text,
                         ProvinceId = cmbProvince.SelectedValue.ToString(),
                         Country = txtCountry.Text,
-                        PostalCode = txtPostalCode.Text,
-                        Phone = txtPhone.Text,
+                        PostalCode = cleanPostalCode,
+                        Phone = cleanPhone,
                         DayOfWeek = txtDayOfWeek.Text,
                         DistanceFromWh = int.Parse(txtDistanceFromWH.Text),
                         Notes = txtNotes.Text,
                         Active = (sbyte)(chkActive.IsChecked == true ? 1 : 0)
                     };
                     context.Sites.Add(site);
-                    context.SaveChanges();
-                    savedSiteId = site.SiteId;
-                    savedSite = site;
                 }
                 else
                 {
-                    savedSiteId = int.Parse(lblSiteId.Content.ToString());
-                    var site = context.Sites.Find(savedSiteId);
+                    int siteId = int.Parse(lblSiteId.Content.ToString());
+                    var site = context.Sites.Find(siteId);
                     if (site != null)
                     {
                         site.SiteName = txtSiteName.Text;
@@ -284,39 +289,23 @@ namespace ISDP2025_Parfonov_Zerrou.Forms.AdminUserControls
                         site.City = txtCity.Text;
                         site.ProvinceId = cmbProvince.SelectedValue.ToString();
                         site.Country = txtCountry.Text;
-                        site.PostalCode = txtPostalCode.Text;
-                        site.Phone = txtPhone.Text;
+                        site.PostalCode = cleanPostalCode;
+                        site.Phone = cleanPhone;
                         site.DayOfWeek = txtDayOfWeek.Text;
                         site.DistanceFromWh = int.Parse(txtDistanceFromWH.Text);
                         site.Notes = txtNotes.Text;
                         site.Active = (sbyte)(chkActive.IsChecked == true ? 1 : 0);
-                        savedSite = site;
                     }
                     else
                     {
                         throw new Exception("Site not found");
                     }
-                    context.SaveChanges();
                 }
 
-                // Store the current selection before reloading
-                previousSelection = savedSite;
-
+                context.SaveChanges();
                 LoadLocations();
-
-                // Select the saved item
-                foreach (var item in dgvLocations.Items)
-                {
-                    dynamic locationItem = item;
-                    if (locationItem.SiteId == savedSiteId)
-                    {
-                        dgvLocations.SelectedItem = item;
-                        dgvLocations.ScrollIntoView(item);
-                        break;
-                    }
-                }
-
                 ResetToDefaultState();
+                EnableSearchControls(true);
                 MessageBox.Show("Location saved successfully!", "Success",
                     MessageBoxButton.OK, MessageBoxImage.Information);
             }
@@ -324,23 +313,6 @@ namespace ISDP2025_Parfonov_Zerrou.Forms.AdminUserControls
             {
                 MessageBox.Show($"Error saving location: {ex.Message}", "Error",
                     MessageBoxButton.OK, MessageBoxImage.Error);
-            }
-        }
-
-        private void ChoosePreviousChoice()
-        {
-            if (previousSelection != null)
-            {
-                foreach (var item in dgvLocations.Items)
-                {
-                    dynamic locationItem = item;
-                    if (locationItem.SiteId == previousSelection.SiteId)
-                    {
-                        dgvLocations.SelectedItem = item;
-                        dgvLocations.ScrollIntoView(item);
-                        break;
-                    }
-                }
             }
         }
 
@@ -422,17 +394,16 @@ namespace ISDP2025_Parfonov_Zerrou.Forms.AdminUserControls
             MessageBoxResult result = MessageBox.Show(
                 "Do you want to save the changes?",
                 "Confirm Save",
-                MessageBoxButton.YesNoCancel,
+                MessageBoxButton.YesNo,
                 MessageBoxImage.Question);
 
             if (result == MessageBoxResult.Yes)
             {
                 SaveChanges();
             }
-            else if (result == MessageBoxResult.No)
+            else
             {
                 ResetToDefaultState();
-                ChoosePreviousChoice();
             }
         }
 

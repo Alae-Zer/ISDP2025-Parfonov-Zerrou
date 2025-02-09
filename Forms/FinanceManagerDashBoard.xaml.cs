@@ -1,8 +1,9 @@
-﻿using System.Windows;
-using ISDP2025_Parfonov_Zerrou.Forms.AdminUserControls;
+﻿using ISDP2025_Parfonov_Zerrou.Forms.AdminUserControls;
+using ISDP2025_Parfonov_Zerrou.Forms.UserControls;
 using ISDP2025_Parfonov_Zerrou.Functionality;
 using ISDP2025_Parfonov_Zerrou.Models;
 using Microsoft.EntityFrameworkCore;
+using System.Windows;
 
 //ISDP Project
 //Mohammed Alae-Zerrou, Serhii Parfonov
@@ -68,6 +69,11 @@ namespace ISDP2025_Parfonov_Zerrou
         private void btnLogout_Click(object sender, RoutedEventArgs e)
         {
             this.Close();
+        }
+
+        private void btnLocations_Click(object sender, RoutedEventArgs e)
+        {
+            MainContent.Content = new ViewLocationsControl();
         }
     }
 }

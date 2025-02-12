@@ -11,7 +11,7 @@
         WindowStartupLocation="CenterScreen"
         MinWidth="1200" MinHeight="800" 
         Loaded="Window_Loaded" Closing="Window_Closing" Icon="/Forms/bullseye.png"
-        >
+        xmlns:hc="https://handyorg.github.io/handycontrol">
 
     <!-- Resources -->
     <Window.Resources>
@@ -166,6 +166,14 @@
                             <TextBlock Text="Suppliers" VerticalAlignment="Center" />
                         </StackPanel>
                     </Button>
+                    <!-- Suppliers Button -->
+                    <Button x:Name="btnOrders" Tag="SuppliersPage" Height="41" Margin="0,9" 
+        Style="{StaticResource SidebarButtonStyle}" Click="btnOrders_Click">
+                        <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                            <Label Style="{StaticResource SidebarLabelStyle}" Content="&#xf07a;" Padding="7,5,2,5" />
+                            <TextBlock Text="Orders" VerticalAlignment="Center" />
+                        </StackPanel>
+                    </Button>
 
                     <!-- Permissions Button -->
                     <Button x:Name="btnPermissions" Tag="PermissionsPage" Height="41" Margin="0,9" 
@@ -187,7 +195,7 @@
                 </StackPanel>
 
                 <!-- Footer -->
-                <DockPanel LastChildFill="True" Margin="10" VerticalAlignment="Stretch">
+                <DockPanel LastChildFill="True" Margin="10" VerticalAlignment="Bottom">
                     <StackPanel DockPanel.Dock="Bottom" Margin="0,10,0,0">
                         <!-- User Label -->
                         <TextBlock x:Name="txtLoggedUser" Text="Logged in as: [Current User]" Foreground="White" FontSize="14" 

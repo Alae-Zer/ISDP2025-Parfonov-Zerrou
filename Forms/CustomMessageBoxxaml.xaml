@@ -11,7 +11,8 @@
       WindowStartupLocation="CenterScreen"
       ResizeMode="NoResize"
       WindowStyle="ToolWindow" 
-      Closing="Window_Closing" Icon="/Forms/bullseye.png">
+      Closing="Window_Closing" Icon="/Forms/bullseye.png"
+        xmlns:hc="https://handyorg.github.io/handycontrol">
     <Window.Resources>
         <Style x:Key="RoundedButton" TargetType="Button">
             <Setter Property="Template">
@@ -75,20 +76,21 @@
                    Margin="0,0,0,20" 
                    Orientation="Horizontal">
             <Label Content="Default Permission:" 
-                  FontWeight="Bold"/>
+                  FontWeight="Bold" Height="27" Padding="10,0,10,0"/>
             <TextBlock x:Name="lblDefaultPermission" 
-                     Margin="5,5,0,0" 
+                     Margin="9,6,0,0" 
                      TextWrapping="Wrap"/>
         </StackPanel>
         <GroupBox Grid.Row="2" 
                 Header="Additional Permissions" 
-                Margin="0,0,0,20">
+                Margin="0,0,0,15" >
             <DataGrid x:Name="dgvPermissions"
                     AutoGenerateColumns="False"
                     IsReadOnly="True"
                     SelectionMode="Single"
                     HeadersVisibility="None" 
-                    SelectionChanged="dgvPermissions_SelectionChanged">
+                    SelectionChanged="dgvPermissions_SelectionChanged" Height="110.44"
+                      RowHeight="25">
                 <DataGrid.Columns>
                     <DataGridTextColumn Header="Permission" 
                                     Binding="{Binding PermissionName}"

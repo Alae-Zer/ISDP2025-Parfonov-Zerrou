@@ -170,10 +170,10 @@ namespace ISDP2025_Parfonov_Zerrou.Forms.AdminUserControls
 
         public bool CheckAllInputs()
         {
-            if (txtFirstName.Text == "" || txtLastName.Text == "" || cmbLocation.SelectedIndex == -1 || cmbPosition.SelectedIndex == -1)
-            {
-                return false;
-            }
+            //if (txtFirstName.Text == "" || txtLastName.Text == "" || cmbLocation.SelectedIndex == -1 || cmbPosition.SelectedIndex == -1)
+            //{
+            //    return false;
+            //}
             return true;
         }
 

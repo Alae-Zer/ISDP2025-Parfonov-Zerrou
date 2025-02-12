@@ -26,7 +26,7 @@
             </StackPanel>
 
             <!-- Login Form -->
-            <Grid x:Name="LoginForm" Visibility="Collapsed">
+            <Grid x:Name="LoginForm" Visibility="Visible">
                 <Border Background="White" CornerRadius="10" Padding="20" Width="400">
                     <StackPanel>
                         <!-- Title -->
@@ -70,7 +70,7 @@
             </Grid>
 
             <!-- Password Reset Form -->
-            <Grid x:Name="PasswordResetForm" Visibility="Visible">
+            <Grid x:Name="PasswordResetForm" Visibility="Collapsed">
                 <Border Background="White" CornerRadius="10" Padding="20" Width="400">
                     <StackPanel>
                         <!-- Title -->

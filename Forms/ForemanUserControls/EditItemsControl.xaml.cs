@@ -7,44 +7,24 @@ namespace ISDP2025_Parfonov_Zerrou.Forms.ForemanUserControls
 {
     public partial class EditItemsControl : UserControl
     {
-        private readonly BestContext context;
-        private readonly Employee _employee;
-        private List<string> categoriesList = new();
+        BestContext context;
+        Employee employee;
+        List<string> categoriesList = new();
 
-        public EditItemsControl(Employee employee)
+        public EditItemsControl(Employee inputEmployee)
         {
             InitializeComponent();
-            _employee = employee;
+            employee = inputEmployee;
             context = new BestContext();
             lblEmployeeLocation.Content = GetEmployeeLocation();
-            LoadInitialData();
         }
 
         private string GetEmployeeLocation()
         {
             return context.Sites
-                .Where(s => s.SiteId == _employee.SiteId)
+                .Where(s => s.SiteId == employee.SiteId)
                 .Select(s => s.SiteName)
                 .FirstOrDefault() ?? "Unknown Location";
-        }
-
-        private void LoadInitialData()
-        {
-            try
-            {
-                LoadCategories();
-                EnableControls(false);
-                ClearFields();
-                LoadInventory();
-            }
-            catch (Exception ex)
-            {
-                HandyControl.Controls.MessageBox.Show(
-                    $"Error loading initial data: {ex.Message}",
-                    "Error",
-                    MessageBoxButton.OK,
-                    MessageBoxImage.Error);
-            }
         }
 
         private void LoadCategories()
@@ -80,7 +60,7 @@ namespace ISDP2025_Parfonov_Zerrou.Forms.ForemanUserControls
             {
                 var query = context.Inventories
                     .Include(i => i.Item)
-                    .Where(i => i.SiteId == _employee.SiteId)
+                    .Where(i => i.SiteId == employee.SiteId)
                     .AsQueryable();
 
                 if (!string.IsNullOrWhiteSpace(txtSearch.Text))
@@ -239,6 +219,7 @@ namespace ISDP2025_Parfonov_Zerrou.Forms.ForemanUserControls
 
         private void BtnRefresh_Click(object sender, RoutedEventArgs e)
         {
+            LoadCategories();
             LoadInventory();
             ClearFields();
         }

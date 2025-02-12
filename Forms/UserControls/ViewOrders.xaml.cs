@@ -30,7 +30,7 @@ namespace ISDP2025_Parfonov_Zerrou.Forms.UserControls
 
         private void btnDelete_Click(object sender, RoutedEventArgs e)
         {
-            aA MainContent.Content = new ViewOrders();
+            //MainContent.Content = new ViewOrders();
         }
     }
 }

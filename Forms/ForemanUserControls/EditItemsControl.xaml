@@ -69,11 +69,7 @@
 
         <StackPanel Grid.Row="1" Orientation="Horizontal" Margin="0,0,0,10">
             <Label Content="Location:" VerticalAlignment="Center" Margin="0,0,5,0"/>
-            <ComboBox x:Name="cmbLocation" Width="200" Margin="0,0,10,0"
-                      SelectionChanged="CmbLocation_SelectionChanged" 
-                      Cursor="Hand"
-                      DisplayMemberPath="SiteName"
-                      SelectedValuePath="SiteId"/>
+            <Label x:Name="lblEmployeeLocation" FontWeight="Bold" VerticalAlignment="Center" Margin="0,0,10,0"/>
 
             <Label Content="Search:" VerticalAlignment="Center" Margin="0,0,5,0"/>
             <TextBox x:Name="txtSearch" Width="200" Margin="0,0,10,0" 
@@ -171,13 +167,6 @@
                             <Style TargetType="TextBlock">
                                 <Setter Property="VerticalAlignment" Value="Center"/>
                                 <Setter Property="TextWrapping" Value="Wrap"/>
-                            </Style>
-                        </DataGridTextColumn.ElementStyle>
-                    </DataGridTextColumn>
-                    <DataGridTextColumn Header="Location" Binding="{Binding SiteName}" Width="150">
-                        <DataGridTextColumn.ElementStyle>
-                            <Style TargetType="TextBlock">
-                                <Setter Property="VerticalAlignment" Value="Center"/>
                             </Style>
                         </DataGridTextColumn.ElementStyle>
                     </DataGridTextColumn>

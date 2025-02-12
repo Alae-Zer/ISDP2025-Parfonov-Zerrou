@@ -8,14 +8,24 @@ namespace ISDP2025_Parfonov_Zerrou.Forms.ForemanUserControls
     public partial class EditItemsControl : UserControl
     {
         private readonly BestContext context;
+        private readonly Employee _employee;
         private List<string> categoriesList = new();
 
         public EditItemsControl(Employee employee)
         {
             InitializeComponent();
+            _employee = employee;
             context = new BestContext();
+            lblEmployeeLocation.Content = GetEmployeeLocation();
             LoadInitialData();
-            LoadLocations();
+        }
+
+        private string GetEmployeeLocation()
+        {
+            return context.Sites
+                .Where(s => s.SiteId == _employee.SiteId)
+                .Select(s => s.SiteName)
+                .FirstOrDefault() ?? "Unknown Location";
         }
 
         private void LoadInitialData()
@@ -25,43 +35,12 @@ namespace ISDP2025_Parfonov_Zerrou.Forms.ForemanUserControls
                 LoadCategories();
                 EnableControls(false);
                 ClearFields();
-                dgvInventory.ItemsSource = null;
-            }
-            catch (Exception ex)
-            {
-                HandyControl.Controls.MessageBox.Show(
-                    $"Error loading initial data: {ex.Message}",
-                    "Error",
-                    MessageBoxButton.OK,
-                    MessageBoxImage.Error);
-            }
-        }
-
-        private void LoadLocations()
-        {
-            try
-            {
-                var excludedSites = new[] { 9999, 10000 };
-
-                var query = context.Sites
-                    .Where(s => s.Active == 1 && !excludedSites.Contains(s.SiteId))
-                    .OrderBy(s => s.SiteName)
-                    .ToList();
-
-                var allSites = new Site { SiteId = 0, SiteName = "All Locations" };
-                var sitesList = new List<Site> { allSites };
-                sitesList.AddRange(query);
-
-                cmbLocation.ItemsSource = sitesList;
-                cmbLocation.SelectedIndex = 0;
-                cmbLocation.IsEnabled = true;
-
                 LoadInventory();
             }
             catch (Exception ex)
             {
                 HandyControl.Controls.MessageBox.Show(
-                    $"Error loading locations: {ex.Message}",
+                    $"Error loading initial data: {ex.Message}",
                     "Error",
                     MessageBoxButton.OK,
                     MessageBoxImage.Error);
@@ -101,27 +80,19 @@ namespace ISDP2025_Parfonov_Zerrou.Forms.ForemanUserControls
             {
                 var query = context.Inventories
                     .Include(i => i.Item)
-                    .Include(i => i.Site)
+                    .Where(i => i.SiteId == _employee.SiteId)
                     .AsQueryable();
 
-                // Apply search filter
                 if (!string.IsNullOrWhiteSpace(txtSearch.Text))
                 {
                     string searchText = txtSearch.Text.ToLower();
                     query = query.Where(i => i.Item.Name.ToLower().Contains(searchText));
                 }
 
-                // Apply category filter
                 if (cmbSearchCategory.SelectedIndex > 0)
                 {
                     string category = cmbSearchCategory.SelectedItem.ToString();
                     query = query.Where(i => i.Item.Category == category);
-                }
-
-                // Apply location filter
-                if (cmbLocation.SelectedItem is Site selectedSite && selectedSite.SiteId != 0)
-                {
-                    query = query.Where(i => i.SiteId == selectedSite.SiteId);
                 }
 
                 var inventory = query
@@ -129,7 +100,6 @@ namespace ISDP2025_Parfonov_Zerrou.Forms.ForemanUserControls
                     {
                         i.ItemId,
                         i.SiteId,
-                        SiteName = i.Site.SiteName,
                         Name = i.Item.Name,
                         i.Quantity,
                         i.ReorderThreshold,
@@ -286,12 +256,6 @@ namespace ISDP2025_Parfonov_Zerrou.Forms.ForemanUserControls
         private void UserControl_Unloaded(object sender, RoutedEventArgs e)
         {
             context?.Dispose();
-        }
-
-        private void CmbLocation_SelectionChanged(object sender, SelectionChangedEventArgs e)
-        {
-            LoadInventory();
-            ClearFields();
         }
     }
 }

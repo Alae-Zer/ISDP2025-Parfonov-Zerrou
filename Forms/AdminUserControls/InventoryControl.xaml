@@ -5,7 +5,7 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:ISDP2025_Parfonov_Zerrou.Forms.AdminUserControls"
              mc:Ignorable="d" 
-             d:DesignHeight="450" d:DesignWidth="800">
+             d:DesignHeight="450" d:DesignWidth="900">
 
     <UserControl.Resources>
         <Style x:Key="RoundedButton" TargetType="Button">
@@ -61,26 +61,18 @@
         </Grid.RowDefinitions>
 
         <TextBlock Text="Inventory Management" 
-               FontSize="24" 
-               FontWeight="Bold" 
-               Margin="0,0,0,20"
-               Grid.Row="0"/>
+              FontSize="24" 
+              FontWeight="Bold" 
+              Margin="0,0,0,20"
+              Grid.Row="0"/>
 
         <StackPanel Grid.Row="1" Orientation="Horizontal" Margin="0,0,0,10">
             <Label Content="Search:" VerticalAlignment="Center" Margin="0,0,5,0"/>
             <TextBox x:Name="txtSearch" Width="200" Margin="0,0,10,0" 
-                 TextChanged="TxtSearch_TextChanged" Cursor="Pen"/>
+                TextChanged="TxtSearch_TextChanged" Cursor="Pen"/>
             <Label Content="Category:" VerticalAlignment="Center" Margin="0,0,5,0"/>
             <ComboBox x:Name="cmbSearchCategory" Width="150" Margin="0,0,10,0" 
-                  SelectionChanged="CmbSearchCategory_SelectionChanged" Cursor="Hand"/>
-            <Label Content="Location:" VerticalAlignment="Center" Margin="0,0,5,0"/>
-            <ComboBox x:Name="cmbSearchLocation" Width="150" 
-                        SelectionChanged="CmbSearchLocation_SelectionChanged"
-                        DisplayMemberPath="SiteName" 
-                        SelectedValuePath="SiteId"
-                        Text="No Location Selected"
-                        IsEditable="True"
-                        IsReadOnly="True" Cursor="Hand"/>
+                 SelectionChanged="CmbSearchCategory_SelectionChanged" Cursor="Hand"/>
         </StackPanel>
 
         <GroupBox Grid.Row="2" Header="Item Information" Padding="10" Margin="0,0,0,10">
@@ -112,38 +104,29 @@
 
                 <TextBox x:Name="txtItemName" Grid.Row="1" Grid.Column="1" Margin="5" Cursor="Pen"/>
                 <TextBox x:Name="txtSKU" Grid.Row="2" Grid.Column="1" Margin="5" Cursor="Pen"/>
-                <ComboBox x:Name="cmbEditCategory" Grid.Row="3" Grid.Column="1" Margin="5" IsEditable="True"
-                        SelectedValue="{Binding Category}"
-                        Cursor="Hand"/>
+                <ComboBox x:Name="cmbEditCategory" Grid.Row="3" Grid.Column="1" Margin="5" IsEditable="False" Cursor="Hand"/>
                 <TextBox x:Name="txtWeight" Grid.Row="4" Grid.Column="1" Margin="5" Cursor="Pen"/>
                 <ComboBox x:Name="cmbSupplier" Grid.Row="5" Grid.Column="1" Margin="5"
-                        DisplayMemberPath="Name" 
-                        SelectedValuePath="SupplierId"
-                        Text="No Supplier Selected"
-                        IsEditable="True"
-                        IsReadOnly="True" 
-                        Cursor="Hand"/>
+                    DisplayMemberPath="Name" 
+                    SelectedValuePath="SupplierId"
+                    Text="No Supplier Selected"
+                    IsEditable="False"
+                    IsReadOnly="True" 
+                    Cursor="Hand"/>
 
                 <Label Content="Cost Price:" Grid.Row="1" Grid.Column="2"/>
                 <Label Content="Retail Price:" Grid.Row="2" Grid.Column="2"/>
-                <Label Content="Quantity:" Grid.Row="3" Grid.Column="2"/>
-                <Label Content="Location:" Grid.Row="4" Grid.Column="2"/>
-                <Label Content="Case Size:" Grid.Row="5" Grid.Column="2"/>
+                <Label Content="Total Quantity:" Grid.Row="3" Grid.Column="2"/>
+                <Label Content="Case Size:" Grid.Row="4" Grid.Column="2"/>
 
                 <TextBox x:Name="txtCostPrice" Grid.Row="1" Grid.Column="3" Margin="5" Cursor="Pen"/>
                 <TextBox x:Name="txtRetailPrice" Grid.Row="2" Grid.Column="3" Margin="5" Cursor="Pen"/>
                 <TextBox x:Name="txtQuantity" Grid.Row="3" Grid.Column="3" Margin="5" Cursor="Pen"/>
-                <ComboBox x:Name="cmbLocation" Grid.Row="4" Grid.Column="3" Margin="5"
-                        DisplayMemberPath="SiteName" 
-                        SelectedValuePath="SiteId"
-                        Text="No Location Selected"
-                        IsEditable="True"
-                        IsReadOnly="True" Cursor="Hand"/>
-                <TextBox x:Name="txtCaseSize" Grid.Row="5" Grid.Column="3" Margin="5" Cursor="Pen"/>
+                <TextBox x:Name="txtCaseSize" Grid.Row="4" Grid.Column="3" Margin="5" Cursor="Pen"/>
 
                 <Label Content="Active:" Grid.Row="6" Grid.Column="2"/>
                 <CheckBox x:Name="chkActive" Grid.Row="6" Grid.Column="3" Margin="5" 
-                          VerticalAlignment="Center" IsEnabled="False" Cursor="Pen" IsChecked="True" Click="chkActive_Click"/>
+                    VerticalAlignment="Center" IsEnabled="False" Cursor="Pen" IsChecked="True" Click="chkActive_Click"/>
             </Grid>
         </GroupBox>
 
@@ -155,44 +138,44 @@
             </Grid.ColumnDefinitions>
 
             <Button x:Name="btnRefresh" Content="Refresh" Width="100" Height="30" 
-                    Grid.Column="0"
-                    Click="BtnRefresh_Click"
-                    Style="{StaticResource RoundedButton}"
-                    Background="#2196F3"
-                    Foreground="White" Cursor="Hand"/>
+               Grid.Column="0"
+               Click="BtnRefresh_Click"
+               Style="{StaticResource RoundedButton}"
+               Background="#2196F3"
+               Foreground="White" Cursor="Hand"/>
 
             <StackPanel Grid.Column="2" Orientation="Horizontal">
                 <Button x:Name="btnClear" Content="Clear" Width="100" Height="30" 
-                        Margin="0,0,10,0" Click="BtnClear_Click"
-                        Style="{StaticResource RoundedButton}"
-                        Background="#FFF62D2D"
-                        Foreground="White" Cursor="Hand"/>
+                   Margin="0,0,10,0" Click="BtnClear_Click"
+                   Style="{StaticResource RoundedButton}"
+                   Background="#FFF62D2D"
+                   Foreground="White" Cursor="Hand"/>
                 <Button x:Name="btnAdd" Content="Add" Width="100" Height="30" 
-                        Margin="0,0,10,0" Click="BtnAdd_Click"
-                        Style="{StaticResource RoundedButton}"
-                        Background="#4CAF50"
-                        Foreground="White" Cursor="Hand"/>
+                   Margin="0,0,10,0" Click="BtnAdd_Click"
+                   Style="{StaticResource RoundedButton}"
+                   Background="#4CAF50"
+                   Foreground="White" Cursor="Hand"/>
                 <Button x:Name="btnUpdate" Content="Update" Width="100" Height="30" 
-                        Margin="0,0,10,0" Click="BtnUpdate_Click"
-                        Style="{StaticResource RoundedButton}"
-                        Background="#FFD700"
-                        Foreground="Black" Cursor="Hand"/>
+                   Margin="0,0,10,0" Click="BtnUpdate_Click"
+                   Style="{StaticResource RoundedButton}"
+                   Background="#FFD700"
+                   Foreground="Black" Cursor="Hand"/>
                 <Button x:Name="btnSave" Content="Save/Cancel" Width="100" Height="30" 
-                        Click="BtnSave_Click"
-                        Style="{StaticResource RoundedButton}"
-                        Background="#4CAF50"
-                        Foreground="White" Cursor="Hand"
-                        Visibility="Collapsed"/>
+                   Click="BtnSave_Click"
+                   Style="{StaticResource RoundedButton}"
+                   Background="#4CAF50"
+                   Foreground="White" Cursor="Hand"
+                   Visibility="Collapsed"/>
             </StackPanel>
         </Grid>
 
         <DataGrid x:Name="dgvItems" 
-              Grid.Row="4" 
-              AutoGenerateColumns="False" 
-              IsReadOnly="True"
-              SelectionMode="Single"
-              SelectionChanged="DgInventory_SelectionChanged"
-              Margin="0,10,0,0">
+             Grid.Row="4" 
+             AutoGenerateColumns="False" 
+             IsReadOnly="True"
+             SelectionMode="Single"
+             SelectionChanged="DgInventory_SelectionChanged"
+             Margin="0,10,0,0">
             <DataGrid.Columns>
                 <DataGridTextColumn Header="ID" Binding="{Binding ItemId}" Width="50">
                     <DataGridTextColumn.ElementStyle>
@@ -204,9 +187,8 @@
                 <DataGridTextColumn Header="Item Name" Binding="{Binding ItemName}" Width="250"/>
                 <DataGridTextColumn Header="SKU" Binding="{Binding Sku}" Width="60"/>
                 <DataGridTextColumn Header="Category" Binding="{Binding Category}" Width="70"/>
-                <DataGridTextColumn Header="Site Name" Binding="{Binding SiteName}" Width="120"/>
+                <DataGridTextColumn Header="Total Quantity" Binding="{Binding TotalQuantity}" Width="90"/>
                 <DataGridTextColumn Header="Supplier" Binding="{Binding SupplierName}" Width="120"/>
-                <DataGridTextColumn Header="Quantity" Binding="{Binding Quantity}" Width="65"/>
                 <DataGridTextColumn Header="Case Size" Binding="{Binding CaseSize}" Width="65"/>
                 <DataGridTextColumn Header="Cost Price" Binding="{Binding CostPrice, StringFormat=C}" Width="100"/>
                 <DataGridTextColumn Header="Retail Price" Binding="{Binding RetailPrice, StringFormat=C}" Width="75"/>

@@ -1,13 +1,10 @@
-﻿using System.Windows;
-using System.Windows.Controls;
-using ISDP2025_Parfonov_Zerrou.Models;
+﻿using ISDP2025_Parfonov_Zerrou.Models;
 using Microsoft.EntityFrameworkCore;
+using System.Windows;
+using System.Windows.Controls;
 
 namespace ISDP2025_Parfonov_Zerrou.Forms.AdminUserControls
 {
-    /// <summary>
-    /// Interaction logic for EmployeesControl.xaml
-    /// </summary>
     public partial class ViewEmployeesControl : UserControl
     {
         MainWindow mainWindow = new MainWindow();

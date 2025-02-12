@@ -1,5 +1,4 @@
-﻿using ISDP2025_Parfonov_Zerrou.Functionality;
-using ISDP2025_Parfonov_Zerrou.Models;
+﻿using ISDP2025_Parfonov_Zerrou.Models;
 using Microsoft.EntityFrameworkCore;
 using System.Windows;
 using System.Windows.Controls;
@@ -10,6 +9,8 @@ namespace ISDP2025_Parfonov_Zerrou.Forms.AdminUserControls
     {
         private readonly BestContext context;
         private bool isEditMode = false;
+        private readonly string[] daysOfWeek = { "MONDAY", "TUESDAY", "WEDNESDAY", "THURSDAY", "FRIDAY", "SATURDAY", "SUNDAY" };
+        private readonly string[] countries = { "CANADA", "USA", "AUSTRALIA" };
 
         public LocationControl()
         {
@@ -35,9 +36,14 @@ namespace ISDP2025_Parfonov_Zerrou.Forms.AdminUserControls
                 searchProvinces.AddRange(provinces);
 
                 cmbSearchProvince.ItemsSource = searchProvinces;
-                cmbSearchProvince.SelectedIndex = 0;
+                cmbSearchProvince.SelectedValue = "NB";
 
                 cmbProvince.ItemsSource = provinces;
+                cmbDayOfWeek.ItemsSource = daysOfWeek;
+                cmbDayOfWeek.SelectedIndex = -1;
+
+                cmbCountry.ItemsSource = countries;
+                cmbCountry.SelectedIndex = 0;
 
                 EnableInputs(false);
                 EnableSearchControls(false);
@@ -145,7 +151,7 @@ namespace ISDP2025_Parfonov_Zerrou.Forms.AdminUserControls
                 dgvLocations.ItemsSource = result;
                 UpdateRecordCount();
                 UpdateAddButtonState();
-                EnableSearchControls(result.Any());
+                EnableSearchControls(true);
             }
             catch (Exception ex)
             {
@@ -161,10 +167,10 @@ namespace ISDP2025_Parfonov_Zerrou.Forms.AdminUserControls
             txtAddress2.IsEnabled = enabled;
             txtCity.IsEnabled = enabled;
             cmbProvince.IsEnabled = enabled;
-            txtCountry.IsEnabled = enabled;
+            cmbCountry.IsEnabled = enabled;
             txtPostalCode.IsEnabled = enabled;
             txtPhone.IsEnabled = enabled;
-            txtDayOfWeek.IsEnabled = enabled;
+            cmbDayOfWeek.IsEnabled = enabled;
             txtDistanceFromWH.IsEnabled = enabled;
             txtNotes.IsEnabled = enabled;
             chkActive.IsEnabled = enabled;
@@ -191,10 +197,10 @@ namespace ISDP2025_Parfonov_Zerrou.Forms.AdminUserControls
             txtAddress2.Clear();
             txtCity.Clear();
             cmbProvince.SelectedIndex = -1;
-            txtCountry.Clear();
+            cmbCountry.SelectedIndex = 0;
             txtPostalCode.Clear();
             txtPhone.Clear();
-            txtDayOfWeek.Clear();
+            cmbDayOfWeek.SelectedIndex = -1;
             txtDistanceFromWH.Clear();
             txtNotes.Clear();
             chkActive.IsChecked = true;
@@ -202,47 +208,73 @@ namespace ISDP2025_Parfonov_Zerrou.Forms.AdminUserControls
 
         private bool ValidateInputs()
         {
-            if (string.IsNullOrWhiteSpace(txtSiteName.Text) ||
-                string.IsNullOrWhiteSpace(txtAddress.Text) ||
-                string.IsNullOrWhiteSpace(txtCity.Text) ||
-                cmbProvince.SelectedValue == null ||
-                string.IsNullOrWhiteSpace(txtCountry.Text) ||
-                string.IsNullOrWhiteSpace(txtPostalCode.Text) ||
-                string.IsNullOrWhiteSpace(txtPhone.Text) ||
-                !int.TryParse(txtDistanceFromWH.Text, out int distance))
+            var errors = new List<string>();
+
+            if (ValidatorsFormatters.IsEmpty(txtSiteName.Text))
             {
-                MessageBox.Show("Please fill in all required fields with valid values.",
-                    "Validation Error", MessageBoxButton.OK, MessageBoxImage.Warning);
-                return false;
+                errors.Add("Site name cannot be empty");
+            }
+            else if (!ValidatorsFormatters.IsValidName(txtSiteName.Text))
+            {
+                errors.Add("Site name can only contain letters, spaces, hyphens and apostrophes");
             }
 
-            if (!ValidatorsFormatters.IsValidName(txtSiteName.Text))
+            if (ValidatorsFormatters.IsEmpty(txtAddress.Text))
             {
-                MessageBox.Show("Please enter a valid site name.",
-                    "Validation Error", MessageBoxButton.OK, MessageBoxImage.Warning);
-                return false;
+                errors.Add("Address cannot be empty");
             }
 
-            string cleanPostalCode = ValidatorsFormatters.CleanPostalCode(txtPostalCode.Text);
-            if (!ValidatorsFormatters.IsValidPostalCode(cleanPostalCode))
+            if (ValidatorsFormatters.IsEmpty(txtCity.Text))
             {
-                MessageBox.Show("Please enter a valid postal code (A1A 1A1 format).",
-                    "Validation Error", MessageBoxButton.OK, MessageBoxImage.Warning);
-                return false;
+                errors.Add("City cannot be empty");
             }
 
-            string cleanPhone = ValidatorsFormatters.CleanPhoneNumber(txtPhone.Text);
-            if (!ValidatorsFormatters.IsValidPhoneNumber(cleanPhone))
+            if (cmbProvince.SelectedValue == null)
             {
-                MessageBox.Show("Please enter a valid 10-digit phone number.",
-                    "Validation Error", MessageBoxButton.OK, MessageBoxImage.Warning);
-                return false;
+                errors.Add("Please select a province");
             }
 
-            if (!ValidatorsFormatters.IsValidInteger(txtDistanceFromWH.Text, 0))
+            if (cmbCountry.SelectedIndex == -1)
             {
-                MessageBox.Show("Distance must be a positive number.",
-                    "Validation Error", MessageBoxButton.OK, MessageBoxImage.Warning);
+                errors.Add("Please select a country");
+            }
+
+            if (ValidatorsFormatters.IsEmpty(txtPostalCode.Text))
+            {
+                errors.Add("Postal code cannot be empty");
+            }
+            else if (!ValidatorsFormatters.IsValidPostalCode(ValidatorsFormatters.CleanPostalCode(txtPostalCode.Text)))
+            {
+                errors.Add("Please enter a valid postal code (A1A 1A1 format)");
+            }
+
+            if (ValidatorsFormatters.IsEmpty(txtPhone.Text))
+            {
+                errors.Add("Phone number cannot be empty");
+            }
+            else if (!ValidatorsFormatters.IsValidPhoneNumber(ValidatorsFormatters.CleanPhoneNumber(txtPhone.Text)))
+            {
+                errors.Add("Please enter a valid 10-digit phone number");
+            }
+
+            if (ValidatorsFormatters.IsEmpty(txtDistanceFromWH.Text))
+            {
+                errors.Add("Distance cannot be empty");
+            }
+            else if (!ValidatorsFormatters.IsValidInteger(txtDistanceFromWH.Text, 0))
+            {
+                errors.Add("Distance must be a positive number");
+            }
+
+            if (cmbDayOfWeek.SelectedIndex == -1)
+            {
+                errors.Add("Please select a delivery day");
+            }
+
+            if (errors.Any())
+            {
+                MessageBox.Show(string.Join("\n", errors), "Validation Error",
+                    MessageBoxButton.OK, MessageBoxImage.Warning);
                 return false;
             }
 
@@ -267,10 +299,10 @@ namespace ISDP2025_Parfonov_Zerrou.Forms.AdminUserControls
                         Address2 = txtAddress2.Text,
                         City = txtCity.Text,
                         ProvinceId = cmbProvince.SelectedValue.ToString(),
-                        Country = txtCountry.Text,
+                        Country = countries[cmbCountry.SelectedIndex],
                         PostalCode = cleanPostalCode,
                         Phone = cleanPhone,
-                        DayOfWeek = txtDayOfWeek.Text,
+                        DayOfWeek = daysOfWeek[cmbDayOfWeek.SelectedIndex],
                         DistanceFromWh = int.Parse(txtDistanceFromWH.Text),
                         Notes = txtNotes.Text,
                         Active = (sbyte)(chkActive.IsChecked == true ? 1 : 0)
@@ -288,10 +320,10 @@ namespace ISDP2025_Parfonov_Zerrou.Forms.AdminUserControls
                         site.Address2 = txtAddress2.Text;
                         site.City = txtCity.Text;
                         site.ProvinceId = cmbProvince.SelectedValue.ToString();
-                        site.Country = txtCountry.Text;
+                        site.Country = countries[cmbCountry.SelectedIndex];
                         site.PostalCode = cleanPostalCode;
                         site.Phone = cleanPhone;
-                        site.DayOfWeek = txtDayOfWeek.Text;
+                        site.DayOfWeek = daysOfWeek[cmbDayOfWeek.SelectedIndex];
                         site.DistanceFromWh = int.Parse(txtDistanceFromWH.Text);
                         site.Notes = txtNotes.Text;
                         site.Active = (sbyte)(chkActive.IsChecked == true ? 1 : 0);
@@ -307,7 +339,7 @@ namespace ISDP2025_Parfonov_Zerrou.Forms.AdminUserControls
                 ResetToDefaultState();
                 EnableSearchControls(true);
                 MessageBox.Show("Location saved successfully!", "Success",
-                    MessageBoxButton.OK, MessageBoxImage.Information);
+                MessageBoxButton.OK, MessageBoxImage.Information);
             }
             catch (Exception ex)
             {
@@ -321,6 +353,7 @@ namespace ISDP2025_Parfonov_Zerrou.Forms.AdminUserControls
             isEditMode = false;
             ClearInputs();
             EnableInputs(false);
+            EnableSearchControls(true);
             btnSave.Visibility = Visibility.Collapsed;
             btnAdd.Visibility = Visibility.Visible;
             btnUpdate.Visibility = Visibility.Visible;
@@ -330,7 +363,6 @@ namespace ISDP2025_Parfonov_Zerrou.Forms.AdminUserControls
             dgvLocations.IsEnabled = true;
             dgvLocations.UnselectAll();
             UpdateAddButtonState();
-            EnableSearchControls(false);
         }
 
         private void EnterEditMode()
@@ -419,10 +451,10 @@ namespace ISDP2025_Parfonov_Zerrou.Forms.AdminUserControls
                 txtAddress2.Text = selectedItem.Address2;
                 txtCity.Text = selectedItem.City;
                 cmbProvince.SelectedValue = selectedItem.ProvinceId;
-                txtCountry.Text = selectedItem.Country;
+                cmbCountry.SelectedItem = selectedItem.Country;
                 txtPostalCode.Text = selectedItem.PostalCode;
                 txtPhone.Text = selectedItem.Phone;
-                txtDayOfWeek.Text = selectedItem.DayOfWeek;
+                cmbDayOfWeek.SelectedItem = selectedItem.DayOfWeek;
                 txtDistanceFromWH.Text = selectedItem.DistanceFromWh.ToString();
                 txtNotes.Text = selectedItem.Notes;
                 chkActive.IsChecked = selectedItem.Active == "Yes";

@@ -141,7 +141,7 @@
 
                     <!-- Locations Button -->
                     <Button x:Name="btnLocations" Tag="LocationsPage" Height="41" Margin="0,9" 
-                            Style="{StaticResource SidebarButtonStyle}">
+                            Style="{StaticResource SidebarButtonStyle}" Click="btnLocations_Click">
                         <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
                             <Label Style="{StaticResource SidebarLabelStyle}" Content="&#xF3C5;" Padding="10,5,1,5" />
                             <TextBlock Text="Locations" VerticalAlignment="Center" />

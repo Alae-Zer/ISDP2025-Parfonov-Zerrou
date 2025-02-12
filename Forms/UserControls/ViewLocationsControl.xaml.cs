@@ -27,13 +27,18 @@ namespace ISDP2025_Parfonov_Zerrou.Forms.UserControls
                     .ToList();
 
                 var searchProvinces = new List<Province>
-                {
-                    new Province { ProvinceId = "-1", ProvinceName = "All Provinces" }
-                };
+        {
+            new Province { ProvinceId = "-1", ProvinceName = "All Provinces" }
+        };
                 searchProvinces.AddRange(provinces);
 
                 cmbSearchProvince.ItemsSource = searchProvinces;
-                cmbSearchProvince.SelectedIndex = 0;
+
+                var newBrunswick = provinces.FirstOrDefault(p => p.ProvinceName == "New Brunswick");
+                if (newBrunswick != null)
+                    cmbSearchProvince.SelectedItem = newBrunswick;
+                else
+                    cmbSearchProvince.SelectedIndex = 0;
 
                 EnableSearchControls(false);
             }

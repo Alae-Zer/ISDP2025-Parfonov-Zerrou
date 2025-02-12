@@ -1,7 +1,7 @@
-﻿using System.Windows;
-using System.Windows.Controls;
-using ISDP2025_Parfonov_Zerrou.Models;
+﻿using ISDP2025_Parfonov_Zerrou.Models;
 using Microsoft.EntityFrameworkCore;
+using System.Windows;
+using System.Windows.Controls;
 
 //ISDP Project
 //Mohammed Alae-Zerrou, Serhii Parfonov
@@ -10,9 +10,6 @@ using Microsoft.EntityFrameworkCore;
 //Last Modified by Mohammed on January 26,2025
 namespace ISDP2025_Parfonov_Zerrou.Forms.AdminUserControls
 {
-    /// <summary>
-    /// Interaction logic for SettingsControl.xaml
-    /// </summary>
     public partial class SettingsControl : UserControl
     {
         BestContext context = new BestContext();

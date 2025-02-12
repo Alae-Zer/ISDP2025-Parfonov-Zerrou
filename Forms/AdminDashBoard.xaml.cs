@@ -1,4 +1,5 @@
 ﻿using ISDP2025_Parfonov_Zerrou.Forms.AdminUserControls;
+using ISDP2025_Parfonov_Zerrou.Forms.ForemanUserControls;
 using ISDP2025_Parfonov_Zerrou.Functionality;
 using ISDP2025_Parfonov_Zerrou.Models;
 using Microsoft.EntityFrameworkCore;
@@ -111,6 +112,16 @@ namespace ISDP2025_Parfonov_Zerrou
         private void btnLogout_Click(object sender, RoutedEventArgs e)
         {
             this.Close();
+        }
+
+        private void btnEditInventory_Click(object sender, RoutedEventArgs e)
+        {
+            MainContent.Content = new AdminThreshholdsControl(employee);
+        }
+
+        private void btnItemNotes_Click(object sender, RoutedEventArgs e)
+        {
+            MainContent.Content = new ForemanInventoryControl();
         }
     }
 }

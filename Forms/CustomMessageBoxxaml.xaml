@@ -6,7 +6,7 @@
       xmlns:local="clr-namespace:ISDP2025_Parfonov_Zerrou.Forms"
       mc:Ignorable="d"
       Title="Select Permission" 
-      Height="350" 
+      Height="500" 
       Width="400"
       WindowStartupLocation="CenterScreen"
       ResizeMode="NoResize"

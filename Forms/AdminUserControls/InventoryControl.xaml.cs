@@ -3,39 +3,27 @@ using Microsoft.EntityFrameworkCore;
 using System.Windows;
 using System.Windows.Controls;
 
-//ISDP Project
-//Mohammed Alae-Zerrou, Serhii Parfonov
-//NBCC, Winter 2025
-//Completed By Equal Share of Mohammed and Serhii
-//Last Modified by Serhii on January 20,2025
 namespace ISDP2025_Parfonov_Zerrou.Forms.AdminUserControls
 {
     public partial class InventoryControl : UserControl
     {
-        //Declare Context and Global Lists for Storagin Data
         BestContext context;
-        List<Site> locationsList = new List<Site>();
         List<dynamic> suppliersList = new List<dynamic>();
         List<string> categoriesList = new List<string>();
 
         public InventoryControl()
         {
-            //Load Degfaults
             InitializeComponent();
             context = new BestContext();
             EnableSearchControls(false);
-            LoadLocationsToList();
             LoadSuppliersToList();
-            LoadCategoriesToList();
             LoadCategoriesToList();
             btnClear.IsEnabled = false;
             EnableInputs(false);
+            ClearInputs();
             dgvItems.ItemsSource = null;
         }
 
-        //Reset Inputs
-        //Send sNothing
-        //Return Nothing
         private void ClearInputs()
         {
             lblItemId.Content = string.Empty;
@@ -43,96 +31,41 @@ namespace ISDP2025_Parfonov_Zerrou.Forms.AdminUserControls
             txtSKU.Clear();
             cmbEditCategory.SelectedIndex = -1;
             cmbEditCategory.Text = string.Empty;
-            txtQuantity.Clear();
+            txtQuantity.Text = "0";
             txtWeight.Clear();
             txtCostPrice.Clear();
             txtRetailPrice.Clear();
             txtCaseSize.Clear();
-            cmbLocation.SelectedIndex = 0;
             cmbSupplier.SelectedIndex = 0;
             chkActive.IsChecked = true;
             cmbSearchCategory.SelectedIndex = 0;
-            cmbSearchLocation.SelectedIndex = 0;
             txtSearch.Clear();
         }
 
-        //Populates List With Categories
-        //Sends Nothing
-        //Returns Nothing
         private void LoadCategoriesToList()
         {
-            //QUERY
             var dbCategories = context.Items
                 .Select(i => i.Category)
                 .Distinct()
                 .OrderBy(c => c)
                 .ToList();
 
-            //Reset List and Add Default Option
             categoriesList.Clear();
             categoriesList.Add("All Categories");
 
-            //LOOP and ADD
             foreach (var category in dbCategories)
             {
                 categoriesList.Add(category);
             }
 
-            //Load Values To The CBOs
             cmbSearchCategory.ItemsSource = categoriesList;
             cmbSearchCategory.SelectedIndex = 0;
-            //First Value Should Be Skipped as not Exists in DB
             cmbEditCategory.ItemsSource = categoriesList.Skip(1).ToList();
             cmbEditCategory.SelectedIndex = 0;
         }
 
-        //Populate List With Locations
-        //Sends Nothing
-        //Returns Nothing
-        // Change back to Site objects
-        private void LoadLocationsToList()
-        {
-            //Reset List and Add Default Option
-            locationsList.Clear();
-            locationsList.Add(new Site
-            {
-                SiteId = -1,
-                SiteName = "No Location Selected"
-            });
-
-            //QUERY
-            var dbLocations = context.Sites
-                .OrderBy(s => s.SiteName)
-                .ToList();
-
-            //LOOP and ADD
-            foreach (var location in dbLocations)
-            {
-                locationsList.Add(location);
-            }
-
-            //Bind Values
-            cmbSearchLocation.ItemsSource = locationsList;
-            cmbSearchLocation.DisplayMemberPath = "SiteName";
-            cmbSearchLocation.SelectedValuePath = "SiteId";
-            cmbSearchLocation.SelectedIndex = 0;
-
-            cmbLocation.ItemsSource = locationsList;
-            cmbLocation.DisplayMemberPath = "SiteName";
-            cmbLocation.SelectedValuePath = "SiteId";
-            cmbLocation.SelectedIndex = 0;
-        }
-
-        //Populates List With Suppliers
-        //Sends Nothing
-        //Returns Nothing
-        //Populates List With Suppliers
-        //Sends Nothing
-        //Returns Nothing
         private void LoadSuppliersToList()
         {
-
-            //Add Default First Option
             suppliersList.Add(new Supplier
             {
                 SupplierId = -1,
@@ -140,157 +73,174 @@ namespace ISDP2025_Parfonov_Zerrou.Forms.AdminUserControls
                 Active = 1
             });
 
-            //QUERY To Get All Active Suppliers
             var dbSuppliers = context.Suppliers
                 .Where(s => s.Active == 1)
                 .OrderBy(s => s.Name)
                 .ToList();
 
-            //Loop Through Each Supplier and Add to List
             foreach (var supplier in dbSuppliers)
             {
                 suppliersList.Add(supplier);
             }
 
-            //Set Up ComboBox
             cmbSupplier.ItemsSource = suppliersList;
             cmbSupplier.DisplayMemberPath = "Name";
             cmbSupplier.SelectedValuePath = "SupplierId";
             cmbSupplier.SelectedIndex = 0;
         }
 
-        //Populates DATAGRID with items
-        //Sends Nothing
-        //Returns Nothing
         private void LoadItems()
         {
-            //QUERY
-            var inventory = context.Inventories
-                .Include(i => i.Item)
-                .Include(i => i.Site)
-                .Include(i => i.Item.Supplier)
+            var inventory = context.Items
+                .Include(i => i.Supplier)
+                .Include(i => i.Inventories)
                 .Select(i => new
                 {
                     i.ItemId,
-                    i.SiteId,
-                    SiteName = i.Site.SiteName,
-                    ItemName = i.Item.Name,
-                    i.Item.Sku,
-                    i.Item.Category,
-                    i.Quantity,
-                    i.Item.Weight,
-                    i.Item.CaseSize,
-                    i.Item.CostPrice,
-                    i.Item.RetailPrice,
-                    i.Item.SupplierId,
-                    SupplierName = i.Item.Supplier.Name,
-                    Active = i.Item.Active == 1 ? "Yes" : "No"
+                    ItemName = i.Name,
+                    i.Sku,
+                    i.Category,
+                    TotalQuantity = i.Inventories.Sum(inv => inv.Quantity),
+                    i.Weight,
+                    i.CaseSize,
+                    i.CostPrice,
+                    i.RetailPrice,
+                    i.SupplierId,
+                    SupplierName = i.Supplier.Name,
+                    Active = i.Active == 1 ? "Yes" : "No"
                 })
                 .ToList();
 
-            //Bind Sources
             dgvItems.ItemsSource = inventory;
         }
 
-        //Change State Of Inputs
-        //Sends Nothing
-        //Returns BOOL
         private void EnableInputs(bool isEnabled)
         {
             txtItemName.IsEnabled = isEnabled;
             txtSKU.IsEnabled = isEnabled;
             cmbEditCategory.IsEnabled = isEnabled;
-            txtQuantity.IsEnabled = isEnabled;
+            txtQuantity.IsEnabled = false;
             txtWeight.IsEnabled = isEnabled;
             txtCostPrice.IsEnabled = isEnabled;
             txtRetailPrice.IsEnabled = isEnabled;
             txtCaseSize.IsEnabled = isEnabled;
-            cmbLocation.IsEnabled = isEnabled;
             chkActive.IsEnabled = isEnabled;
             cmbSupplier.IsEnabled = isEnabled;
         }
 
-        //Change State Of Inpugts
-        //Sends Nothing
-        //Returns BOOL
         private void EnableSearchControls(bool isEnabled)
         {
             txtSearch.IsEnabled = isEnabled;
             cmbSearchCategory.IsEnabled = isEnabled;
-            cmbSearchLocation.IsEnabled = isEnabled;
             dgvItems.IsEnabled = isEnabled;
         }
 
-        //Verifies That All Required Fields Are Populated
-        //Sends Nothinf
-        //Returns BOOL
         private bool CheckInputs()
         {
-            if (string.IsNullOrWhiteSpace(txtItemName.Text) ||
-                string.IsNullOrWhiteSpace(txtSKU.Text) ||
-                string.IsNullOrWhiteSpace(cmbEditCategory.Text) ||
-                !decimal.TryParse(txtQuantity.Text, out _) ||
-                !decimal.TryParse(txtWeight.Text, out _) ||
-                !decimal.TryParse(txtCostPrice.Text, out _) ||
-                !decimal.TryParse(txtRetailPrice.Text, out _) ||
-                !int.TryParse(txtCaseSize.Text, out _) ||
-                (int)cmbLocation.SelectedValue == -1 ||
-                cmbSupplier.SelectedValue == null)
+            var errors = new List<string>();
+
+            if (!ValidatorsFormatters.ValidateItemName(txtItemName.Text))
             {
+                errors.Add(ValidatorsFormatters.GetItemNameError(txtItemName.Text));
+            }
+
+            if (!ValidatorsFormatters.ValidateSKU(txtSKU.Text))
+            {
+                errors.Add(ValidatorsFormatters.GetSKUError(txtSKU.Text));
+            }
+
+            if (!ValidatorsFormatters.ValidateCategory(cmbEditCategory.Text))
+            {
+                errors.Add(ValidatorsFormatters.GetCategoryError(cmbEditCategory.Text));
+            }
+
+            if (!ValidatorsFormatters.ValidateWeight(txtWeight.Text))
+            {
+                errors.Add(ValidatorsFormatters.GetWeightError(txtWeight.Text));
+            }
+
+            if (!ValidatorsFormatters.ValidatePrice(txtCostPrice.Text))
+            {
+                errors.Add(ValidatorsFormatters.GetPriceError(txtCostPrice.Text));
+            }
+
+            if (!ValidatorsFormatters.ValidatePrice(txtRetailPrice.Text))
+            {
+                errors.Add(ValidatorsFormatters.GetPriceError(txtRetailPrice.Text));
+            }
+
+            if (!ValidatorsFormatters.ValidateCaseSize(txtCaseSize.Text))
+            {
+                errors.Add(ValidatorsFormatters.GetCaseSizeError(txtCaseSize.Text));
+            }
+
+            if (cmbSupplier.SelectedValue == null || (int)cmbSupplier.SelectedValue == -1)
+            {
+                errors.Add("Please select a supplier");
+            }
+
+            if (errors.Any())
+            {
+                MessageBox.Show(string.Join("\n", errors), "Validation Errors",
+                    MessageBoxButton.OK, MessageBoxImage.Warning);
                 return false;
             }
+
             return true;
         }
 
-        //Sanve new Item To The Database
-        //Sends Nothing
-        //Returns Nothing
         private void SaveNewItem()
         {
-            var item = new Item
+            try
             {
-                Name = txtItemName.Text,
-                Sku = txtSKU.Text,
-                Category = cmbEditCategory.Text,
-                Weight = decimal.Parse(txtWeight.Text),
-                CaseSize = int.Parse(txtCaseSize.Text),
-                CostPrice = decimal.Parse(txtCostPrice.Text),
-                RetailPrice = decimal.Parse(txtRetailPrice.Text),
-                SupplierId = (int)cmbSupplier.SelectedValue,
-                Description = null,
-                Active = (sbyte)(chkActive.IsChecked == true ? 1 : 0)
-            };
+                var item = new Item
+                {
+                    Name = txtItemName.Text,
+                    Sku = txtSKU.Text,
+                    Category = cmbEditCategory.Text,
+                    Weight = decimal.Parse(txtWeight.Text),
+                    CaseSize = int.Parse(txtCaseSize.Text),
+                    CostPrice = decimal.Parse(txtCostPrice.Text),
+                    RetailPrice = decimal.Parse(txtRetailPrice.Text),
+                    SupplierId = (int)cmbSupplier.SelectedValue,
+                    Description = null,
+                    Active = (sbyte)(chkActive.IsChecked == true ? 1 : 0)
+                };
 
-            //Add Item and Save
-            context.Items.Add(item);
+                context.Items.Add(item);
+                context.SaveChanges();
 
-            //Add To Inventory
-            var inventory = new Inventory
+                var sites = context.Sites.Where(s => s.Active == 1).ToList();
+                foreach (var site in sites)
+                {
+                    var inventory = new Inventory
+                    {
+                        ItemId = item.ItemId,
+                        SiteId = site.SiteId,
+                        Quantity = 0,
+                        ItemLocation = "Stock",
+                        ReorderThreshold = 0,
+                        OptimumThreshold = 0
+                    };
+                    context.Inventories.Add(inventory);
+                }
+                context.SaveChanges();
+            }
+            catch (Exception ex)
             {
-                ItemId = item.ItemId,
-                SiteId = (int)cmbLocation.SelectedValue,
-                Quantity = (int)decimal.Parse(txtQuantity.Text)
-            };
-
-            //Add 
-            context.Inventories.Add(inventory);
-            context.SaveChanges();
+                MessageBox.Show($"Error saving new item: {ex.Message}", "Error",
+                    MessageBoxButton.OK, MessageBoxImage.Error);
+                throw;
+            }
         }
 
-        //Updates Item If Already Exists
-        //Sends Nothing
-        //Returns Nothing
         private void UpdateExistingItem()
         {
             try
             {
-                //Take Item Id
                 int itemId = int.Parse(lblItemId.Content.ToString());
-
-                //Find in the database
                 var item = context.Items.Find(itemId);
 
-                //If found- procceed
                 if (item != null)
                 {
                     item.Name = txtItemName.Text;
@@ -304,114 +254,72 @@ namespace ISDP2025_Parfonov_Zerrou.Forms.AdminUserControls
                     item.Active = (sbyte)(chkActive.IsChecked == true ? 1 : 0);
                 }
 
-                //Find Inventory
-                var inventory = context.Inventories
-                    .FirstOrDefault(i => i.ItemId == itemId && i.SiteId == (int)cmbLocation.SelectedValue);
-
-                //If Found - procceed
-                if (inventory != null)
-                {
-                    inventory.Quantity = (int)decimal.Parse(txtQuantity.Text);
-                }
-                //Create New Inventory If not Found
-                else
-                {
-                    inventory = new Inventory
-                    {
-                        ItemId = itemId,
-                        SiteId = (int)cmbLocation.SelectedValue,
-                        Quantity = (int)decimal.Parse(txtQuantity.Text)
-                    };
-                    context.Inventories.Add(inventory);
-                }
+                context.SaveChanges();
             }
             catch (Exception ex)
             {
-                MessageBox.Show("Exception " + ex.Message + " found");
+                MessageBox.Show($"Error updating item: {ex.Message}", "Error",
+                    MessageBoxButton.OK, MessageBoxImage.Error);
+                throw;
             }
-
         }
 
-        //Dynamic Filters
-        //Sends Nothing
-        //Returns Nothing
         private void ApplyFilters()
         {
-            //Always Start With Fresh Data
-            var query = context.Inventories
-                .Include(i => i.Item)
-                .Include(i => i.Site)
-                .Include(i => i.Item.Supplier)
+            var query = context.Items
+                .Include(i => i.Supplier)
+                .Include(i => i.Inventories)
                 .AsQueryable();
 
-            //Filter By Input - Apply Even If Empty
             string searchText = txtSearch.Text.ToLower();
-            query = query.Where(i => i.Item.Name.ToLower().Contains(searchText));
+            query = query.Where(i => i.Name.ToLower().Contains(searchText));
 
-            //Sort By Categories
             if (cmbSearchCategory.SelectedIndex > 0)
             {
                 string category = cmbSearchCategory.SelectedItem.ToString();
-                query = query.Where(i => i.Item.Category == category);
+                query = query.Where(i => i.Category == category);
             }
 
-            //Sort By Location
-            if (cmbSearchLocation.SelectedIndex > 0)
-            {
-                int selectedSiteId = (int)cmbSearchLocation.SelectedValue;
-                query = query.Where(i => i.SiteId == selectedSiteId);
-            }
-
-            //Create Result
             var result = query.Select(i => new
             {
                 i.ItemId,
-                i.SiteId,
-                SiteName = i.Site.SiteName,
-                ItemName = i.Item.Name,
-                i.Item.Sku,
-                i.Item.Category,
-                i.Quantity,
-                i.Item.Weight,
-                i.Item.CaseSize,
-                i.Item.CostPrice,
-                i.Item.RetailPrice,
-                i.Item.SupplierId,
-                SupplierName = i.Item.Supplier.Name,
-                Active = i.Item.Active == 1 ? "Yes" : "No"
+                ItemName = i.Name,
+                i.Sku,
+                i.Category,
+                TotalQuantity = i.Inventories.Sum(inv => inv.Quantity),
+                i.Weight,
+                i.CaseSize,
+                i.CostPrice,
+                i.RetailPrice,
+                i.SupplierId,
+                SupplierName = i.Supplier.Name,
+                Active = i.Active == 1 ? "Yes" : "No"
             }).ToList();
 
-            //Update DGV
             dgvItems.ItemsSource = result;
         }
 
-        //Populates Inputs Based On Selected Item
-        //Sends Nothing
-        //Returns Nothing
         private void PopulateAddEditInputs()
         {
             if (dgvItems.Items.Count > 0 && dgvItems.SelectedItem != null)
             {
-                //IDK how it works, Found Idea In Internet, But Works!!!
                 dynamic selectedItem = dgvItems.SelectedItem;
 
                 try
                 {
-                    //Populate Inputs Wioth Item From DataGrid
                     lblItemId.Content = selectedItem.ItemId.ToString();
                     txtItemName.Text = selectedItem.ItemName;
                     txtSKU.Text = selectedItem.Sku;
                     cmbEditCategory.Text = selectedItem.Category;
-                    txtQuantity.Text = selectedItem.Quantity.ToString();
                     txtWeight.Text = selectedItem.Weight.ToString();
                     txtCostPrice.Text = selectedItem.CostPrice.ToString();
                     txtRetailPrice.Text = selectedItem.RetailPrice.ToString();
                     txtCaseSize.Text = selectedItem.CaseSize.ToString();
-                    cmbLocation.SelectedValue = selectedItem.SiteId;
                     cmbSupplier.SelectedValue = selectedItem.SupplierId;
                     chkActive.IsChecked = selectedItem.Active == "Yes";
                     btnUpdate.IsEnabled = true;
                     btnClear.IsEnabled = true;
+                    txtQuantity.Text = selectedItem.TotalQuantity.ToString();
                 }
                 catch (Exception ex)
                 {
@@ -421,25 +329,23 @@ namespace ISDP2025_Parfonov_Zerrou.Forms.AdminUserControls
             else
             {
                 btnUpdate.IsEnabled = false;
+                EnableInputs(false);
             }
         }
 
-        //Saves Items When Changed or Added
-        //Sends Nothing
-        //Returns Nothing
         private void SaveChanges()
         {
-            //Dialog Opened
-            MessageBoxResult result = MessageBox.Show("The Item Will Be Added/Updated\n YES - Save Item\n " +
-                "NO - Return To previous Page\n CANCEL - Continue Editing", "Confirmation Needed",
-                MessageBoxButton.YesNoCancel, MessageBoxImage.Question);
+            MessageBoxResult result = MessageBox.Show(
+                "The Item Will Be Added/Updated\nYES - Save Item\n" +
+                "NO - Return To previous Page\nCANCEL - Continue Editing",
+                "Confirmation Needed",
+                MessageBoxButton.YesNoCancel,
+                MessageBoxImage.Question);
 
             if (result == MessageBoxResult.Yes)
             {
                 if (!CheckInputs())
                 {
-                    MessageBox.Show("Please fill all required fields with valid values", "Validation Error",
-                        MessageBoxButton.OK, MessageBoxImage.Warning);
                     return;
                 }
 
@@ -454,7 +360,6 @@ namespace ISDP2025_Parfonov_Zerrou.Forms.AdminUserControls
                         UpdateExistingItem();
                     }
 
-                    context.SaveChanges();
                     LoadItems();
                     DefaultLayout();
                     MessageBox.Show("Item saved successfully!", "Success",
@@ -472,10 +377,7 @@ namespace ISDP2025_Parfonov_Zerrou.Forms.AdminUserControls
             }
         }
 
-        //Changes Buttons If DGV Populated
-        //Sends Nothing
-        //Returns Nothing
-        private void ChanfeButtons()
+        private void ChangeButtons()
         {
             if (dgvItems.ItemsSource == null)
             {
@@ -493,29 +395,22 @@ namespace ISDP2025_Parfonov_Zerrou.Forms.AdminUserControls
             btnSave.Visibility = Visibility.Visible;
         }
 
-        //Changes UI to Default condition
-        //Sends Nothing
-        //Returns Nothing
         private void DefaultLayout()
         {
             ClearInputs();
             EnableInputs(false);
             EnableSearchControls(true);
 
-            //Hide Buttons
             btnSave.Visibility = Visibility.Collapsed;
             btnAdd.Visibility = Visibility.Visible;
             btnUpdate.Visibility = Visibility.Visible;
             btnUpdate.IsEnabled = false;
             btnClear.Visibility = Visibility.Visible;
-
-            //Blank Searh 
-            txtSearch.Clear();
-            cmbSearchCategory.SelectedIndex = 0;
-            cmbSearchLocation.SelectedIndex = 0;
-
             btnClear.IsEnabled = false;
             btnRefresh.Visibility = Visibility.Visible;
+
+            txtSearch.Clear();
+            cmbSearchCategory.SelectedIndex = 0;
         }
 
         private void TxtSearch_TextChanged(object sender, TextChangedEventArgs e)
@@ -530,12 +425,6 @@ namespace ISDP2025_Parfonov_Zerrou.Forms.AdminUserControls
             {
                 btnClear.IsEnabled = true;
             }
-            ApplyFilters();
-        }
-
-        private void CmbSearchLocation_SelectionChanged(object sender, SelectionChangedEventArgs e)
-        {
-            if (cmbSearchLocation.SelectedIndex != 0) { btnClear.IsEnabled = true; }
             ApplyFilters();
         }
 
@@ -558,13 +447,21 @@ namespace ISDP2025_Parfonov_Zerrou.Forms.AdminUserControls
 
         private void BtnUpdate_Click(object sender, RoutedEventArgs e)
         {
-            ChanfeButtons();
+            if (dgvItems.SelectedItem == null)
+            {
+                MessageBox.Show("Please select an item to update", "No Selection",
+                    MessageBoxButton.OK, MessageBoxImage.Warning);
+            }
+            else
+            {
+                ChangeButtons();
+            }
         }
 
         private void BtnAdd_Click(object sender, RoutedEventArgs e)
         {
             ClearInputs();
-            ChanfeButtons();
+            ChangeButtons();
         }
 
         private void UserControl_Unloaded(object sender, RoutedEventArgs e)
@@ -582,14 +479,14 @@ namespace ISDP2025_Parfonov_Zerrou.Forms.AdminUserControls
 
         private void chkActive_Click(object sender, RoutedEventArgs e)
         {
-            //Check If User attempt Deactivate
             if (chkActive.IsChecked == false)
             {
-                //Declare Result and display Messagebox
-                MessageBoxResult result =
-                MessageBox.Show("You're about to deactivate this item!", "Alert", MessageBoxButton.OKCancel, MessageBoxImage.Warning);
+                MessageBoxResult result = MessageBox.Show(
+                    "You're about to deactivate this item!",
+                    "Alert",
+                    MessageBoxButton.OKCancel,
+                    MessageBoxImage.Warning);
 
-                //Check/Uncheck based on User's decision
                 if (result == MessageBoxResult.OK)
                 {
                     chkActive.IsChecked = false;

@@ -7,34 +7,15 @@ namespace ISDP2025_Parfonov_Zerrou.Forms.AdminUserControls
 {
     public partial class AdminThreshholdsControl : UserControl
     {
-        private readonly BestContext context;
-        private List<string> categoriesList = new();
+        BestContext context;
+        List<string> categoriesList = new();
 
         public AdminThreshholdsControl(Employee employee)
         {
             InitializeComponent();
             context = new BestContext();
-            LoadInitialData();
-            LoadLocations();
-        }
-
-        private void LoadInitialData()
-        {
-            try
-            {
-                LoadCategories();
-                EnableControls(false);
-                ClearFields();
-                dgvInventory.ItemsSource = null;
-            }
-            catch (Exception ex)
-            {
-                HandyControl.Controls.MessageBox.Show(
-                    $"Error loading initial data: {ex.Message}",
-                    "Error",
-                    MessageBoxButton.OK,
-                    MessageBoxImage.Error);
-            }
+            EnableControls(false);
+            ClearFields();
         }
 
         private void LoadLocations()
@@ -267,7 +248,8 @@ namespace ISDP2025_Parfonov_Zerrou.Forms.AdminUserControls
 
         private void BtnRefresh_Click(object sender, RoutedEventArgs e)
         {
-            LoadInventory();
+            LoadCategories();
+            LoadLocations();
             ClearFields();
         }
 

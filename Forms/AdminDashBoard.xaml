@@ -167,11 +167,11 @@
                     </Button>
 
                     <!-- Edit Inventory Button -->
-                    <Button x:Name="btnEditInventory" Tag="EditInventoryPage" Height="41" Margin="0,9" 
-                            Style="{StaticResource SidebarButtonStyle}" Click="btnEditInventory_Click">
-                       <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
-                            <Label Style="{StaticResource SidebarLabelStyle}" Content="&#xF044;" Padding="6,5,3,5" Margin="10,0,9,0" />
-                            <TextBlock Text="Reorder Threshholds" VerticalAlignment="Center" Width="173" />
+                    <Button x:Name="btnReorderThresholds" Tag="ReorderThresholdsPage" Height="41" Margin="0,9" 
+                        Style="{StaticResource SidebarButtonStyle}" Click="btnReorderThresholds_Click">
+                        <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                            <Label Style="{StaticResource SidebarLabelStyle}" Content="&#xF201;" Padding="6,5,3,5" Margin="10,0,9,0" />
+                            <TextBlock Text="Reorder Thresholds" VerticalAlignment="Center" />
                         </StackPanel>
                     </Button>
 

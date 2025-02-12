@@ -114,14 +114,14 @@ namespace ISDP2025_Parfonov_Zerrou
             this.Close();
         }
 
-        private void btnEditInventory_Click(object sender, RoutedEventArgs e)
-        {
-            MainContent.Content = new AdminThreshholdsControl(employee);
-        }
-
         private void btnItemNotes_Click(object sender, RoutedEventArgs e)
         {
             MainContent.Content = new ForemanInventoryControl();
+        }
+
+        private void btnReorderThresholds_Click(object sender, RoutedEventArgs e)
+        {
+            MainContent.Content = new AdminThreshholdsControl(employee);
         }
     }
 }

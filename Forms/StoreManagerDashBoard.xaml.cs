@@ -75,7 +75,7 @@ namespace ISDP2025_Parfonov_Zerrou
             MainContent.Content = new ViewLocationsControl();
         }
 
-        private void btnInventory_Click(object sender, RoutedEventArgs e)
+        private void btnReorderThresholds_Click(object sender, RoutedEventArgs e)
         {
             MainContent.Content = new EditItemsControl(employee);
         }

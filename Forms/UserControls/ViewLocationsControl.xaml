@@ -1,0 +1,148 @@
+﻿<UserControl x:Class="ISDP2025_Parfonov_Zerrou.Forms.UserControls.ViewLocationsControl"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:ISDP2025_Parfonov_Zerrou.Forms.UserControls"
+             mc:Ignorable="d" Height="672" Width="900">
+
+    <Grid Background="White" Margin="10">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <TextBlock Text="View Locations" 
+                   FontSize="24" 
+                   FontWeight="Bold" 
+                   Margin="0,0,0,10"
+                   Grid.Row="0"/>
+
+        <!-- Search Panel -->
+        <StackPanel Grid.Row="1" Orientation="Horizontal" Margin="0,0,0,5">
+            <Label Content="Search:" VerticalAlignment="Center" Margin="0,0,5,0"/>
+            <TextBox x:Name="txtSearch" Width="200" Margin="0,0,10,0" Height="22"
+                     TextChanged="TxtSearch_TextChanged"/>
+            <Label Content="Province:" VerticalAlignment="Center" Margin="0,0,5,0"/>
+            <ComboBox x:Name="cmbSearchProvince" Width="150" Margin="0,0,10,0" Height="22"
+                      SelectionChanged="CmbSearchProvince_SelectionChanged"
+                      DisplayMemberPath="ProvinceName"
+                      SelectedValuePath="ProvinceId"
+                      IsEditable="True"
+                      IsReadOnly="True"/>
+        </StackPanel>
+
+        <!-- Location Details -->
+        <GroupBox Grid.Row="2" Header="Location Details" Padding="5" Margin="0,0,0,5">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="100"/>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="100"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="28"/>
+                    <RowDefinition Height="28"/>
+                    <RowDefinition Height="28"/>
+                    <RowDefinition Height="28"/>
+                    <RowDefinition Height="28"/>
+                    <RowDefinition Height="28"/>
+                    <RowDefinition Height="28"/>
+                </Grid.RowDefinitions>
+
+                <Label Content="Site ID:" Grid.Row="0" Grid.Column="0"/>
+                <TextBlock x:Name="txtSiteId" Grid.Row="0" Grid.Column="1" Margin="5,5,0,0"/>
+
+                <Label Content="Site Name:" Grid.Row="1" Grid.Column="0"/>
+                <TextBlock x:Name="txtSiteName" Grid.Row="1" Grid.Column="1" Margin="5,5,0,0"/>
+
+                <Label Content="Address:" Grid.Row="2" Grid.Column="0"/>
+                <TextBlock x:Name="txtAddress" Grid.Row="2" Grid.Column="1" Margin="5,5,0,0"/>
+
+                <Label Content="City:" Grid.Row="3" Grid.Column="0"/>
+                <TextBlock x:Name="txtCity" Grid.Row="3" Grid.Column="1" Margin="5,5,0,0"/>
+
+                <Label Content="Province:" Grid.Row="4" Grid.Column="0"/>
+                <TextBlock x:Name="txtProvince" Grid.Row="4" Grid.Column="1" Margin="5,5,0,0"/>
+
+                <Label Content="Phone:" Grid.Row="1" Grid.Column="2"/>
+                <TextBlock x:Name="txtPhone" Grid.Row="1" Grid.Column="3" Margin="5,5,0,0"/>
+
+                <Label Content="Postal Code:" Grid.Row="2" Grid.Column="2"/>
+                <TextBlock x:Name="txtPostalCode" Grid.Row="2" Grid.Column="3" Margin="5,5,0,0"/>
+
+                <Label Content="Day of Week:" Grid.Row="3" Grid.Column="2"/>
+                <TextBlock x:Name="txtDayOfWeek" Grid.Row="3" Grid.Column="3" Margin="5,5,0,0"/>
+
+                <Label Content="Distance:" Grid.Row="4" Grid.Column="2"/>
+                <TextBlock x:Name="txtDistance" Grid.Row="4" Grid.Column="3" Margin="5,5,0,0"/>
+            </Grid>
+        </GroupBox>
+
+        <!-- Refresh Button -->
+        <Button x:Name="btnRefresh" 
+                Content="Refresh" 
+                Width="100" 
+                Height="25"
+                Grid.Row="3"
+                HorizontalAlignment="Left"
+                VerticalAlignment="Top"
+                Margin="0,5,0,0"
+                Click="BtnRefresh_Click"
+                Background="#2196F3"
+                Foreground="White"/>
+
+        <!-- Locations Grid -->
+        <DataGrid x:Name="dgvLocations" 
+                  Grid.Row="3" 
+                  AutoGenerateColumns="False" 
+                  IsReadOnly="True"
+                  SelectionMode="Single"
+                  SelectionChanged="DgLocations_SelectionChanged"
+                  Margin="0,40,0,0">
+            <DataGrid.Style>
+                <Style TargetType="DataGrid">
+                    <Style.Triggers>
+                        <Trigger Property="HasItems" Value="False">
+                            <Setter Property="Template">
+                                <Setter.Value>
+                                    <ControlTemplate>
+                                        <TextBlock Text="Click Refresh to load locations" 
+                                                 HorizontalAlignment="Center"
+                                                 VerticalAlignment="Center"
+                                                 FontStyle="Italic"
+                                                 Foreground="Gray"/>
+                                    </ControlTemplate>
+                                </Setter.Value>
+                            </Setter>
+                        </Trigger>
+                    </Style.Triggers>
+                </Style>
+            </DataGrid.Style>
+            <DataGrid.Columns>
+                <DataGridTextColumn Header="ID" Binding="{Binding SiteId}" Width="40"/>
+                <DataGridTextColumn Header="Site Name" Binding="{Binding SiteName}" Width="*"/>
+                <DataGridTextColumn Header="Address" Binding="{Binding Address}" Width="*"/>
+                <DataGridTextColumn Header="City" Binding="{Binding City}" Width="90"/>
+                <DataGridTextColumn Header="Province" 
+                    Binding="{Binding Province.ProvinceName}" 
+                    Width="80"/>
+                <DataGridTextColumn Header="Postal Code" Binding="{Binding PostalCode}" Width="80"/>
+                <DataGridTextColumn Header="Phone" Binding="{Binding Phone}" Width="90"/>
+                <DataGridTextColumn Header="Day" Binding="{Binding DayOfWeek}" Width="90"/>
+            </DataGrid.Columns>
+        </DataGrid>
+
+        <!-- Record Count -->
+        <TextBlock x:Name="lblRecordCount" 
+                   Grid.Row="4" 
+                   Margin="0,2,0,0"
+                   HorizontalAlignment="Right"
+                   FontStyle="Italic"
+                   Foreground="Gray"/>
+    </Grid>
+</UserControl>

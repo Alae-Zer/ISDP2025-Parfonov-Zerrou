@@ -141,7 +141,7 @@
 
                     <!-- Locations Button -->
                     <Button x:Name="btnLocations" Tag="LocationsPage" Height="41" Margin="0,9" 
-                            Style="{StaticResource SidebarButtonStyle}">
+                            Style="{StaticResource SidebarButtonStyle}" Click="btnLocations_Click">
                         <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
                             <Label Style="{StaticResource SidebarLabelStyle}" Content="&#xF3C5;" Padding="10,5,1,5" />
                             <TextBlock Text="Locations" VerticalAlignment="Center" />
@@ -154,6 +154,14 @@
                         <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
                             <Label Style="{StaticResource SidebarLabelStyle}" Content="&#xF468;" Padding="6,5,3,5" Margin="10,0,9,0" />
                             <TextBlock Text="Edit Items" VerticalAlignment="Center" />
+                        </StackPanel>
+                    </Button>
+
+                    <Button x:Name="btnReorderThresholds" Tag="ReorderThresholdsPage" Height="41" Margin="0,9" 
+                            Style="{StaticResource SidebarButtonStyle}" Click="btnReorderThresholds_Click">
+                            <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                            <Label Style="{StaticResource SidebarLabelStyle}" Content="&#xF201;" Padding="6,5,3,5" Margin="10,0,9,0" />
+                            <TextBlock Text="Reorder Thresholds" VerticalAlignment="Center" />
                         </StackPanel>
                     </Button>
 

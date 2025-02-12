@@ -1,7 +1,7 @@
-﻿using System.Windows;
-using System.Windows.Controls;
-using ISDP2025_Parfonov_Zerrou.Models;
+﻿using ISDP2025_Parfonov_Zerrou.Models;
 using Microsoft.EntityFrameworkCore;
+using System.Windows;
+using System.Windows.Controls;
 
 namespace ISDP2025_Parfonov_Zerrou.Forms.AdminUserControls
 {
@@ -258,15 +258,13 @@ namespace ISDP2025_Parfonov_Zerrou.Forms.AdminUserControls
             if (string.IsNullOrEmpty(firstName) || string.IsNullOrEmpty(lastName))
                 return string.Empty;
 
-            // Convert to lowercase and get base username (first initial + lastname)
             string baseUsername = (firstName[0] + lastName).ToLower();
             string username = baseUsername;
 
-            // Check if username exists
             int counter = 1;
             while (context.Employees.Any(e => e.Username.ToLower() == username.ToLower()))
             {
-                username = $"{baseUsername}{counter:D2}"; // Format counter as 2 digits
+                username = $"{baseUsername}{counter:D2}";
                 counter++;
             }
 

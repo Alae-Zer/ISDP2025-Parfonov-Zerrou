@@ -1,6 +1,7 @@
 ﻿using System.Windows;
 using ISDP2025_Parfonov_Zerrou.Forms.AdminUserControls;
 using ISDP2025_Parfonov_Zerrou.Forms.UserControls;
+using ISDP2025_Parfonov_Zerrou.Forms.ForemanUserControls;
 using ISDP2025_Parfonov_Zerrou.Functionality;
 using ISDP2025_Parfonov_Zerrou.Models;
 using Microsoft.EntityFrameworkCore;
@@ -66,7 +67,7 @@ namespace ISDP2025_Parfonov_Zerrou
 
         private void btnLocations_Click(object sender, RoutedEventArgs e)
         {
-
+            MainContent.Content = new LocationControl();
         }
 
         private void btnInventory_Click(object sender, RoutedEventArgs e)
@@ -104,7 +105,7 @@ namespace ISDP2025_Parfonov_Zerrou
 
         private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
-            logoutManager.Cleanup();
+            //logoutManager.Cleanup();
             context.Dispose();
             new MainWindow().Show();
         }
@@ -112,6 +113,16 @@ namespace ISDP2025_Parfonov_Zerrou
         private void btnLogout_Click(object sender, RoutedEventArgs e)
         {
             this.Close();
+        }
+
+        private void btnItemNotes_Click(object sender, RoutedEventArgs e)
+        {
+            MainContent.Content = new ForemanInventoryControl();
+        }
+
+        private void btnReorderThresholds_Click(object sender, RoutedEventArgs e)
+        {
+            MainContent.Content = new AdminThreshholdsControl(employee);
         }
 
         private void btnOrders_Click(object sender, RoutedEventArgs e)

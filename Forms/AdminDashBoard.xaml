@@ -129,7 +129,7 @@
                 </StackPanel>
 
                 <!-- Navigation -->
-                <StackPanel Margin="10,10,10,86">
+                <StackPanel Margin="10,10,10,0">
 
                     <!-- Employees Button -->
                     <Button x:Name="btnEmployees" Tag="EmployeesPage" Height="41" Margin="0,9" 
@@ -154,7 +154,24 @@
                             Style="{StaticResource SidebarButtonStyle}" Click="btnInventory_Click">
                         <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
                             <Label Style="{StaticResource SidebarLabelStyle}" Content="&#xF468;" Padding="6,5,3,5" Margin="10,0,9,0" />
-                            <TextBlock Text="Inventory" VerticalAlignment="Center" />
+                            <TextBlock Text="Add/Edit Items" VerticalAlignment="Center" Width="173" />
+                        </StackPanel>
+                    </Button>
+
+                    <Button x:Name="btnItemNotes" Tag="ItemNotesPage" Height="41" Margin="0,9" 
+                            Style="{StaticResource SidebarButtonStyle}" Click="btnItemNotes_Click">
+                            <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                            <Label Style="{StaticResource SidebarLabelStyle}" Content="&#xF302;" Padding="6,5,3,5" Margin="10,0,9,0" />
+                            <TextBlock Text="Item Notes/Pictures" VerticalAlignment="Center" Width="173" />
+                        </StackPanel>
+                    </Button>
+
+                    <!-- Edit Inventory Button -->
+                    <Button x:Name="btnReorderThresholds" Tag="ReorderThresholdsPage" Height="41" Margin="0,9" 
+                        Style="{StaticResource SidebarButtonStyle}" Click="btnReorderThresholds_Click">
+                        <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                            <Label Style="{StaticResource SidebarLabelStyle}" Content="&#xF201;" Padding="6,5,3,5" Margin="10,0,9,0" />
+                            <TextBlock Text="Reorder Thresholds" VerticalAlignment="Center" />
                         </StackPanel>
                     </Button>
 

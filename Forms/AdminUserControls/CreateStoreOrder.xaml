@@ -27,7 +27,7 @@
                     <hc:ComboBox x:Name="StoreComboBox" 
                                 DisplayMemberPath="SiteName"
                                 SelectedValuePath="SiteID"
-                                Margin="0,5,0,0"/>
+                                Margin="0,5,0,0" SelectionChanged="StoreComboBox_SelectionChanged"/>
                 </StackPanel>
 
                 <!-- Order Type -->
@@ -57,21 +57,26 @@
 
             <!-- Inventory Items -->
             <DockPanel Grid.Column="0">
-                <TextBox hc:InfoElement.Placeholder="Search Inventory..."
-                         hc:InfoElement.Title="Inventory Items"
-                         Style="{StaticResource TextBoxExtend}"
-                         Margin="0,0,0,5"
-                         DockPanel.Dock="Top"/>
-
+                <StackPanel DockPanel.Dock="Top" Margin="0,0,0,5">
+                    <TextBox x:Name="SearchBox" 
+                hc:InfoElement.Placeholder="Search Inventory..."
+                hc:InfoElement.Title="Inventory Items"
+                Style="{StaticResource TextBoxExtend}"
+                TextChanged="SearchBox_TextChanged"/>
+                    <hc:Pagination x:Name="InventoryPagination" 
+                      PageIndex="1"
+                      MaxPageCount="1"
+                      PageUpdated="InventoryPagination_PageUpdated"/>
+                </StackPanel>
                 <DataGrid x:Name="InventoryGrid" 
-                          AutoGenerateColumns="False"
-                          CanUserAddRows="False">
+              AutoGenerateColumns="False"
+              CanUserAddRows="False" RowHeight="36">
                     <DataGrid.Columns>
-                        <DataGridTextColumn Header="ID" Binding="{Binding ItemId}"/>
-                        <DataGridTextColumn Header="Name" Binding="{Binding Name}"/>
-                        <DataGridTextColumn Header="Quantity" Binding="{Binding Quantity}"/>
-                        <DataGridTextColumn Header="Case Size" Binding="{Binding CaseSize}"/>
-                        <DataGridTextColumn Header="Reorder Level" Binding="{Binding ReorderThreshold}"/>
+                        <DataGridTextColumn Header="ID" Binding="{Binding ItemId}" Width="Auto"/>
+                        <DataGridTextColumn Header="Name" Binding="{Binding Name}" Width="*"/>
+                        <DataGridTextColumn Header="Quantity" Binding="{Binding Quantity}" Width="Auto"/>
+                        <DataGridTextColumn Header="Case Size" Binding="{Binding CaseSize}" Width="*"/>
+                        <DataGridTextColumn Header="Reorder Level" Binding="{Binding ReorderThreshold}" Width="Auto"/>
                     </DataGrid.Columns>
                 </DataGrid>
             </DockPanel>

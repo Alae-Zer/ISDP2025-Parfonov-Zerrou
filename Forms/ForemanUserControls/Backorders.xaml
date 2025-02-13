@@ -1,0 +1,180 @@
+﻿<UserControl x:Class="ISDP2025_Parfonov_Zerrou.Forms.AdminUserControls.Backorders"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:hc="https://handyorg.github.io/handycontrol"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d">
+    <Grid Margin="10">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <!-- Header Section -->
+        <Grid Grid.Row="0">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="Auto"/>
+            </Grid.ColumnDefinitions>
+
+            <!-- Store Selection -->
+            <StackPanel Grid.Column="0" Margin="5" Orientation="Vertical">
+                <TextBlock Text="Select Store:" Style="{StaticResource TextBlockSubTitle}"/>
+                <hc:ComboBox x:Name="StoreComboBox" 
+                            DisplayMemberPath="SiteName"
+                            SelectedValuePath="SiteID"
+                            SelectionChanged="StoreComboBox_SelectionChanged"
+                            Width="200"
+                            Margin="0,5,0,0"/>
+            </StackPanel>
+
+            <!-- New Backorder Button -->
+            <Button Grid.Column="1" 
+                    x:Name="btnNewBackorder" 
+                    Content="Create Backorder" 
+                    Style="{StaticResource ButtonPrimary}"
+                    Click="btnNewBackorder_Click"
+                    Margin="10,5,5,5"
+                    VerticalAlignment="Bottom"/>
+
+            <!-- Refresh Button -->
+            <Button Grid.Column="3" 
+                    x:Name="btnRefresh" 
+                    Content="Refresh" 
+                    Style="{StaticResource ButtonDefault}"
+                    Click="btnRefresh_Click"
+                    Margin="5"
+                    VerticalAlignment="Bottom"/>
+        </Grid>
+
+        <!-- Existing Backorders Section -->
+        <GroupBox Grid.Row="1" 
+                  Header="Existing Backorders" 
+                  Margin="5,10">
+            <DataGrid x:Name="BackordersGrid" 
+                      Height="150"
+                      AutoGenerateColumns="False"
+                      SelectionChanged="BackordersGrid_SelectionChanged"
+                      CanUserAddRows="False"
+                      IsReadOnly="True"
+                      SelectionMode="Single">
+                <DataGrid.Columns>
+                    <DataGridTextColumn Header="Backorder ID" Binding="{Binding TxnId}" Width="100"/>
+                    <DataGridTextColumn Header="Store Location" Binding="{Binding SiteIdtoNavigation.SiteName}" Width="150"/>
+                    <DataGridTextColumn Header="Created Date" Binding="{Binding CreatedDate, StringFormat={}{0:MM/dd/yyyy}}" Width="120"/>
+                    <DataGridTextColumn Header="Ship Date" Binding="{Binding ShipDate, StringFormat={}{0:MM/dd/yyyy}}" Width="120"/>
+                    <DataGridTextColumn Header="Status" Binding="{Binding TxnStatus}" Width="100"/>
+                    <DataGridTextColumn Header="Notes" Binding="{Binding Notes}" Width="*"/>
+                </DataGrid.Columns>
+            </DataGrid>
+        </GroupBox>
+
+        <!-- Main Content Area -->
+        <Grid Grid.Row="2" Margin="5">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+
+            <!-- Available Items -->
+            <DockPanel Grid.Column="0">
+                <StackPanel DockPanel.Dock="Top" Margin="0,0,0,5">
+                    <TextBlock Text="Available Items in Warehouse" Style="{StaticResource TextBlockSubTitle}"/>
+                    <TextBox x:Name="SearchBox"
+                             TextChanged="SearchBox_TextChanged"
+                             hc:InfoElement.Placeholder="Search items..."
+                             Style="{StaticResource TextBoxExtend}"
+                             Margin="0,5,0,0"/>
+                </StackPanel>
+
+                <DataGrid x:Name="InventoryGrid" 
+                          AutoGenerateColumns="False"
+                          CanUserAddRows="False"
+                          IsReadOnly="True"
+                          SelectionMode="Single">
+                    <DataGrid.Columns>
+                        <DataGridTextColumn Header="ID" Binding="{Binding ItemId}" Width="60"/>
+                        <DataGridTextColumn Header="Name" Binding="{Binding Name}" Width="*"/>
+                        <DataGridTextColumn Header="Stock" Binding="{Binding Quantity}" Width="80"/>
+                        <DataGridTextColumn Header="Case Size" Binding="{Binding CaseSize}" Width="80"/>
+                    </DataGrid.Columns>
+                </DataGrid>
+            </DockPanel>
+
+            <!-- Transfer Buttons -->
+            <StackPanel Grid.Column="1" 
+                        VerticalAlignment="Center" 
+                        Margin="10">
+                <Button x:Name="btnAdd" 
+                        Content="Add >" 
+                        Style="{StaticResource ButtonPrimary}"
+                        Margin="5" 
+                        Click="btnAdd_Click"
+                        Width="80"/>
+                <Button x:Name="btnRemove" 
+                        Content="Remove" 
+                        Style="{StaticResource ButtonPrimary}"
+                        Margin="5"
+                        Click="btnRemove_Click"
+                        Width="80"/>
+            </StackPanel>
+
+            <!-- Backorder Items -->
+            <DockPanel Grid.Column="2">
+                <StackPanel DockPanel.Dock="Top" Margin="0,0,0,5">
+                    <TextBlock Text="Backorder Items" Style="{StaticResource TextBlockSubTitle}"/>
+                    <TextBlock x:Name="BackorderIdText" 
+                              Text="No backorder selected" 
+                              Foreground="Gray"
+                              Margin="0,5,0,0"/>
+                </StackPanel>
+
+                <DataGrid x:Name="BackorderItemsGrid" 
+                          AutoGenerateColumns="False"
+                          CanUserAddRows="False">
+                    <DataGrid.Columns>
+                        <DataGridTextColumn Header="ID" 
+                                          Binding="{Binding ItemId}" 
+                                          Width="60"
+                                          IsReadOnly="True"/>
+                        <DataGridTextColumn Header="Name" 
+                                          Binding="{Binding Name}" 
+                                          Width="*"
+                                          IsReadOnly="True"/>
+                        <DataGridTemplateColumn Header="Quantity" Width="120">
+                            <DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate>
+                                    <hc:NumericUpDown Value="{Binding Quantity, UpdateSourceTrigger=PropertyChanged}"
+                                                     Minimum="0"
+                                                     Increment="{Binding CaseSize}"/>
+                                </DataTemplate>
+                            </DataGridTemplateColumn.CellTemplate>
+                        </DataGridTemplateColumn>
+                        <DataGridTextColumn Header="Case Size" 
+                                          Binding="{Binding CaseSize}" 
+                                          Width="80"
+                                          IsReadOnly="True"/>
+                    </DataGrid.Columns>
+                </DataGrid>
+            </DockPanel>
+        </Grid>
+
+        <!-- Bottom Buttons -->
+        <StackPanel Grid.Row="3" 
+                    Orientation="Horizontal" 
+                    HorizontalAlignment="Right" 
+                    Margin="5,10">
+            <Button x:Name="btnSave" 
+                    Content="Save Changes" 
+                    Style="{StaticResource ButtonPrimary}"
+                    Click="btnSave_Click"
+                    Width="120"/>
+        </StackPanel>
+    </Grid>
+</UserControl>

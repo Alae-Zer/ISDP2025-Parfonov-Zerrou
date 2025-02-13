@@ -87,5 +87,10 @@ namespace ISDP2025_Parfonov_Zerrou
         {
             MainContent.Content = new EditItemsControl(employee);
         }
+
+        private void btnPermissions_Click(object sender, RoutedEventArgs e)
+        {
+            MainContent.Content = new Backorders(employee);
+        }
     }
 }

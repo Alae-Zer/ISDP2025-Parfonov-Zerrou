@@ -177,7 +177,7 @@
 
 
                     <Button x:Name="btnSettings" Tag="Settings" Height="41" Margin="0,9" 
-                            Style="{StaticResource SidebarButtonStyle}">
+                            Style="{StaticResource SidebarButtonStyle}" Click="btnSettings_Click">
                         <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
                             <Label Style="{StaticResource SidebarLabelStyle}" Content="&#xF013;" Padding="9,5,0,5"/>
                             <TextBlock Text="Settings" VerticalAlignment="Center"/>

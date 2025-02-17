@@ -79,5 +79,10 @@ namespace ISDP2025_Parfonov_Zerrou
         {
             MainContent.Content = new EditItemsControl(employee);
         }
+
+        private void btnSettings_Click(object sender, RoutedEventArgs e)
+        {
+            AuditTransactions.LogActivity(employee, 1, "GGGG", "MADE IT", employee.SiteId);
+        }
     }
 }

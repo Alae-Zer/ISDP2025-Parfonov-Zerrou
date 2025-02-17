@@ -1,11 +1,15 @@
 -- Bullseye DB SQL Script 2025
--- version 1.1
--- January 14, 2025
+-- version 1.2
+-- February 13, 2025
 -- Chris London
 
 -- ********************************************
 -- Changes
 -- ********************************************
+--
+-- 1.2 Second update 2025-02-13
+--      Added txnStatus type "Received"
+--      No idea why that went missing, but it is back!
 -- 1.1 First Update 2025-01-15
 -- 		Expand employee.Password field from varchar(32) to varchar(255)
 -- 		Added imageLocation field to item table (for storing location of images)
@@ -461,6 +465,7 @@ INSERT INTO `txnstatus` (`statusName`, `statusDescription`) VALUES
 ('DELIVERED', 'When the order has been delivered to the store'),
 ('COMPLETE', 'When the order has been accounted for by the store or received by an online customer'),
 ('REJECTED', 'When the order is rejected by the warehouse (Item no longer exists etc...)'),
+('RECEIVED', 'When a "NEW" order is "RECEIVED" by the Warehouse Manager'),
 ('CANCELLED', 'When the order is deleted (cancelled)');
 
 --

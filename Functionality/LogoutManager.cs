@@ -1,16 +1,25 @@
-﻿using System.Windows;
+﻿using ISDP2025_Parfonov_Zerrou.Models;
+using System.Windows;
 using System.Windows.Threading;
-using ISDP2025_Parfonov_Zerrou.Models;
 
+//ISDP Project
+//Mohammed Alae-Zerrou, Serhii Parfonov
+//NBCC, Winter 2025
+//Completed By Mohammed with some changes from serhii
+//Last Modified by Mohammed on Feb 1,2025
 namespace ISDP2025_Parfonov_Zerrou.Functionality
 {
     public class LogoutManager
     {
-        private readonly Window currentWindow;
-        private readonly BestContext context;
-        private readonly DispatcherTimer logoutTimer;
-        private readonly int logoutTimeInMinutes;
+        //Set of variables
+        Window currentWindow;
+        BestContext context;
+        DispatcherTimer logoutTimer;
+        int logoutTimeInMinutes;
 
+        //Constructor initializes logout management
+        //Requires active window and database context
+        //Sets up timer and event handlers for user activity tracking
         public LogoutManager(Window window, BestContext context)
         {
             this.currentWindow = window;
@@ -18,7 +27,7 @@ namespace ISDP2025_Parfonov_Zerrou.Functionality
 
             try
             {
-                // Get logout time from settings
+                //Get logout time from settings
                 var settings = context.Settings.FirstOrDefault();
                 if (settings != null)
                 {
@@ -40,16 +49,19 @@ namespace ISDP2025_Parfonov_Zerrou.Functionality
             }
         }
 
+        //Start Timer
         public void StartTimer()
         {
             logoutTimer.Start();
         }
 
+        //Stops Timer
         public void StopTimer()
         {
             logoutTimer.Stop();
         }
 
+        //Resets Logout Timer
         private void ResetLogoutTimer()
         {
             if (logoutTimer != null)
@@ -59,22 +71,24 @@ namespace ISDP2025_Parfonov_Zerrou.Functionality
             }
         }
 
+        //Handles timer completion by triggering logout
         private void LogoutTimer_Tick(object sender, EventArgs e)
         {
             SafeLogout();
         }
 
+        //Performs secure logout: stops timer, notifies user, closes window
         private void SafeLogout()
         {
             try
             {
-                // Stop the timer
+                //End timer
                 StopTimer();
 
-                // Show message to user
+                //Show message to user
                 MessageBox.Show("Your session has expired due to inactivity.", "Session Expired", MessageBoxButton.OK, MessageBoxImage.Information);
 
-                // Close current form and open MainWindow
+                //Close current form and open MainWindow
                 Application.Current.Dispatcher.Invoke(() =>
                 {
                     context.Dispose();
@@ -87,16 +101,19 @@ namespace ISDP2025_Parfonov_Zerrou.Functionality
             }
         }
 
+        //Reset timer on mouse movement
         private void Window_MouseMove(object sender, System.Windows.Input.MouseEventArgs e)
         {
             ResetLogoutTimer();
         }
 
+        //Reset timer on keyboard activity
         private void Window_KeyDown(object sender, System.Windows.Input.KeyEventArgs e)
         {
             ResetLogoutTimer();
         }
 
+        //Remove event handlers and stop timer when closing
         public void Cleanup()
         {
             StopTimer();

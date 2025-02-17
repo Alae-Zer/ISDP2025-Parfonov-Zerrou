@@ -42,7 +42,7 @@ namespace ISDP2025_Parfonov_Zerrou
                 currentSite = context.Sites.FirstOrDefault(s => s.SiteId == employee.SiteId);
 
 
-
+                txtLoggedUser.Text = "Your Username is : " + employee.Username;
                 txtUserLocation.Text = "Current Location: " + (currentSite != null ? currentSite.SiteName : "Unknown");
             }
             catch (Exception ex)
@@ -73,7 +73,7 @@ namespace ISDP2025_Parfonov_Zerrou
 
         private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
-            logoutManager.Cleanup();
+            //logoutManager.Cleanup();
             context.Dispose();
             new MainWindow().Show();
         }
@@ -86,6 +86,11 @@ namespace ISDP2025_Parfonov_Zerrou
         private void btnReorderThresholds_Click(object sender, RoutedEventArgs e)
         {
             MainContent.Content = new EditItemsControl(employee);
+        }
+
+        private void btnPermissions_Click(object sender, RoutedEventArgs e)
+        {
+            MainContent.Content = new Backorders(employee);
         }
     }
 }

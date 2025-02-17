@@ -3,7 +3,7 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:local="clr-namespace:ISDP2025_Parfonov_Zerrou"
              xmlns:hc="https://handyorg.github.io/handycontrol"
-             StartupUri="/Forms/AdminDashBoard.xaml">
+             StartupUri="/Forms/WarehouseFormanDashBoard.xaml">
     <Application.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>

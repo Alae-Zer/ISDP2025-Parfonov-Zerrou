@@ -1,4 +1,5 @@
-﻿using ISDP2025_Parfonov_Zerrou.Managers;
+﻿using ISDP2025_Parfonov_Zerrou.Functionality;
+using ISDP2025_Parfonov_Zerrou.Managers;
 using ISDP2025_Parfonov_Zerrou.Models;
 using Microsoft.EntityFrameworkCore;
 using System.Windows;
@@ -18,6 +19,7 @@ namespace ISDP2025_Parfonov_Zerrou.Forms.AdminUserControls
         List<Txn> allBackorders;
         string[] allDays = { "MONDAY", "TUESDAY", "WEDNESDAY", "THURSDAY", "FRIDAY" };
         BackorderManager backorderManager;
+        string[] validStatuses = { "NEW", "RECEIVED", "ASSEMBLING" };
 
         public Backorders(Employee employee)
         {
@@ -29,6 +31,50 @@ namespace ISDP2025_Parfonov_Zerrou.Forms.AdminUserControls
             btnNewBackorder.IsEnabled = false;
             cboDeliveryDay.ItemsSource = allDays;
             txtSearch.IsEnabled = false;
+        }
+
+        private void UpdateControlsBasedOnStatus(string status)
+        {
+            switch (status)
+            {
+                case "NEW":
+                    btnAdd.IsEnabled = true;
+                    btnRemove.IsEnabled = true;
+                    btnSave.IsEnabled = true;
+                    btnSendToAssembly.IsEnabled = false;
+                    cboDeliveryDay.IsEnabled = true;
+                    dgvWarehouseItems.IsEnabled = true;
+                    dgvBackItems.IsEnabled = true;
+                    break;
+                case "RECEIVED":
+                    btnAdd.IsEnabled = true;
+                    btnRemove.IsEnabled = true;
+                    btnSave.IsEnabled = true;
+                    btnSendToAssembly.IsEnabled = true;
+                    cboDeliveryDay.IsEnabled = true;
+                    dgvWarehouseItems.IsEnabled = true;
+                    dgvBackItems.IsEnabled = true;
+                    break;
+                case "ASSEMBLING":
+                    btnAdd.IsEnabled = false;
+                    btnRemove.IsEnabled = false;
+                    btnSave.IsEnabled = false;
+                    btnSendToAssembly.IsEnabled = false;
+                    cboDeliveryDay.IsEnabled = false;
+                    dgvBackItems.IsEnabled = false;
+                    dgvWarehouseItems.IsEnabled = false;
+
+                    break;
+                default:
+                    btnAdd.IsEnabled = false;
+                    btnRemove.IsEnabled = false;
+                    btnSave.IsEnabled = false;
+                    btnSendToAssembly.IsEnabled = false;
+                    cboDeliveryDay.IsEnabled = false;
+                    dgvBackItems.IsEnabled = false;
+                    dgvWarehouseItems.IsEnabled = false;
+                    break;
+            }
         }
 
         //Enables/disables Controls based on received bool value
@@ -81,13 +127,13 @@ namespace ISDP2025_Parfonov_Zerrou.Forms.AdminUserControls
         {
             try
             {
-                //Bind parameters and assign to DGV using backorder Manager Features
                 allBackorders = backorderManager.GetAllBackorders();
                 dgvBackorders.ItemsSource = allBackorders;
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Error loading backorders: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                MessageBox.Show($"Error loading backorders: {ex.Message}", "Error",
+                    MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
 
@@ -232,6 +278,7 @@ namespace ISDP2025_Parfonov_Zerrou.Forms.AdminUserControls
             {
                 //Show backorder details when a backorder is selected
                 lblBackorderId.Content = selectedBackorder.TxnId.ToString();
+                txtStatus.Text = selectedBackorder.TxnStatus;  // Add this line
 
                 using (var context = new BestContext())
                 {
@@ -253,6 +300,7 @@ namespace ISDP2025_Parfonov_Zerrou.Forms.AdminUserControls
                 //Display shipment date and load items
                 txtDeliveryDate.Text = selectedBackorder.ShipDate.ToString("MM/dd/yyyy");
                 LoadBackorderItems(selectedBackorder.TxnId);
+                UpdateControlsBasedOnStatus(selectedBackorder.TxnStatus);
             }
             else
             {
@@ -260,74 +308,12 @@ namespace ISDP2025_Parfonov_Zerrou.Forms.AdminUserControls
                 cboDeliveryDay.Visibility = Visibility.Collapsed;
                 lblBackorderId.Content = "N/A";
                 txtDeliveryDate.Text = "";
+                txtStatus.Text = "";
+                UpdateControlsBasedOnStatus("");
             }
         }
 
-        private void btnAdd_Click(object sender, RoutedEventArgs e)
-        {
-            try
-            {
-                //Check if backorder is selected from the grid
-                if (dgvBackorders.SelectedItem is Txn selectedBackorder)
-                {
-                    //Get selected item from warehouse items grid
-                    var selectedItem = dgvWarehouseItems.SelectedItem as BackorderItemViewModel;
-                    if (selectedItem != null)
-                    {
-                        //Add selected item to backorder and reload items
-                        backorderManager.AddItemToBackorder(
-                            selectedBackorder.TxnId,
-                            selectedItem.ItemId,
-                            selectedItem.CaseSize);
-                        LoadBackorderItems(selectedBackorder.TxnId);
-                    }
-                    else
-                    {
-                        //Show warning if no warehouse item selected
-                        MessageBox.Show("Please select an item to add", "Warning",
-                            MessageBoxButton.OK, MessageBoxImage.Warning);
-                    }
-                }
-                else
-                {
-                    //Show warning if no backorder selected
-                    MessageBox.Show("Please select a backorder first", "Warning",
-                        MessageBoxButton.OK, MessageBoxImage.Warning);
-                }
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show($"Error adding item: {ex.Message}", "Error",
-                    MessageBoxButton.OK, MessageBoxImage.Error);
-            }
-        }
 
-        private void btnRemove_Click(object sender, RoutedEventArgs e)
-        {
-            try
-            {
-                //Check if a backorder is selected from the main grid
-                if (dgvBackorders.SelectedItem is not Txn selectedBackorder)
-                {
-                    MessageBox.Show("Please select a backorder first", "Warning", MessageBoxButton.OK, MessageBoxImage.Warning);
-                }
-                //Check if an item is selected from the backorder items grid
-                else if (dgvBackItems.SelectedItem is not BackorderItemViewModel selectedItem)
-                {
-                    MessageBox.Show("Please select an item to remove", "Warning", MessageBoxButton.OK, MessageBoxImage.Warning);
-                }
-                else
-                {
-                    //Remove the selected item from the backorder and refresh the display
-                    backorderManager.RemoveItemFromBackorder(selectedBackorder.TxnId, selectedItem.ItemId);
-                    LoadBackorderItems(selectedBackorder.TxnId);
-                }
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show($"Error removing item: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
-            }
-        }
 
         private void btnNewBackorder_Click(object sender, RoutedEventArgs e)
         {
@@ -352,44 +338,117 @@ namespace ISDP2025_Parfonov_Zerrou.Forms.AdminUserControls
             }
         }
 
+        private void btnAdd_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                if (dgvBackorders.SelectedItem is Txn selectedBackorder)
+                {
+                    var selectedItem = dgvWarehouseItems.SelectedItem as BackorderItemViewModel;
+                    if (selectedItem != null)
+                    {
+                        backorderManager.AddItemToBackorder(
+                            selectedBackorder.TxnId,
+                            selectedItem.ItemId,
+                            selectedItem.CaseSize);
+
+                        LoadBackorderItems(selectedBackorder.TxnId);
+                    }
+                    else
+                    {
+                        MessageBox.Show("Please select an item to add", "Warning",
+                            MessageBoxButton.OK, MessageBoxImage.Warning);
+                    }
+                }
+                else
+                {
+                    MessageBox.Show("Please select a backorder first", "Warning",
+                        MessageBoxButton.OK, MessageBoxImage.Warning);
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Error adding item: {ex.Message}", "Error",
+                    MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+        }
+
+        private void btnRemove_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                if (dgvBackorders.SelectedItem is not Txn selectedBackorder)
+                {
+                    MessageBox.Show("Please select a backorder first", "Warning",
+                        MessageBoxButton.OK, MessageBoxImage.Warning);
+                    return;
+                }
+
+                if (dgvBackItems.SelectedItem is not BackorderItemViewModel selectedItem)
+                {
+                    MessageBox.Show("Please select an item to remove", "Warning",
+                        MessageBoxButton.OK, MessageBoxImage.Warning);
+                    return;
+                }
+
+                backorderManager.RemoveItemFromBackorder(selectedBackorder.TxnId, selectedItem.ItemId);
+                LoadBackorderItems(selectedBackorder.TxnId);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Error removing item: {ex.Message}", "Error",
+                    MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+        }
+
         private void btnSave_Click(object sender, RoutedEventArgs e)
         {
             try
             {
-                //Validate backorder selection
                 if (dgvBackorders.SelectedItem is not Txn selectedBackorder)
                 {
                     MessageBox.Show("Please select a backorder first", "Warning", MessageBoxButton.OK, MessageBoxImage.Warning);
+                    return;
                 }
-                else
-                {
-                    using (var context = new BestContext())
-                    {
-                        //Verify items exist to save
-                        var updatedItems = dgvBackItems.ItemsSource as List<BackorderItemViewModel>;
-                        if (updatedItems == null || !updatedItems.Any())
-                        {
-                            MessageBox.Show("No items to save", "Warning", MessageBoxButton.OK, MessageBoxImage.Warning);
-                        }
-                        else
-                        {
-                            //Update quantities and save changes
-                            foreach (var item in updatedItems)
-                            {
-                                var txnItem = context.Txnitems
-                                    .FirstOrDefault(ti => ti.TxnId == selectedBackorder.TxnId && ti.ItemId == item.ItemId);
-                                if (txnItem != null)
-                                {
-                                    txnItem.Quantity = item.Quantity;
-                                }
-                            }
-                            context.SaveChanges();
 
-                            //Refresh display
-                            MessageBox.Show("Changes saved successfully", "Success", MessageBoxButton.OK, MessageBoxImage.Information);
-                            LoadBackorderItems(selectedBackorder.TxnId);
-                            btnRefresh_Click(null, null);
+                using (var context = new BestContext())
+                {
+                    var updatedItems = dgvBackItems.ItemsSource as List<BackorderItemViewModel>;
+                    if (updatedItems == null || !updatedItems.Any())
+                    {
+                        MessageBox.Show("No items to save", "Warning", MessageBoxButton.OK, MessageBoxImage.Warning);
+                        return;
+                    }
+
+                    var txn = context.Txns.Find(selectedBackorder.TxnId);
+                    if (txn != null)
+                    {
+                        //Update quantities
+                        foreach (var item in updatedItems)
+                        {
+                            var txnItem = context.Txnitems
+                                .FirstOrDefault(ti => ti.TxnId == selectedBackorder.TxnId && ti.ItemId == item.ItemId);
+                            if (txnItem != null)
+                            {
+                                txnItem.Quantity = item.Quantity;
+                            }
                         }
+
+                        // Update status based on items
+                        if (txn.TxnStatus == "NEW" && updatedItems.Any())
+                        {
+                            txn.TxnStatus = "RECEIVED";
+                        }
+                        else if (txn.TxnStatus == "RECEIVED" && !updatedItems.Any())
+                        {
+                            txn.TxnStatus = "NEW";
+                        }
+
+                        context.SaveChanges();
+                        MessageBox.Show("Changes saved successfully", "Success", MessageBoxButton.OK, MessageBoxImage.Information);
+                        LoadBackorders();
+                        LoadBackorderItems(selectedBackorder.TxnId);
+                        UpdateControlsBasedOnStatus(txn.TxnStatus);
                     }
                 }
             }
@@ -468,5 +527,70 @@ namespace ISDP2025_Parfonov_Zerrou.Forms.AdminUserControls
             public int ReorderThreshold { get; set; }
             public bool BelowThreshold => CurrentStock < ReorderThreshold;
         }
+
+        private void btnSendToAssembly_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                if (dgvBackorders.SelectedItem is Txn selectedBackorder)
+                {
+                    if (selectedBackorder.TxnStatus != "RECEIVED")
+                    {
+                        MessageBox.Show("Only RECEIVED orders can be sent to assembly",
+                            "Warning", MessageBoxButton.OK, MessageBoxImage.Warning);
+                    }
+                    else
+                    {
+                        MessageBoxResult confirmResult = MessageBox.Show("Are you sure you want to send this order to assembly?",
+                            "Confirm Send", MessageBoxButton.YesNo, MessageBoxImage.Question);
+
+                        if (confirmResult == MessageBoxResult.Yes)
+                        {
+                            using (var context = new BestContext())
+                            {
+                                var txn = context.Txns.Find(selectedBackorder.TxnId);
+                                if (txn != null)
+                                {
+                                    txn.TxnStatus = "ASSEMBLING";
+                                    context.SaveChanges();
+
+                                    //Audit LOG
+                                    AuditTransactions.LogActivity(
+                                        currentUser,
+                                        txn.TxnId,
+                                        "Back Order",
+                                        "UPDATED",
+                                        txn.SiteIdto,
+                                        null,
+                                        "Status changed to ASSEMBLING"
+                                    );
+
+                                    LoadBackorders();
+                                    UpdateControlsBasedOnStatus("ASSEMBLING");
+                                    MessageBox.Show("Order sent to assembly successfully",
+                                        "Success", MessageBoxButton.OK, MessageBoxImage.Information);
+                                }
+                            }
+                        }
+                        else if (confirmResult == MessageBoxResult.No)
+                        {
+                            MessageBox.Show("Order sending canceled.",
+                                "Canceled", MessageBoxButton.OK, MessageBoxImage.Information);
+                        }
+                        else
+                        {
+                            MessageBox.Show("Unexpected response.",
+                                "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Error sending to assembly: {ex.Message}",
+                    "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+        }
+
     }
 }

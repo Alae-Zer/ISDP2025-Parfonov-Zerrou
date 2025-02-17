@@ -1,4 +1,5 @@
 ﻿using ISDP2025_Parfonov_Zerrou.Forms.AdminUserControls;
+using ISDP2025_Parfonov_Zerrou.Forms.FloorGuyUserControl;
 using ISDP2025_Parfonov_Zerrou.Forms.UserControls;
 using ISDP2025_Parfonov_Zerrou.Functionality;
 using ISDP2025_Parfonov_Zerrou.Models;
@@ -74,6 +75,11 @@ namespace ISDP2025_Parfonov_Zerrou
         private void btnLocations_Click(object sender, RoutedEventArgs e)
         {
             MainContent.Content = new ViewLocationsControl();
+        }
+
+        private void btnFulfil_Click(object sender, RoutedEventArgs e)
+        {
+            MainContent.Content = new FloorGuyFulfil(employee);
         }
     }
 }

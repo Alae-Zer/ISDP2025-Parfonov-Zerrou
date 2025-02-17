@@ -29,7 +29,10 @@ namespace ISDP2025_Parfonov_Zerrou.Managers
                 using var context = new BestContext();
                 return context.Txns
                     .Include(t => t.SiteIdtoNavigation)
-                    .Where(t => t.TxnType == "Back Order" && t.TxnStatus == "NEW")
+                    .Where(t => t.TxnType == "Back Order" &&
+                               (t.TxnStatus == "NEW" ||
+                                t.TxnStatus == "RECEIVED" ||
+                                t.TxnStatus == "ASSEMBLING"))
                     .OrderByDescending(t => t.CreatedDate)
                     .ToList();
             }

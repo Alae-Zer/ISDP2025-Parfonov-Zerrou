@@ -166,8 +166,8 @@
                     </Button>
 
                     <!-- Permissions Button -->
-                    <Button x:Name="btnPermissions" Tag="PermissionsPage" Height="41" Margin="0,9" 
-                            Style="{StaticResource SidebarButtonStyle}">
+                    <Button x:Name="btnFulfil" Tag="PermissionsPage" Height="41" Margin="0,9" 
+                            Style="{StaticResource SidebarButtonStyle}" Click="btnFulfil_Click">
                         <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
                             <Label Style="{StaticResource SidebarLabelStyle}" Content="&#xF4FF;" Padding="9,5,0,5" Margin="10,0,10,0" Width="34" />
                             <TextBlock Text="Permissions" VerticalAlignment="Center" />

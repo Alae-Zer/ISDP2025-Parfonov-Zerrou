@@ -8,13 +8,23 @@ namespace ISDP2025_Parfonov_Zerrou.Forms.UserControls
 {
     public partial class ViewOrders : UserControl
     {
-        private readonly BestContext context;
+        private BestContext context;
+        private Employee Employee;
+        private int? selectedTxnId = null;
 
         public ViewOrders()
         {
             InitializeComponent();
             context = new BestContext();
             LoadTransactions(); // Load transactions (aka orders) when control is initialized
+        }
+
+        public ViewOrders(Employee employee)
+        {
+            InitializeComponent();
+            context = new BestContext();
+            LoadTransactions(); // Load transactions (aka orders) when control is initialized
+            Employee = employee;
         }
 
         private async void LoadTransactions()
@@ -45,6 +55,7 @@ namespace ISDP2025_Parfonov_Zerrou.Forms.UserControls
                 var orders = await query
                     .Select(t => new
                     {
+                        TxnId = t.TxnId,
                         Location = t.SiteIdtoNavigation.SiteName,
                         Status = t.TxnStatus,
                         Items = t.Txnitems.Count(),
@@ -71,10 +82,27 @@ namespace ISDP2025_Parfonov_Zerrou.Forms.UserControls
 
         private void btnCreate_Click(object sender, RoutedEventArgs e)
         {
+            var existingOrder = context.Txns.FirstOrDefault(t => t.TxnStatus == "NEW"); //t.SiteIdto == Employee.SiteId &&
+
+
             var mainContent = this.Parent as ContentControl;
             if (mainContent != null)
             {
-                mainContent.Content = new CreateStoreOrder();
+                if (existingOrder != null)
+                {
+                    // Open existing order for modification
+                    mainContent.Content = new CreateStoreOrder(Employee, existingOrder.TxnId);
+                }
+                else if (selectedTxnId.HasValue)
+                {
+                    // Open selected order for modification
+                    mainContent.Content = new CreateStoreOrder(Employee, selectedTxnId.Value);
+                }
+                else
+                {
+                    // Create brand new order
+                    mainContent.Content = new CreateStoreOrder(Employee);
+                }
             }
         }
 
@@ -104,6 +132,15 @@ namespace ISDP2025_Parfonov_Zerrou.Forms.UserControls
                 return;
             }
             // write delete functionality
+        }
+
+        private void dgOrders_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if (dgOrders.SelectedItem != null)
+            {
+                dynamic selectedOrder = dgOrders.SelectedItem;
+                selectedTxnId = selectedOrder.TxnId;
+            }
         }
     }
 }

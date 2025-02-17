@@ -3,13 +3,28 @@ using System.Windows.Controls;
 using ISDP2025_Parfonov_Zerrou.Models;
 using Microsoft.EntityFrameworkCore;
 
-namespace ISDP2025_Parfonov_Zerrou.Forms.AdminUserControls
+namespace ISDP2025_Parfonov_Zerrou.Forms.UserControls
 {
     /// <summary>
-    /// Interaction logic for CreateStoreOrder.xaml
+    /// Interaction logic for CreateStoreOrderManagers.xaml
     /// </summary>
-    public partial class CreateStoreOrder : UserControl
+    public partial class CreateStoreOrderManagers : UserControl
     {
+        public CreateStoreOrderManagers()
+        {
+            InitializeComponent();
+            context = new BestContext();
+            LoadInitialData();
+        }
+
+        public CreateStoreOrderManagers(Employee emp)
+        {
+            InitializeComponent();
+            context = new BestContext();
+            LoadInitialData();
+            employee = emp;
+        }
+
         private readonly BestContext context;
         private readonly List<OrderLineItem> orderItems = new();
         private readonly List<Inventory> AllOfInventory = new();
@@ -17,7 +32,6 @@ namespace ISDP2025_Parfonov_Zerrou.Forms.AdminUserControls
         private const int ItemsPerPage = 12;
         private List<OrderItem> allItems = new();
         private string currentSearchText = "";
-        private int? existingTxnId = null;
 
 
         Employee employee;
@@ -42,66 +56,11 @@ namespace ISDP2025_Parfonov_Zerrou.Forms.AdminUserControls
             public decimal Weight { get; set; }
         }
 
-        public CreateStoreOrder()
-        {
-            InitializeComponent();
-            context = new BestContext();
-            LoadInitialData();
-        }
-
-        public CreateStoreOrder(Employee emp)
-        {
-            InitializeComponent();
-            context = new BestContext();
-            LoadInitialData();
-            employee = emp;
-        }
-
-        public CreateStoreOrder(Employee emp, int ID)
-        {
-            InitializeComponent();
-            employee = emp;
-            existingTxnId = ID;
-            context = new BestContext();
-            LoadInitialData();
-            LoadExistingOrder();
-        }
-
-        private void LoadExistingOrder()
-        {
-            if (!existingTxnId.HasValue) return;
-
-            var existingOrder = context.Txns
-                .Include(t => t.Txnitems)
-                .ThenInclude(ti => ti.Item)
-                .FirstOrDefault(t => t.TxnId == existingTxnId);
-
-            if (existingOrder != null)
-            {
-                // Populate UI with existing order data
-                StoreComboBox.SelectedValue = existingOrder.SiteIdto;
-                DeliveryDatePicker.SelectedDate = existingOrder.ShipDate;
-
-                orderItems.Clear();
-                foreach (var item in existingOrder.Txnitems)
-                {
-                    orderItems.Add(new OrderLineItem
-                    {
-                        ItemId = item.ItemId,
-                        Name = item.Item.Name,
-                        OrderQuantity = item.Quantity,
-                        CaseSize = item.Item.CaseSize,
-                        Weight = item.Item.Weight
-                    });
-                }
-                OrderGrid.ItemsSource = orderItems;
-            }
-        }
-
         private void LoadInitialData()
         {
             try
             {
+                // Load stores (excluding warehouse, corporate, etc.)
                 var stores = context.Sites
                     .Select(s => new
                     {
@@ -111,14 +70,13 @@ namespace ISDP2025_Parfonov_Zerrou.Forms.AdminUserControls
                     })
                     .OrderBy(s => s.SiteName)
                     .ToList();
-                stores.RemoveAt(0); // Corporate Headquarters
-                stores.RemoveAt(4); // Online
-                stores.RemoveAt(7); // Truck
-                stores.RemoveAt(8); // Warehouse Bay
 
                 StoreComboBox.ItemsSource = stores;
                 StoreComboBox.DisplayMemberPath = "SiteName";
                 StoreComboBox.SelectedValuePath = "SiteId";
+
+                // Load inventory items with current stock levels
+                LoadInventoryItems();
 
 
                 //PrePopulateOrder();
@@ -137,29 +95,27 @@ namespace ISDP2025_Parfonov_Zerrou.Forms.AdminUserControls
             orderItems.Clear(); // Clear existing pre-populated items
 
             int selectedSiteId = (int)StoreComboBox.SelectedValue;
-            if (orderItems == null)
+
+            var inventoryData = context.Inventories
+                .Include(i => i.Item)
+                .Where(i => i.SiteId == selectedSiteId)
+                .ToList();
+
+            foreach (var inventory in inventoryData)
             {
-                var inventoryData = context.Inventories
-                    .Include(i => i.Item)
-                    .Where(i => i.SiteId == selectedSiteId)
-                    .ToList();
-
-                foreach (var inventory in inventoryData)
+                if (inventory.Quantity <= inventory.ReorderThreshold)
                 {
-                    if (inventory.Quantity <= inventory.ReorderThreshold)
-                    {
-                        int needed = inventory.OptimumThreshold - inventory.Quantity;
-                        int cases = inventory.Item.CaseSize > 0 ? (int)Math.Ceiling((double)needed / inventory.Item.CaseSize) : needed;
+                    int needed = inventory.OptimumThreshold - inventory.Quantity;
+                    int cases = inventory.Item.CaseSize > 0 ? (int)Math.Ceiling((double)needed / inventory.Item.CaseSize) : needed;
 
-                        orderItems.Add(new OrderLineItem
-                        {
-                            ItemId = inventory.ItemId,
-                            Name = inventory.Item.Name,
-                            OrderQuantity = cases * inventory.Item.CaseSize,
-                            CaseSize = inventory.Item.CaseSize,
-                            Weight = inventory.Item.Weight
-                        });
-                    }
+                    orderItems.Add(new OrderLineItem
+                    {
+                        ItemId = inventory.ItemId,
+                        Name = inventory.Item.Name,
+                        OrderQuantity = cases * inventory.Item.CaseSize,
+                        CaseSize = inventory.Item.CaseSize,
+                        Weight = inventory.Item.Weight
+                    });
                 }
             }
 
@@ -379,18 +335,6 @@ namespace ISDP2025_Parfonov_Zerrou.Forms.AdminUserControls
         {
             LoadInventoryItems();
         }
-
-        private void nupQuantity_ValueChanged(object sender, HandyControl.Data.FunctionEventArgs<double> e)
-        {
-            // code to add item to orderItems list
-            OrderItem selectedItem = OrderGrid.SelectedItem as OrderItem;
-            if (selectedItem != null)
-            {
-                selectedItem.Quantity += selectedItem.CaseSize;
-                OrderGrid.SelectedItem = selectedItem;
-                PrePopulateOrder();
-            }
-
-        }
     }
 }
+

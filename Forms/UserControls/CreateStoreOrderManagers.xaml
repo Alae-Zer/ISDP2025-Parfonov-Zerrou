@@ -1,4 +1,4 @@
-﻿<UserControl x:Class="ISDP2025_Parfonov_Zerrou.Forms.AdminUserControls.CreateStoreOrder"
+﻿<UserControl x:Class="ISDP2025_Parfonov_Zerrou.Forms.UserControls.CreateStoreOrderManagers"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:hc="https://handyorg.github.io/handycontrol"
@@ -159,10 +159,10 @@
                         <DataGridTemplateColumn Header="Quantity" Width="58">
                             <DataGridTemplateColumn.CellTemplate>
                                 <DataTemplate>
-                                    <hc:NumericUpDown x:Name="nmpQuantity" Value="{Binding OrderQuantity}"
-                             Minimum="{Binding CaseSize}"
+                                    <hc:NumericUpDown Value="{Binding OrderQuantity}"
+                             Minimum="0"
                              Increment="{Binding CaseSize}"
-                                                      IsReadOnly="False" ValueChanged="nupQuantity_ValueChanged"/>
+                                                      IsReadOnly="False"/>
                                 </DataTemplate>
                             </DataGridTemplateColumn.CellTemplate>
                         </DataGridTemplateColumn>

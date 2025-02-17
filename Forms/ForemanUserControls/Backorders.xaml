@@ -25,9 +25,9 @@
             <!-- Store Selection -->
             <StackPanel Grid.Column="0" Margin="5" Orientation="Vertical">
                 <TextBlock Text="Select Store:" Style="{StaticResource TextBlockSubTitle}"/>
-                <hc:ComboBox x:Name="StoreComboBox" 
+                <hc:ComboBox x:Name="cboStores" 
                             DisplayMemberPath="SiteName"
-                            SelectedValuePath="SiteID"
+                            SelectedValuePath="SiteId"
                             SelectionChanged="StoreComboBox_SelectionChanged"
                             Width="200"
                             Margin="0,5,0,0"/>
@@ -46,28 +46,26 @@
             <Button Grid.Column="3" 
                     x:Name="btnRefresh" 
                     Content="Refresh" 
-                    Style="{StaticResource ButtonDefault}"
+                    Style="{StaticResource ButtonInfo}"
                     Click="btnRefresh_Click"
                     Margin="5"
                     VerticalAlignment="Bottom"/>
         </Grid>
 
         <!-- Existing Backorders Section -->
-        <GroupBox Grid.Row="1" 
-                  Header="Existing Backorders" 
-                  Margin="5,10">
-            <DataGrid x:Name="BackordersGrid" 
-                      Height="150"
+        <GroupBox Grid.Row="1" Header="Existing Backorders">
+            <DataGrid x:Name="dgvBackorders" 
+                      Height="125"
                       AutoGenerateColumns="False"
-                      SelectionChanged="BackordersGrid_SelectionChanged"
+                      SelectionChanged="dgvBackorders_SelectionChanged"
                       CanUserAddRows="False"
                       IsReadOnly="True"
                       SelectionMode="Single">
                 <DataGrid.Columns>
-                    <DataGridTextColumn Header="Backorder ID" Binding="{Binding TxnId}" Width="100"/>
-                    <DataGridTextColumn Header="Store Location" Binding="{Binding SiteIdtoNavigation.SiteName}" Width="150"/>
-                    <DataGridTextColumn Header="Created Date" Binding="{Binding CreatedDate, StringFormat={}{0:MM/dd/yyyy}}" Width="120"/>
-                    <DataGridTextColumn Header="Ship Date" Binding="{Binding ShipDate, StringFormat={}{0:MM/dd/yyyy}}" Width="120"/>
+                    <DataGridTextColumn Header="ID" Binding="{Binding TxnId}" Width="80"/>
+                    <DataGridTextColumn Header="Store" Binding="{Binding SiteIdtoNavigation.SiteName}" Width="150"/>
+                    <DataGridTextColumn Header="Created" Binding="{Binding CreatedDate, StringFormat={}{0:MM/dd/yyyy}}" Width="100"/>
+                    <DataGridTextColumn Header="Ship Date" Binding="{Binding ShipDate, StringFormat={}{0:MM/dd/yyyy}}" Width="100"/>
                     <DataGridTextColumn Header="Status" Binding="{Binding TxnStatus}" Width="100"/>
                     <DataGridTextColumn Header="Notes" Binding="{Binding Notes}" Width="*"/>
                 </DataGrid.Columns>
@@ -77,92 +75,126 @@
         <!-- Main Content Area -->
         <Grid Grid.Row="2" Margin="5">
             <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="0.4*"/>
                 <ColumnDefinition Width="Auto"/>
-                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="0.6*"/>
             </Grid.ColumnDefinitions>
 
             <!-- Available Items -->
-            <DockPanel Grid.Column="0">
-                <StackPanel DockPanel.Dock="Top" Margin="0,0,0,5">
-                    <TextBlock Text="Available Items in Warehouse" Style="{StaticResource TextBlockSubTitle}"/>
-                    <TextBox x:Name="SearchBox"
+            <GroupBox Grid.Column="0" Header="Available Items">
+                <DockPanel>
+                    <TextBox x:Name="txtSearch"
+                             DockPanel.Dock="Top"
                              TextChanged="SearchBox_TextChanged"
                              hc:InfoElement.Placeholder="Search items..."
                              Style="{StaticResource TextBoxExtend}"
-                             Margin="0,5,0,0"/>
-                </StackPanel>
+                             Margin="0,5,0,5"/>
 
-                <DataGrid x:Name="InventoryGrid" 
-                          AutoGenerateColumns="False"
-                          CanUserAddRows="False"
-                          IsReadOnly="True"
-                          SelectionMode="Single">
-                    <DataGrid.Columns>
-                        <DataGridTextColumn Header="ID" Binding="{Binding ItemId}" Width="60"/>
-                        <DataGridTextColumn Header="Name" Binding="{Binding Name}" Width="*"/>
-                        <DataGridTextColumn Header="Stock" Binding="{Binding Quantity}" Width="80"/>
-                        <DataGridTextColumn Header="Case Size" Binding="{Binding CaseSize}" Width="80"/>
-                    </DataGrid.Columns>
-                </DataGrid>
-            </DockPanel>
+                    <DataGrid x:Name="dgvWarehouseItems" 
+                              AutoGenerateColumns="False"
+                              CanUserAddRows="False"
+                              IsReadOnly="True"
+                              SelectionMode="Single">
+                        <DataGrid.Columns>
+                            <DataGridTextColumn Header="ID" Binding="{Binding ItemId}" Width="60"/>
+                            <DataGridTextColumn Header="Name" Binding="{Binding Name}" Width="*"/>
+                            <DataGridTextColumn Header="Stock" Binding="{Binding Quantity}" Width="60"/>
+                        </DataGrid.Columns>
+                    </DataGrid>
+                </DockPanel>
+            </GroupBox>
 
             <!-- Transfer Buttons -->
             <StackPanel Grid.Column="1" 
                         VerticalAlignment="Center" 
                         Margin="10">
                 <Button x:Name="btnAdd" 
-                        Content="Add >" 
+                        Content="→" 
                         Style="{StaticResource ButtonPrimary}"
-                        Margin="5" 
                         Click="btnAdd_Click"
-                        Width="80"/>
+                        Width="40"
+                        Margin="5"/>
                 <Button x:Name="btnRemove" 
-                        Content="Remove" 
-                        Style="{StaticResource ButtonPrimary}"
-                        Margin="5"
+                        Content="←" 
+                        Style="{StaticResource ButtonDanger}"
                         Click="btnRemove_Click"
-                        Width="80"/>
+                        Width="40"
+                        Margin="5"/>
             </StackPanel>
 
             <!-- Backorder Items -->
-            <DockPanel Grid.Column="2">
-                <StackPanel DockPanel.Dock="Top" Margin="0,0,0,5">
-                    <TextBlock Text="Backorder Items" Style="{StaticResource TextBlockSubTitle}"/>
-                    <TextBlock x:Name="BackorderIdText" 
-                              Text="No backorder selected" 
-                              Foreground="Gray"
-                              Margin="0,5,0,0"/>
-                </StackPanel>
+            <GroupBox Grid.Column="2" Header="Backorder Items">
+                <StackPanel Orientation="Vertical">
+                    <!-- Backorder ID, Delivery Day and Date in the same row -->
+                    <Grid Margin="5">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="Auto"/>
+                        </Grid.ColumnDefinitions>
 
-                <DataGrid x:Name="BackorderItemsGrid" 
-                          AutoGenerateColumns="False"
-                          CanUserAddRows="False">
-                    <DataGrid.Columns>
-                        <DataGridTextColumn Header="ID" 
-                                          Binding="{Binding ItemId}" 
-                                          Width="60"
-                                          IsReadOnly="True"/>
-                        <DataGridTextColumn Header="Name" 
-                                          Binding="{Binding Name}" 
-                                          Width="*"
-                                          IsReadOnly="True"/>
-                        <DataGridTemplateColumn Header="Quantity" Width="120">
-                            <DataGridTemplateColumn.CellTemplate>
-                                <DataTemplate>
-                                    <hc:NumericUpDown Value="{Binding Quantity, UpdateSourceTrigger=PropertyChanged}"
-                                                     Minimum="0"
-                                                     Increment="{Binding CaseSize}"/>
-                                </DataTemplate>
-                            </DataGridTemplateColumn.CellTemplate>
-                        </DataGridTemplateColumn>
-                        <DataGridTextColumn Header="Case Size" 
-                                          Binding="{Binding CaseSize}" 
-                                          Width="80"
-                                          IsReadOnly="True"/>
-                    </DataGrid.Columns>
-                </DataGrid>
-            </DockPanel>
+                        <!-- Backorder ID -->
+                        <StackPanel Grid.Column="0" Orientation="Horizontal" VerticalAlignment="Center" Margin="5,0">
+                            <TextBlock Text="Backorder ID:" Style="{StaticResource TextBlockSubTitle}" VerticalAlignment="Center"/>
+                            <Label x:Name="lblBackorderId" Content="N/A" FontWeight="Bold" Margin="5,0,0,0" VerticalAlignment="Center"/>
+                        </StackPanel>
+
+                        <!-- Delivery Day -->
+                        <StackPanel Grid.Column="2" Orientation="Horizontal" VerticalAlignment="Center" Margin="5,0">
+                            <TextBlock Text="Day:" Style="{StaticResource TextBlockSubTitle}" VerticalAlignment="Center"/>
+                            <hc:ComboBox x:Name="cboDeliveryDay" 
+                                        Width="120"
+                                        SelectionChanged="cboDeliveryDay_SelectionChanged"
+                                        Margin="5,0,0,0"/>
+                        </StackPanel>
+
+                        <!-- Date Display -->
+                        <StackPanel Grid.Column="3" Orientation="Horizontal" VerticalAlignment="Center" Margin="15,0,5,0">
+                            <TextBlock Text="Date:" Style="{StaticResource TextBlockSubTitle}" VerticalAlignment="Center"/>
+                            <TextBlock x:Name="txtDeliveryDate" Margin="5,0,0,0" VerticalAlignment="Center"/>
+                        </StackPanel>
+                    </Grid>
+
+                    <!-- Backorder Items DataGrid -->
+                    <DataGrid x:Name="dgvBackItems" 
+                              AutoGenerateColumns="False"
+                              CanUserAddRows="False">
+                        <DataGrid.Columns>
+                            <DataGridTextColumn Header="ID" 
+                                              Binding="{Binding ItemId}" 
+                                              Width="45"
+                                              IsReadOnly="True"/>
+                            <DataGridTextColumn Header="Name" 
+                                              Binding="{Binding Name}" 
+                                              Width="200"
+                                              IsReadOnly="True"/>
+                            <DataGridTemplateColumn Header="Quantity" Width="75">
+                                <DataGridTemplateColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <hc:NumericUpDown Value="{Binding Quantity, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                                         Minimum="0"
+                                                         Maximum="999"
+                                                         Increment="{Binding CaseSize}"/>
+                                    </DataTemplate>
+                                </DataGridTemplateColumn.CellTemplate>
+                            </DataGridTemplateColumn>
+                            <DataGridTextColumn Header="Case Size" 
+                                              Binding="{Binding CaseSize}" 
+                                              Width="80"
+                                              IsReadOnly="True"/>
+                            <DataGridTextColumn Header="Stock" 
+                                              Binding="{Binding CurrentStock}" 
+                                              Width="50"
+                                              IsReadOnly="True"/>
+                            <DataGridTextColumn Header="Optimum" 
+                                              Binding="{Binding OptimumThreshold}" 
+                                              Width="50"
+                                              IsReadOnly="True"/>
+                        </DataGrid.Columns>
+                    </DataGrid>
+                </StackPanel>
+            </GroupBox>
         </Grid>
 
         <!-- Bottom Buttons -->
@@ -174,7 +206,7 @@
                     Content="Save Changes" 
                     Style="{StaticResource ButtonPrimary}"
                     Click="btnSave_Click"
-                    Width="120"/>
+                    Width="100"/>
         </StackPanel>
     </Grid>
 </UserControl>

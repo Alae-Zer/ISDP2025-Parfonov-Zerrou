@@ -176,7 +176,7 @@
                   
                   Margin="0,10,0,0" SelectionChanged="dgvEmployees_SelectionChanged">
             <DataGrid.Columns>
-                <DataGridTextColumn Header="ID" Binding="{Binding EmployeeId}" Width="40">
+                <DataGridTextColumn Header="ID" Binding="{Binding EmployeeID}" Width="40">
                     <DataGridTextColumn.ElementStyle>
                         <Style TargetType="TextBlock">
                             <Setter Property="FontWeight" Value="Bold"/>

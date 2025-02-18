@@ -131,18 +131,6 @@ namespace ISDP2025_Parfonov_Zerrou.Managers
 
                 context.SaveChanges();
 
-                //Audit log
-                var txn = context.Txns.Find(txnId);
-                AuditTransactions.LogActivity(
-                    currentUser,
-                    txnId,
-                    "Back Order",
-                    "UPDATED",
-                    txn.SiteIdto,
-                    null,
-                    $"Added item {itemId} with quantity {quantity}"
-                );
-
                 return true;
             }
             catch (Exception ex)
@@ -213,17 +201,6 @@ namespace ISDP2025_Parfonov_Zerrou.Managers
                     var txn = context.Txns.Find(txnId);
                     context.Txnitems.Remove(txnItem);
                     context.SaveChanges();
-
-                    //Audit log
-                    AuditTransactions.LogActivity(
-                        currentUser,
-                        txnId,
-                        "Back Order",
-                        "UPDATED",
-                        txn.SiteIdto,
-                        null,
-                        $"Removed item {itemId} from backorder"
-                    );
 
                     return true;
                 }

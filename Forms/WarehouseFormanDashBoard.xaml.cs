@@ -1,4 +1,5 @@
 ﻿using ISDP2025_Parfonov_Zerrou.Forms.AdminUserControls;
+using ISDP2025_Parfonov_Zerrou.Forms.FloorGuyUserControl;
 using ISDP2025_Parfonov_Zerrou.Forms.ForemanUserControls;
 using ISDP2025_Parfonov_Zerrou.Forms.UserControls;
 using ISDP2025_Parfonov_Zerrou.Functionality;
@@ -91,6 +92,11 @@ namespace ISDP2025_Parfonov_Zerrou
         private void btnPermissions_Click(object sender, RoutedEventArgs e)
         {
             MainContent.Content = new Backorders(employee);
+        }
+
+        private void btnFulfil_Click(object sender, RoutedEventArgs e)
+        {
+            MainContent.Content = new FloorGuyFulfil(employee);
         }
     }
 }

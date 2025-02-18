@@ -3,31 +3,65 @@ using ISDP2025_Parfonov_Zerrou.Models;
 using Microsoft.EntityFrameworkCore;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Input;
 
 namespace ISDP2025_Parfonov_Zerrou.Forms.FloorGuyUserControl
 {
     public partial class FloorGuyFulfil : UserControl
     {
-        private readonly Employee currentUser;
-        private List<OrderItemViewModel> orderItems;
-        private List<OrderItemViewModel> assembledItems;
+        Employee currentUser;
+        List<OrderViewModel> allOrders;
+        List<OrderItemViewModel> orderItems;
+        List<OrderItemViewModel> assembledItems;
+        int[] notStores = { 1, 2, 3, 9999, 10000 };
 
         public FloorGuyFulfil(Employee employee)
         {
             InitializeComponent();
             currentUser = employee;
-            LoadOpenOrders();
-            InitializeControls();
+            assembledItems = new List<OrderItemViewModel>();
+            InitializeControls(false);
+            PopulateSitesComboBox();
+            cboStores.SelectedIndex = 0;
         }
 
-        private void InitializeControls()
+        private void InitializeControls(bool isEnabled)
         {
-            assembledItems = new List<OrderItemViewModel>();
-            txtBarcode.Focus();
             btnComplete.IsEnabled = false;
             btnMoveToAssembled.IsEnabled = false;
             btnMoveBack.IsEnabled = false;
+            txtSearch.IsEnabled = isEnabled;
+            cboStores.IsEnabled = isEnabled;
+            dgvOrders.ItemsSource = null;
+            dgvOrderItems.ItemsSource = null;
+            dgvAssembledItems.ItemsSource = null;
+        }
+
+        private void PopulateSitesComboBox()
+        {
+            try
+            {
+                List<Site> allSites = new List<Site>();
+                allSites.Add(new Site { SiteId = 0, SiteName = "All Stores" });
+
+                using (var context = new BestContext())
+                {
+                    var sites = context.Sites
+                        .Where(s => s.Active == 1 && !notStores.Contains(s.SiteId))
+                        .OrderBy(s => s.DayOfWeek)
+                        .Select(s => new Site { SiteId = s.SiteId, SiteName = s.SiteName })
+                        .ToList();
+
+                    allSites.AddRange(sites);
+                }
+
+                cboStores.ItemsSource = allSites;
+                cboStores.DisplayMemberPath = "SiteName";
+                cboStores.SelectedValuePath = "SiteId";
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Error loading stores: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
         }
 
         private void LoadOpenOrders()
@@ -36,29 +70,45 @@ namespace ISDP2025_Parfonov_Zerrou.Forms.FloorGuyUserControl
             {
                 using (var context = new BestContext())
                 {
-                    var orders = context.Txns
-                        .Include(t => t.SiteIdtoNavigation)
-                        .Include(t => t.Employee)
-                        .Where(t => t.TxnStatus == "ASSEMBLING")
-                        .Select(t => new
-                        {
-                            t.TxnId,
-                            t.SiteIdtoNavigation.SiteName,
-                            t.CreatedDate,
-                            t.ShipDate,
-                            t.TxnStatus,
-                            AssemblerName = $"{t.Employee.FirstName} {t.Employee.LastName}",
-                            t.Notes
-                        })
-                        .ToList();
+                    allOrders = context.Txns
+                            .Include(t => t.SiteIdtoNavigation)
+                            .Where(t => t.TxnStatus == "ASSEMBLING" &&
+                                      (t.TxnType == "Store Order" ||
+                                       t.TxnType == "Emergency Order" ||
+                                       t.TxnType == "Back Order"))
+                            .OrderBy(t => t.ShipDate)
+                            .Select(o => new OrderViewModel
+                            {
+                                TxnId = o.TxnId,
+                                StoreName = o.SiteIdtoNavigation.SiteName,
+                                TxnType = o.TxnType,
+                                ShipDate = o.ShipDate,
+                                TxnStatus = o.TxnStatus,
+                                SiteIdto = o.SiteIdto,
+                                Notes = o.Notes
+                            })
+                            .ToList();
 
-                    dgvOrders.ItemsSource = orders;
+                    UpdateOrdersGrid();
                 }
             }
             catch (Exception ex)
             {
-                HandyControl.Controls.MessageBox.Error($"Error loading orders: {ex.Message}", "Error");
+                MessageBox.Show($"Error loading orders: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
             }
+        }
+
+        private void UpdateOrdersGrid()
+        {
+            if (allOrders == null) return;
+
+            var displayOrders = allOrders;
+            if (cboStores.SelectedItem is Site selectedSite && selectedSite.SiteId != 0)
+            {
+                displayOrders = allOrders.Where(o => o.SiteIdto == selectedSite.SiteId).ToList();
+            }
+
+            dgvOrders.ItemsSource = displayOrders;
         }
 
         private void LoadOrderItems(int txnId)
@@ -67,18 +117,23 @@ namespace ISDP2025_Parfonov_Zerrou.Forms.FloorGuyUserControl
             {
                 using (var context = new BestContext())
                 {
-                    orderItems = context.Txnitems
-                        .Include(ti => ti.Item)
-                        .Where(ti => ti.TxnId == txnId)
-                        .Select(ti => new OrderItemViewModel
-                        {
-                            ItemId = ti.ItemId,
-                            Name = ti.Item.Name,
-                            Required = ti.Quantity,
-                            Remaining = ti.Quantity
-                        })
-                        .ToList();
+                    var query = from ti in context.Txnitems
+                                join i in context.Items on ti.ItemId equals i.ItemId
+                                join inv in context.Inventories
+                                on new { ti.ItemId, SiteId = 2 }
+                                equals new { inv.ItemId, inv.SiteId }
+                                where ti.TxnId == txnId
+                                select new OrderItemViewModel
+                                {
+                                    ItemId = ti.ItemId,
+                                    Name = i.Name,
+                                    Barcode = i.Sku,
+                                    Quantity = ti.Quantity,
+                                    CaseSize = i.CaseSize,
+                                    CurrentStock = inv.Quantity
+                                };
 
+                    orderItems = query.ToList();
                     dgvOrderItems.ItemsSource = orderItems;
                     assembledItems.Clear();
                     dgvAssembledItems.ItemsSource = null;
@@ -87,8 +142,114 @@ namespace ISDP2025_Parfonov_Zerrou.Forms.FloorGuyUserControl
             }
             catch (Exception ex)
             {
-                HandyControl.Controls.MessageBox.Error($"Error loading order items: {ex.Message}", "Error");
+                MessageBox.Show($"Error loading order items: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
             }
+        }
+
+        private void MoveItemToAssembled(OrderItemViewModel item)
+        {
+            try
+            {
+                var selectedOrder = dgvOrders.SelectedItem as OrderViewModel;
+                if (selectedOrder == null) return;
+
+                if (item.CurrentStock < item.CaseSize)
+                {
+                    MessageBox.Show($"Insufficient stock for {item.Name}. Current stock: {item.CurrentStock}",
+                        "Warning", MessageBoxButton.OK, MessageBoxImage.Warning);
+                    return;
+                }
+
+                using (var context = new BestContext())
+                {
+                    var destInventory = context.Inventories
+                        .FirstOrDefault(i => i.ItemId == item.ItemId && i.SiteId == 3);
+
+                    if (destInventory == null)
+                    {
+                        destInventory = new Inventory
+                        {
+                            ItemId = item.ItemId,
+                            SiteId = 3,
+                            ItemLocation = "Stock",
+                            Quantity = 0,
+                            OptimumThreshold = 0
+                        };
+                        context.Inventories.Add(destInventory);
+                        context.SaveChanges();
+                    }
+                }
+
+                if (MoveInventory.Move(item.ItemId, item.CaseSize, 2, 3))
+                {
+                    item.CurrentStock -= item.CaseSize;
+                    item.Quantity -= item.CaseSize;
+
+                    var assembledItem = assembledItems.FirstOrDefault(i => i.ItemId == item.ItemId);
+                    if (assembledItem != null)
+                    {
+                        assembledItem.Quantity += item.CaseSize;
+                    }
+                    else
+                    {
+                        assembledItems.Add(new OrderItemViewModel
+                        {
+                            ItemId = item.ItemId,
+                            Name = item.Name,
+                            Barcode = item.Barcode,
+                            Quantity = item.CaseSize,
+                            CaseSize = item.CaseSize,
+                            CurrentStock = item.CurrentStock
+                        });
+                    }
+
+                    var originalItem = orderItems.FirstOrDefault(i => i.ItemId == item.ItemId);
+                    if (originalItem != null && originalItem.Quantity <= 0)
+                    {
+                        orderItems.Remove(originalItem);
+                    }
+
+                    var popup = new ItemToCartMovement($"Moving {item.CaseSize} units of {item.Name} to assembly area");
+                    popup.Show();
+
+                    RefreshGrids();
+                    CheckOrderCompletion();
+                }
+                else
+                {
+                    MessageBox.Show($"Failed to move {item.Name} from warehouse to assembly area. Please check inventory levels.",
+                        "Warning", MessageBoxButton.OK, MessageBoxImage.Warning);
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Error moving item: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+        }
+
+        private void RefreshGrids()
+        {
+            dgvOrderItems.ItemsSource = null;
+            dgvOrderItems.ItemsSource = orderItems;
+            dgvAssembledItems.ItemsSource = null;
+            dgvAssembledItems.ItemsSource = assembledItems;
+        }
+
+        private void CheckOrderCompletion()
+        {
+            btnComplete.IsEnabled = orderItems == null || !orderItems.Any();
+        }
+
+        private void btnRefresh_Click(object sender, RoutedEventArgs e)
+        {
+            InitializeControls(true);
+            LoadOpenOrders();
+            txtSearch.IsEnabled = true;
+        }
+
+        private void cboStores_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            UpdateOrdersGrid();
         }
 
         private void SearchBox_TextChanged(object sender, TextChangedEventArgs e)
@@ -96,163 +257,39 @@ namespace ISDP2025_Parfonov_Zerrou.Forms.FloorGuyUserControl
             string searchText = txtSearch.Text.ToLower();
             if (orderItems != null)
             {
-                var filteredItems = orderItems.Where(i =>
-                    i.Name.ToLower().Contains(searchText) ||
-                    i.ItemId.ToString().Contains(searchText)).ToList();
+                var filteredItems = orderItems
+                    .Where(i => i.Name.ToLower().Contains(searchText) ||
+                               i.ItemId.ToString().Contains(searchText) ||
+                               i.Barcode.ToLower().Contains(searchText))
+                    .ToList();
                 dgvOrderItems.ItemsSource = filteredItems;
             }
         }
 
-        private void Barcode_KeyDown(object sender, KeyEventArgs e)
-        {
-            if (e.Key == Key.Enter)
-            {
-                try
-                {
-                    string barcode = txtBarcode.Text.Trim();
-                    if (string.IsNullOrEmpty(barcode)) return;
-
-                    var item = orderItems?.FirstOrDefault(i =>
-                        i.ItemId.ToString() == barcode && i.Remaining > 0);
-
-                    if (item != null)
-                    {
-                        MoveItemToAssembled(item);
-                        HandyControl.Controls.MessageBox.Success($"Scanned: {item.Name}", "Success");
-                    }
-                    else
-                    {
-                        HandyControl.Controls.MessageBox.Warning("Item not found or already assembled", "Warning");
-                    }
-
-                    txtBarcode.Clear();
-                    txtBarcode.Focus();
-                }
-                catch (Exception ex)
-                {
-                    HandyControl.Controls.MessageBox.Error($"Error processing barcode: {ex.Message}", "Error");
-                }
-            }
-        }
-
-        private void MoveItemToAssembled(OrderItemViewModel item)
-        {
-            if (MoveInventory.Move(item.ItemId, 1, 2, 3))
-            {
-                item.Remaining--;
-
-                var assembledItem = assembledItems.FirstOrDefault(i => i.ItemId == item.ItemId);
-                if (assembledItem != null)
-                {
-                    assembledItem.Assembled++;
-                }
-                else
-                {
-                    assembledItems.Add(new OrderItemViewModel
-                    {
-                        ItemId = item.ItemId,
-                        Name = item.Name,
-                        Required = item.Required,
-                        Assembled = 1
-                    });
-                }
-
-                RefreshGrids();
-                CheckOrderCompletion();
-            }
-            else
-            {
-                HandyControl.Controls.MessageBox.Warning("Failed to move inventory", "Warning");
-            }
-        }
-
-        private void RefreshGrids()
-        {
-            dgvOrderItems.Items.Refresh();
-            dgvAssembledItems.ItemsSource = null;
-            dgvAssembledItems.ItemsSource = assembledItems;
-        }
-
-        private void CheckOrderCompletion()
-        {
-            btnComplete.IsEnabled = orderItems?.All(i => i.Remaining == 0) ?? false;
-        }
-
-        private void btnComplete_Click(object sender, RoutedEventArgs e)
-        {
-            try
-            {
-                if (dgvOrders.SelectedItem != null)
-                {
-                    int txnId = (int)((dynamic)dgvOrders.SelectedItem).TxnId;
-                    using (var context = new BestContext())
-                    {
-                        var order = context.Txns.Find(txnId);
-                        if (order != null)
-                        {
-                            order.TxnStatus = "ASSEMBLED";
-                            context.SaveChanges();
-
-                            AuditTransactions.LogActivity(
-                                currentUser,
-                                txnId,
-                                order.TxnType,
-                                "ASSEMBLED",
-                                order.SiteIdto);
-
-                            HandyControl.Controls.MessageBox.Success("Order marked as assembled", "Success");
-
-                            LoadOpenOrders();
-                            ClearGrids();
-                        }
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                HandyControl.Controls.MessageBox.Error($"Error completing order: {ex.Message}", "Error");
-            }
-        }
-        private void ClearGrids()
-        {
-            dgvOrderItems.ItemsSource = null;
-            dgvAssembledItems.ItemsSource = null;
-            btnComplete.IsEnabled = false;
-            btnMoveToAssembled.IsEnabled = false;
-            btnMoveBack.IsEnabled = false;
-        }
-
-        private void btnRefresh_Click(object sender, RoutedEventArgs e)
-        {
-            LoadOpenOrders();
-            ClearGrids();
-        }
-
         private void dgvOrders_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            if (dgvOrders.SelectedItem != null)
+            if (dgvOrders.SelectedItem is OrderViewModel selectedOrder)
             {
-                int txnId = (int)((dynamic)dgvOrders.SelectedItem).TxnId;
-                LoadOrderItems(txnId);
+                LoadOrderItems(selectedOrder.TxnId);
             }
         }
 
         private void dgvOrderItems_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            btnMoveToAssembled.IsEnabled = dgvOrderItems.SelectedItem != null &&
-                ((OrderItemViewModel)dgvOrderItems.SelectedItem).Remaining > 0;
+            if (dgvOrderItems.SelectedItem is OrderItemViewModel selectedItem)
+            {
+                btnMoveToAssembled.IsEnabled = selectedItem.CurrentStock >= selectedItem.CaseSize;
+            }
         }
 
         private void dgvAssembledItems_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            btnMoveBack.IsEnabled = dgvAssembledItems.SelectedItem != null &&
-                ((OrderItemViewModel)dgvAssembledItems.SelectedItem).Assembled > 0;
+            btnMoveBack.IsEnabled = dgvAssembledItems.SelectedItem != null;
         }
 
         private void btnMoveToAssembled_Click(object sender, RoutedEventArgs e)
         {
-            var selectedItem = dgvOrderItems.SelectedItem as OrderItemViewModel;
-            if (selectedItem?.Remaining > 0)
+            if (dgvOrderItems.SelectedItem is OrderItemViewModel selectedItem)
             {
                 MoveItemToAssembled(selectedItem);
             }
@@ -261,15 +298,34 @@ namespace ISDP2025_Parfonov_Zerrou.Forms.FloorGuyUserControl
         private void btnMoveBack_Click(object sender, RoutedEventArgs e)
         {
             var selectedItem = dgvAssembledItems.SelectedItem as OrderItemViewModel;
-            if (selectedItem?.Assembled > 0)
-            {
-                if (MoveInventory.Move(selectedItem.ItemId, 1, 3, 2))
-                {
-                    var orderItem = orderItems.First(i => i.ItemId == selectedItem.ItemId);
-                    orderItem.Remaining++;
-                    selectedItem.Assembled--;
+            var selectedOrder = dgvOrders.SelectedItem as OrderViewModel;
 
-                    if (selectedItem.Assembled == 0)
+            if (selectedItem?.Quantity > 0 && selectedOrder != null)
+            {
+                if (MoveInventory.Move(selectedItem.ItemId, selectedItem.CaseSize, 3, 2))
+                {
+                    var orderItem = orderItems.FirstOrDefault(i => i.ItemId == selectedItem.ItemId);
+                    if (orderItem == null)
+                    {
+                        orderItem = new OrderItemViewModel
+                        {
+                            ItemId = selectedItem.ItemId,
+                            Name = selectedItem.Name,
+                            Barcode = selectedItem.Barcode,
+                            Quantity = selectedItem.Quantity,
+                            CaseSize = selectedItem.CaseSize,
+                            CurrentStock = 0
+                        };
+                        orderItems.Add(orderItem);
+                    }
+
+                    orderItem.CurrentStock += selectedItem.CaseSize;
+                    selectedItem.Quantity -= selectedItem.CaseSize;
+
+                    var popup = new ItemToCartMovement($"Moving {selectedItem.CaseSize} units of {selectedItem.Name} back to warehouse");
+                    popup.Show();
+
+                    if (selectedItem.Quantity == 0)
                     {
                         assembledItems.Remove(selectedItem);
                     }
@@ -279,18 +335,71 @@ namespace ISDP2025_Parfonov_Zerrou.Forms.FloorGuyUserControl
                 }
                 else
                 {
-                    HandyControl.Controls.MessageBox.Warning("Failed to move item back to warehouse", "Warning");
+                    MessageBox.Show("Failed to move item back to warehouse", "Warning", MessageBoxButton.OK, MessageBoxImage.Warning);
                 }
             }
         }
 
-        public class OrderItemViewModel
+        private void btnComplete_Click(object sender, RoutedEventArgs e)
         {
-            public int ItemId { get; set; }
-            public string Name { get; set; }
-            public int Required { get; set; }
-            public int Assembled { get; set; }
-            public int Remaining { get; set; }
+            try
+            {
+                var selectedOrder = dgvOrders.SelectedItem as OrderViewModel;
+                if (selectedOrder != null)
+                {
+                    using (var context = new BestContext())
+                    {
+                        var order = context.Txns.Find(selectedOrder.TxnId);
+                        if (order != null)
+                        {
+                            order.TxnStatus = "ASSEMBLED";
+                            context.SaveChanges();
+
+                            var totalItems = assembledItems.Sum(i => i.Quantity);
+
+                            AuditTransactions.LogActivity(
+                                currentUser,
+                                order.TxnId,
+                                order.TxnType,
+                                "ASSEMBLED",
+                                order.SiteIdto,
+                                null,
+                                $"Order assembly completed. Total items assembled: {totalItems}"
+                            );
+
+                            MessageBox.Show("Order marked as assembled", "Success", MessageBoxButton.OK, MessageBoxImage.Information);
+                            LoadOpenOrders();
+                            InitializeControls(true);
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Error completing order: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
         }
+    }
+
+    public class OrderViewModel
+    {
+        public int TxnId { get; set; }
+        public string StoreName { get; set; }
+        public string TxnType { get; set; }
+        public DateTime ShipDate { get; set; }
+        public string TxnStatus { get; set; }
+        public int SiteIdto { get; set; }
+        public string Notes { get; set; }
+    }
+
+    public class OrderItemViewModel
+    {
+        public int ItemId { get; set; }
+        public string Name { get; set; }
+        public string Barcode { get; set; }
+        public int Quantity { get; set; }
+        public int CaseSize { get; set; }
+        public int CurrentStock { get; set; }
+        public bool InsufficientStock => CurrentStock < Quantity;
     }
 }

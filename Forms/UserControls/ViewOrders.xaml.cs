@@ -117,7 +117,12 @@ namespace ISDP2025_Parfonov_Zerrou.Forms.UserControls
                               MessageBoxImage.Warning);
                 return;
             }
-            // have receive functionality
+            int txnID = (int)selectedOrder.GetType().GetProperty("TxnId").GetValue(selectedOrder);
+            var transaction = context.Txns.FirstOrDefault(t => t.TxnId == txnID);
+            transaction.TxnStatus = "DELIVERED";
+            context.Txns.Update(transaction);
+            context.SaveChanges();
+            LoadTransactions();
         }
 
         private void btnDelete_Click(object sender, RoutedEventArgs e)
@@ -139,7 +144,13 @@ namespace ISDP2025_Parfonov_Zerrou.Forms.UserControls
             if (dgOrders.SelectedItem != null)
             {
                 dynamic selectedOrder = dgOrders.SelectedItem;
-                selectedTxnId = selectedOrder.TxnId;
+                if (selectedOrder.GetType().GetProperty("Status").GetValue(selectedOrder) == "NEW")
+                {
+                    selectedTxnId = selectedOrder.TxnId;
+
+                }
+                else
+                    MessageBox.Show("No");
             }
         }
     }

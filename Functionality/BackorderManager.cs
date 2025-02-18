@@ -31,8 +31,7 @@ namespace ISDP2025_Parfonov_Zerrou.Managers
                     .Include(t => t.SiteIdtoNavigation)
                     .Where(t => t.TxnType == "Back Order" &&
                                (t.TxnStatus == "NEW" ||
-                                t.TxnStatus == "RECEIVED" ||
-                                t.TxnStatus == "ASSEMBLING"))
+                                t.TxnStatus == "RECEIVED"))
                     .OrderByDescending(t => t.CreatedDate)
                     .ToList();
             }
@@ -53,7 +52,7 @@ namespace ISDP2025_Parfonov_Zerrou.Managers
                 return context.Txns
                     .FirstOrDefault(t => t.SiteIdto == siteId
                                     && t.TxnType == "Back Order"
-                                    && t.TxnStatus == "NEW");
+                                    && (t.TxnStatus == "NEW" || t.TxnStatus == "RECEIVED"));
             }
             catch (Exception ex)
             {

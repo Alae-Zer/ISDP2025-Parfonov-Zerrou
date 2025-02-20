@@ -483,7 +483,7 @@ namespace ISDP2025_Parfonov_Zerrou.Forms.AdminUserControls
                     int currentDayNumber = (int)currentDate.DayOfWeek;
                     int daysToAdd;
 
-                    // Calculate how many days to add
+                    //Calculate how many days to add
                     if (currentDayNumber < targetDayNumber)
                     {
                         daysToAdd = targetDayNumber - currentDayNumber;

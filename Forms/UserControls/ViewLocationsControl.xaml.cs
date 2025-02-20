@@ -52,12 +52,8 @@ namespace ISDP2025_Parfonov_Zerrou.Forms.UserControls
                 //Bind values
                 cmbSearchProvince.ItemsSource = searchProvinces;
 
-                //Set NB as default if In the DB
-                var newBrunswick = provinces.FirstOrDefault(p => p.ProvinceName == "New Brunswick");
-                if (newBrunswick != null)
-                    cmbSearchProvince.SelectedItem = newBrunswick;
-                else
-                    cmbSearchProvince.SelectedIndex = 0;
+                //Set Default - Obviously NB
+                cmbSearchProvince.SelectedValue = "NB";
 
                 //Search controls Disabling
                 EnableSearchControls(false);
@@ -69,11 +65,12 @@ namespace ISDP2025_Parfonov_Zerrou.Forms.UserControls
             }
         }
 
-        // Loads and displays active locations
+        //Loads and displays active locations
         private void LoadLocations()
         {
             try
             {
+                //QUERY
                 var locations = context.Sites
                     .Include(s => s.Province)
                     .Where(s => s.Active == 1)
@@ -99,9 +96,10 @@ namespace ISDP2025_Parfonov_Zerrou.Forms.UserControls
                     .OrderBy(s => s.SiteName)
                     .ToList();
 
+                //Bind and Update count
                 dgvLocations.ItemsSource = locations;
                 UpdateRecordCount();
-                EnableSearchControls(locations.Any());
+                //EnableSearchControls(locations.Any());
             }
             catch (Exception ex)
             {
@@ -117,71 +115,85 @@ namespace ISDP2025_Parfonov_Zerrou.Forms.UserControls
             cmbSearchProvince.IsEnabled = enabled;
         }
 
-        // Filters data based on search text and selected province
+        //Filters data based on search text and selected province
         private void ApplyFilters()
         {
-            if (dgvLocations.ItemsSource == null) return;
-
-            try
+            if (dgvLocations.ItemsSource != null)
             {
-                var query = context.Sites
-                    .Include(s => s.Province)
-                    .Where(s => s.Active == 1)
-                    .AsQueryable();
-
-                // Apply text search filter
-                if (!string.IsNullOrWhiteSpace(txtSearch.Text))
+                try
                 {
-                    string searchText = txtSearch.Text.ToLower();
-                    query = query.Where(s =>
-                        s.SiteName.ToLower().Contains(searchText) ||
-                        s.City.ToLower().Contains(searchText) ||
-                        s.Address.ToLower().Contains(searchText));
-                }
+                    //Start Query
+                    var query = context.Sites
+                        .Include(s => s.Province)
+                        .Where(s => s.Active == 1)
+                        .AsQueryable();
 
-                // Apply province filter
-                if (cmbSearchProvince.SelectedValue != null && cmbSearchProvince.SelectedValue.ToString() != "-1")
-                {
-                    string provinceId = cmbSearchProvince.SelectedValue.ToString();
-                    query = query.Where(s => s.ProvinceId == provinceId);
-                }
-
-                var result = query
-                    .Select(s => new
+                    //Text Search
+                    if (!string.IsNullOrWhiteSpace(txtSearch.Text))
                     {
-                        s.SiteId,
-                        s.SiteName,
-                        s.Address,
-                        s.City,
-                        s.ProvinceId,
-                        ProvinceName = s.Province.ProvinceName,
-                        s.PostalCode,
-                        s.Phone,
-                        s.DayOfWeek,
-                        s.DistanceFromWh
-                    })
-                    .OrderBy(s => s.SiteName)
-                    .ToList();
+                        //Add To QUERY
+                        string searchText = txtSearch.Text.ToLower();
+                        query = query.Where(s =>
+                            s.SiteName.ToLower().Contains(searchText) ||
+                            s.City.ToLower().Contains(searchText) ||
+                            s.Address.ToLower().Contains(searchText));
+                    }
 
-                dgvLocations.ItemsSource = result;
+                    //Province filter, was modified so still holds default index
+                    if (cmbSearchProvince.SelectedValue != null && cmbSearchProvince.SelectedValue.ToString() != "-1")
+                    {
+                        //Add Again
+                        string? provinceId = cmbSearchProvince.SelectedValue.ToString();
+                        query = query.Where(s => s.ProvinceId == provinceId);
+                    }
+
+                    //And Finally assemble our list
+                    var result = query
+                        .Select(s => new
+                        {
+                            s.SiteId,
+                            s.SiteName,
+                            s.Address,
+                            s.City,
+                            s.ProvinceId,
+                            ProvinceName = s.Province.ProvinceName,
+                            s.PostalCode,
+                            s.Phone,
+                            s.DayOfWeek,
+                            s.DistanceFromWh
+                        })
+                        .OrderBy(s => s.SiteName)
+                        .ToList();
+
+                    //Bind sources
+                    dgvLocations.ItemsSource = result;
+                    UpdateRecordCount();
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show($"Error applying filters: {ex.Message}", "Error",
+                        MessageBoxButton.OK, MessageBoxImage.Error);
+                }
+            }
+            else
+            {
+                dgvLocations.ItemsSource = null;
                 UpdateRecordCount();
             }
-            catch (Exception ex)
-            {
-                MessageBox.Show($"Error applying filters: {ex.Message}", "Error",
-                    MessageBoxButton.OK, MessageBoxImage.Error);
-            }
         }
 
-        // Updates the total record count display
+        //Total Count
         private void UpdateRecordCount()
         {
-            var items = dgvLocations.ItemsSource as IEnumerable<object>;
-            int count = items?.Count() ?? 0;
-            lblRecordCount.Text = $"Total Records: {count}";
+            int count = 0;
+            if (dgvLocations.Items != null)
+            {
+                count = dgvLocations.Items.Count;
+            }
+            lblRecordCount.Text = "Total Records: " + count.ToString();
         }
 
-        // Event handlers for UI interactions
+        //Search text Changes
         private void TxtSearch_TextChanged(object sender, TextChangedEventArgs e)
         {
             ApplyFilters();
@@ -194,17 +206,19 @@ namespace ISDP2025_Parfonov_Zerrou.Forms.UserControls
 
         private void BtnRefresh_Click(object sender, RoutedEventArgs e)
         {
+            //DEfault state 
             LoadLocations();
             txtSearch.Focus();
             txtSearch.Text = "";
             cmbSearchProvince.SelectedValue = "NB";
         }
 
-        // Updates detail fields when location selection changes
+        //Updates detail fields when location selection changes
         private void DgLocations_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             if (dgvLocations.SelectedItem != null)
             {
+                //Only for displaying in controls
                 dynamic selectedItem = dgvLocations.SelectedItem;
 
                 txtSiteId.Text = selectedItem.SiteId.ToString();
@@ -219,7 +233,7 @@ namespace ISDP2025_Parfonov_Zerrou.Forms.UserControls
             }
         }
 
-        // Cleanup when control is unloaded
+        //Cleanup when control is unloaded
         private void UserControl_Unloaded(object sender, RoutedEventArgs e)
         {
             if (context != null)

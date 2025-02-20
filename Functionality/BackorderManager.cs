@@ -98,6 +98,7 @@ namespace ISDP2025_Parfonov_Zerrou.Managers
             }
         }
 
+        //Adds or Updates items in backorders
         public bool AddItemToBackorder(int txnId, int itemId, int quantity)
         {
             try
@@ -138,6 +139,7 @@ namespace ISDP2025_Parfonov_Zerrou.Managers
             }
         }
 
+        //Add Item to backorder
         public bool AddToBackorder(Txn originalTransaction, int itemId, int quantity)
         {
             try

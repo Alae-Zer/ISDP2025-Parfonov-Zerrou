@@ -99,7 +99,7 @@ namespace ISDP2025_Parfonov_Zerrou.Forms.UserControls
                 //Bind and Update count
                 dgvLocations.ItemsSource = locations;
                 UpdateRecordCount();
-                //EnableSearchControls(locations.Any());
+                EnableSearchControls(locations.Any());
             }
             catch (Exception ex)
             {

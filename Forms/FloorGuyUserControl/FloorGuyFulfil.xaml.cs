@@ -4,6 +4,11 @@ using Microsoft.EntityFrameworkCore;
 using System.Windows;
 using System.Windows.Controls;
 
+//ISDP Project
+//Mohammed Alae-Zerrou, Serhii Parfonov
+//NBCC, Winter 2025
+//Completed By Equal Share of Mohammed and Serhii
+//Last Modified by Mohammed on January 26,2025
 namespace ISDP2025_Parfonov_Zerrou.Forms.FloorGuyUserControl
 {
     public partial class FloorGuyFulfil : UserControl

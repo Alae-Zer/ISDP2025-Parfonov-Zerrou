@@ -9,7 +9,7 @@ using System.Windows;
 //Mohammed Alae-Zerrou, Serhii Parfonov
 //NBCC, Winter 2025
 //Completed By Equal Share of Mohammed and Serhii
-//Last Modified by Mohammed on January 26,2025
+//Last Modified by Mohammed on January 20,2025
 namespace ISDP2025_Parfonov_Zerrou
 {
     public partial class FinanceManagerDashBoard : Window

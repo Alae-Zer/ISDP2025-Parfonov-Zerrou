@@ -129,7 +129,7 @@
                 <DataGridTextColumn Header="Address" Binding="{Binding Address}" Width="*"/>
                 <DataGridTextColumn Header="City" Binding="{Binding City}" Width="90"/>
                 <DataGridTextColumn Header="Province" 
-                    Binding="{Binding Province.ProvinceName}" 
+                    Binding="{Binding ProvinceName}" 
                     Width="80"/>
                 <DataGridTextColumn Header="Postal Code" Binding="{Binding PostalCode}" Width="80"/>
                 <DataGridTextColumn Header="Phone" Binding="{Binding Phone}" Width="90"/>

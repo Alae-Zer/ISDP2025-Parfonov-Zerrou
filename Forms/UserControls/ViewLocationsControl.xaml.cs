@@ -3,12 +3,20 @@ using Microsoft.EntityFrameworkCore;
 using System.Windows;
 using System.Windows.Controls;
 
+//ISDP Project
+//Mohammed Alae-Zerrou, Serhii Parfonov
+//NBCC, Winter 2025
+//Completed By Equal Share of Mohammed and Serhii
+//Last Modified by Serhii on February 20,2025
 namespace ISDP2025_Parfonov_Zerrou.Forms.UserControls
 {
+    //Displays Sites in DGV with Search Functionality
     public partial class ViewLocationsControl : UserControl
     {
+        //Context Declaration - Global
         private BestContext context;
 
+        //Initialize controls
         public ViewLocationsControl()
         {
             InitializeComponent();
@@ -18,28 +26,40 @@ namespace ISDP2025_Parfonov_Zerrou.Forms.UserControls
             UpdateRecordCount();
         }
 
+        //Populates province dropdown with DB values
         private void InitializeControls()
         {
+            //TRYCATCH
             try
             {
+                //QUERY
                 var provinces = context.Provinces
                     .OrderBy(p => p.ProvinceName)
                     .ToList();
 
+                //Combine Default value with Values from DB
                 var searchProvinces = new List<Province>
-        {
-            new Province { ProvinceId = "-1", ProvinceName = "All Provinces" }
-        };
-                searchProvinces.AddRange(provinces);
+                {
+                    new Province { ProvinceId = "-1", ProvinceName = "All Provinces" }
+                };
 
+                //LOOP
+                foreach (var province in provinces)
+                {
+                    searchProvinces.Add(province);
+                }
+
+                //Bind values
                 cmbSearchProvince.ItemsSource = searchProvinces;
 
+                //Set NB as default if In the DB
                 var newBrunswick = provinces.FirstOrDefault(p => p.ProvinceName == "New Brunswick");
                 if (newBrunswick != null)
                     cmbSearchProvince.SelectedItem = newBrunswick;
                 else
                     cmbSearchProvince.SelectedIndex = 0;
 
+                //Search controls Disabling
                 EnableSearchControls(false);
             }
             catch (Exception ex)
@@ -49,6 +69,7 @@ namespace ISDP2025_Parfonov_Zerrou.Forms.UserControls
             }
         }
 
+        // Loads and displays active locations
         private void LoadLocations()
         {
             try
@@ -63,9 +84,11 @@ namespace ISDP2025_Parfonov_Zerrou.Forms.UserControls
                         s.Address,
                         s.City,
                         ProvinceName = s.Province.ProvinceName,
+                        // Format postal code XXX-XXX
                         PostalCode = string.Format("{0}-{1}",
                             s.PostalCode.Substring(0, 3),
                             s.PostalCode.Substring(3, 3)),
+                        // Format phone (XXX) XXX-XXXX
                         Phone = string.Format("({0}) {1}-{2}",
                             s.Phone.Substring(0, 3),
                             s.Phone.Substring(3, 3),
@@ -87,12 +110,14 @@ namespace ISDP2025_Parfonov_Zerrou.Forms.UserControls
             }
         }
 
+        // Toggles search controls based on data availability
         private void EnableSearchControls(bool enabled)
         {
             txtSearch.IsEnabled = enabled;
             cmbSearchProvince.IsEnabled = enabled;
         }
 
+        // Filters data based on search text and selected province
         private void ApplyFilters()
         {
             if (dgvLocations.ItemsSource == null) return;
@@ -104,6 +129,7 @@ namespace ISDP2025_Parfonov_Zerrou.Forms.UserControls
                     .Where(s => s.Active == 1)
                     .AsQueryable();
 
+                // Apply text search filter
                 if (!string.IsNullOrWhiteSpace(txtSearch.Text))
                 {
                     string searchText = txtSearch.Text.ToLower();
@@ -113,6 +139,7 @@ namespace ISDP2025_Parfonov_Zerrou.Forms.UserControls
                         s.Address.ToLower().Contains(searchText));
                 }
 
+                // Apply province filter
                 if (cmbSearchProvince.SelectedValue != null && cmbSearchProvince.SelectedValue.ToString() != "-1")
                 {
                     string provinceId = cmbSearchProvince.SelectedValue.ToString();
@@ -138,7 +165,6 @@ namespace ISDP2025_Parfonov_Zerrou.Forms.UserControls
 
                 dgvLocations.ItemsSource = result;
                 UpdateRecordCount();
-                EnableSearchControls(result.Any());
             }
             catch (Exception ex)
             {
@@ -147,6 +173,7 @@ namespace ISDP2025_Parfonov_Zerrou.Forms.UserControls
             }
         }
 
+        // Updates the total record count display
         private void UpdateRecordCount()
         {
             var items = dgvLocations.ItemsSource as IEnumerable<object>;
@@ -154,6 +181,7 @@ namespace ISDP2025_Parfonov_Zerrou.Forms.UserControls
             lblRecordCount.Text = $"Total Records: {count}";
         }
 
+        // Event handlers for UI interactions
         private void TxtSearch_TextChanged(object sender, TextChangedEventArgs e)
         {
             ApplyFilters();
@@ -167,8 +195,12 @@ namespace ISDP2025_Parfonov_Zerrou.Forms.UserControls
         private void BtnRefresh_Click(object sender, RoutedEventArgs e)
         {
             LoadLocations();
+            txtSearch.Focus();
+            txtSearch.Text = "";
+            cmbSearchProvince.SelectedValue = "NB";
         }
 
+        // Updates detail fields when location selection changes
         private void DgLocations_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             if (dgvLocations.SelectedItem != null)
@@ -187,6 +219,7 @@ namespace ISDP2025_Parfonov_Zerrou.Forms.UserControls
             }
         }
 
+        // Cleanup when control is unloaded
         private void UserControl_Unloaded(object sender, RoutedEventArgs e)
         {
             if (context != null)

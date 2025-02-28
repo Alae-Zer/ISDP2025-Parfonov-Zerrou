@@ -25,13 +25,15 @@
             <StackPanel Grid.Row="0" Orientation="Horizontal" Margin="0,0,0,10">
                 <TextBlock Text="Order Type:" VerticalAlignment="Center"/>
                 <hc:ComboBox x:Name="cmbOrderType" Width="120" Margin="5,0,15,0">
-                    <ComboBoxItem Content="Regular"/>
-                    <ComboBoxItem Content="Emergency"/>
-                    <ComboBoxItem Content="Backorder"/>
+                    <ComboBoxItem Content="All"/>
+                    <ComboBoxItem Content="Store Order"/>
+                    <ComboBoxItem Content="Emergency Order"/>
+                    <ComboBoxItem Content="Back Order"/>
                 </hc:ComboBox>
 
                 <TextBlock Text="Status:" VerticalAlignment="Center"/>
                 <hc:ComboBox x:Name="cmbStatus" Width="120" Margin="5,0">
+                    <ComboBoxItem Content="ALL"/>
                     <ComboBoxItem Content="Submitted"/>
                     <ComboBoxItem Content="Received"/>
                     <ComboBoxItem Content="Processing"/>
@@ -39,8 +41,34 @@
                     <ComboBoxItem Content="In Transit"/>
                     <ComboBoxItem Content="Delivered"/>
                     <ComboBoxItem Content="Closed"/>
-                    <ComboBoxItem Content="ALL"/>
                 </hc:ComboBox>
+                <Button x:Name="btnRefresh" 
+        Content="Refresh"
+        Style="{StaticResource ButtonDefault}"
+        Margin="5,0"
+        Click="btnRefresh_Click" HorizontalAlignment="Right" Width="77"/>
+                <Grid Grid.Column="2" Margin="5,0" Height="33" HorizontalAlignment="Right" x:Name="Alert">
+                    <hc:Card >
+                        <hc:SimplePanel>
+                            <Border Background="#c82121" CornerRadius="4">
+                                <Border.Triggers>
+                                    <EventTrigger RoutedEvent="Border.Loaded">
+                                        <BeginStoryboard>
+                                            <Storyboard>
+                                                <ColorAnimation 
+                    Storyboard.TargetProperty="Background.(SolidColorBrush.Color)"
+                    From="Red" To="DarkOrange" Duration="0:0:0.6" 
+                    AutoReverse="True" RepeatBehavior="Forever"/>
+                                            </Storyboard>
+                                        </BeginStoryboard>
+                                    </EventTrigger>
+                                </Border.Triggers>
+                            </Border>
+                            <TextBlock Text="NEW ORDER" FontSize="15" FontWeight="Bold" Foreground="White"
+       HorizontalAlignment="Right" VerticalAlignment="Center" Margin="8,2,10,0" Height="23"/>
+                        </hc:SimplePanel>
+                    </hc:Card>
+                </Grid>
             </StackPanel>
 
             <!-- DataGrid -->
@@ -57,6 +85,7 @@
                     <DataGridTextColumn Header="Items" Binding="{Binding Items}"/>
                     <DataGridTextColumn Header="Weight (kg)" Binding="{Binding Weight}"/>
                     <DataGridTextColumn Header="Delivery Date" Binding="{Binding DeliveryDate}"/>
+                    <DataGridTextColumn Header="Order Type" Binding="{Binding OrderType}"/>
                 </DataGrid.Columns>
             </DataGrid>
         </Grid>
@@ -66,26 +95,54 @@
                     Orientation="Horizontal" 
                     HorizontalAlignment="Right" 
                     Margin="10">
-            <Button x:Name="btnRefresh" 
-                    Content="Refresh"
-                    Style="{StaticResource ButtonDefault}"
-                    Margin="5,0"
-                    Click="btnRefresh_Click"/>
+            <Button x:Name="btnReceiveWarehouse" 
+        Content="Receive Warehouse"
+        Style="{StaticResource ButtonInfo}"
+        Margin="5,0"
+        Click="btnReceiveWarehouse_Click" Width="125" Background="#FF1EB79E" BorderBrush="#FF1EB79E"/>
             <Button x:Name="btnCreate" 
                     Content="Create Order"
                     Style="{StaticResource ButtonPrimary}"
                     Margin="5,0"
-                    Click="btnCreate_Click"/>
+                    Click="btnCreate_Click"
+                    Width="93">
+                <Button.Background>
+                    <LinearGradientBrush EndPoint="1,0">
+                        <GradientStop Color="#FF245EE4"/>
+                        <GradientStop Color="#FF326CF3" Offset="1"/>
+                    </LinearGradientBrush>
+                </Button.Background>
+                <Button.BorderBrush>
+                    <LinearGradientBrush EndPoint="1,0">
+                        <GradientStop Color="#FF4F71BF"/>
+                        <GradientStop Color="#FF326CF3" Offset="1"/>
+                    </LinearGradientBrush>
+                </Button.BorderBrush>
+            </Button>
             <Button x:Name="btnReceive" 
-                    Content="Receive"
+                    Content="Receive store"
                     Style="{StaticResource ButtonInfo}"
                     Margin="5,0"
-                    Click="btnReceive_Click"/>
-            <Button x:Name="btnDelete" 
-                    Content="Delete"
-                    Style="{StaticResource ButtonDanger}"
+                    Click="btnReceive_Click" Width="97" Background="#FF00D447" BorderBrush="#FF00D447"/>
+            <Button x:Name="btnEdit" 
+                    Content="Edit"
+                    Style="{StaticResource ButtonInfo}"
                     Margin="5,0"
-                    Click="btnDelete_Click"/>
+                    Width="69" Click="btnEdit_Click">
+                <Button.BorderBrush>
+                    <LinearGradientBrush EndPoint="1,0">
+                        <GradientStop Color="#FFD48B33"/>
+                        <GradientStop Color="#FFEC8A14" Offset="1"/>
+                    </LinearGradientBrush>
+                </Button.BorderBrush>
+                <Button.Background>
+                    <LinearGradientBrush EndPoint="1,0">
+                        <GradientStop Color="#FFD48B33"/>
+                        <GradientStop Color="#FFEC8A14" Offset="1"/>
+                    </LinearGradientBrush>
+                </Button.Background>
+            </Button>
+
         </StackPanel>
     </Grid>
 </UserControl>

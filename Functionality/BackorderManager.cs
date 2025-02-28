@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore;
 //ISDP Project
 //Mohammed Alae-Zerrou, Serhii Parfonov
 //NBCC, Winter 2025
-//Completed By Mohammed with some changes from serhii
+//Completed By serhii with some changes from mohammed
 //Last Modified by Serhii on Feb 16,2025
 namespace ISDP2025_Parfonov_Zerrou.Managers
 {

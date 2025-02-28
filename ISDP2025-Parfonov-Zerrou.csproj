@@ -10,6 +10,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="Forms\AdminUserControls\Animation - 1740495174359.gif" />
     <None Remove="Forms\bullseye - Copy.png" />
     <None Remove="Forms\bullseye.ico" />
     <None Remove="Forms\bullseye.png" />
@@ -36,6 +37,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Resource Include="Forms\AdminUserControls\Animation - 1740495174359.gif" />
     <Resource Include="Forms\bullseye.png" />
     <Resource Include="Forms\UserControls\bullseye.png" />
     <Resource Include="Images\bullseye - Copy.png" />

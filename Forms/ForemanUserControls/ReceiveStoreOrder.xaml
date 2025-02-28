@@ -1,0 +1,181 @@
+﻿<UserControl x:Class="ISDP2025_Parfonov_Zerrou.Forms.ForemanUserControls.ReceiveStoreOrder"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:ISDP2025_Parfonov_Zerrou.Forms.ForemanUserControls"
+             xmlns:hc="https://handyorg.github.io/handycontrol"
+             mc:Ignorable="d" SizeChanged="UserControl_SizeChanged">
+    <Grid Margin="10">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+            <!--<RowDefinition/>
+            <RowDefinition Height="Auto"/>  -->
+        </Grid.RowDefinitions>
+
+        <!-- Top Controls 
+        <StackPanel Grid.Row="0" Margin="0,0,0,10">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+            </Grid>
+        </StackPanel> -->
+
+        <!-- Main Content -->
+        <Grid Grid.Row="0" x:Name="all1">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+
+            <!-- Inventory Items -->
+            <DockPanel Grid.Column="0">
+                <StackPanel DockPanel.Dock="Top" Margin="0,0,0,3">
+                    <TextBox x:Name="SearchBox" 
+                hc:InfoElement.Placeholder="Search Inventory..."
+                hc:TitleElement.Title="Inventory Items"
+                Style="{StaticResource TextBoxExtend}"
+                TextChanged="SearchBox_TextChanged"/>
+                    <hc:Pagination x:Name="InventoryPagination" 
+                      PageIndex="1"
+                      MaxPageCount="1"
+                      PageUpdated="InventoryPagination_PageUpdated" Margin="0,5,0,1"/>
+                </StackPanel>
+                <DataGrid x:Name="InventoryGrid" 
+                  AutoGenerateColumns="False"
+                  CanUserAddRows="False" 
+                  RowHeight="37"
+                  SelectionMode="Single"
+                  IsReadOnly="True"
+                  ScrollViewer.HorizontalScrollBarVisibility="Auto">
+                        <DataGrid.ColumnHeaderStyle>
+                            <Style TargetType="{x:Type DataGridColumnHeader}">
+                                <Setter Property="Height" Value="40"/>
+                                <Setter Property="VerticalContentAlignment" Value="Center"/>
+                                <Setter Property="ContentTemplate">
+                                    <Setter.Value>
+                                        <DataTemplate>
+                                            <TextBlock Text="{Binding}"
+                                     TextWrapping="Wrap"
+                                     TextAlignment="Center"/>
+                                        </DataTemplate>
+                                    </Setter.Value>
+                                </Setter>
+                            </Style>
+                        </DataGrid.ColumnHeaderStyle>
+                        <DataGrid.Columns>
+                            <DataGridTextColumn Header="ID" 
+                              Binding="{Binding ItemId}"
+                              Width="SizeToHeader" 
+                              MinWidth="40"/>
+
+                            <DataGridTemplateColumn Header="Name" Width="*" MinWidth="229">
+                                <DataGridTemplateColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <TextBlock Text="{Binding Name}" 
+                                 TextTrimming="CharacterEllipsis">
+                                            <TextBlock.ToolTip>
+                                                <ToolTip>
+                                                    <StackPanel>
+                                                        <TextBlock Text="{Binding Name}" 
+                                                 FontWeight="Bold"/>
+                                                        <TextBlock Text="{Binding Description}" 
+                                                 TextWrapping="Wrap" 
+                                                 MaxWidth="300"/>
+                                                    </StackPanel>
+                                                </ToolTip>
+                                            </TextBlock.ToolTip>
+                        </TextBlock>
+                                    </DataTemplate>
+                                </DataGridTemplateColumn.CellTemplate>
+                            </DataGridTemplateColumn>
+
+                            <DataGridTextColumn Header="Store Quantity" 
+                              Binding="{Binding Quantity}" 
+                              Width="SizeToHeader"
+                              MinWidth="57"/>
+
+                            <DataGridTextColumn Header="Case Size" 
+                              Binding="{Binding CaseSize}" 
+                              Width="SizeToHeader"
+                              MinWidth="40"/>
+
+                            <DataGridTextColumn Header="Reorder Level" 
+                              Binding="{Binding ReorderThreshold}" 
+                              Width="SizeToHeader"
+                              MinWidth="53"/>
+                        </DataGrid.Columns>
+                </DataGrid>
+            </DockPanel>
+
+            <!-- Transfer Buttons -->
+            <StackPanel Grid.Column="1" VerticalAlignment="Center" Margin="7">
+                <Button x:Name="btnAdd" Content="-&gt;" 
+                        Style="{StaticResource ButtonPrimary}"
+                        Margin="5" Click="btnAdd_Click"/>
+                <Button x:Name="btnRemove" Content="&lt;-" 
+                        Style="{StaticResource ButtonPrimary}"
+                        Margin="5"
+                        Click="btnRemove_Click"/>
+            </StackPanel>
+
+            <!-- Order Items -->
+            <DockPanel Grid.Column="2">
+                <TextBox hc:InfoElement.Placeholder="Search Order..."
+                         hc:TitleElement.Title="Order Items"
+                         Style="{StaticResource TextBoxExtend}"
+                         Margin="0,0,0,5"
+                         DockPanel.Dock="Top"/>
+                <DataGrid x:Name="dgvOrders" 
+                          AutoGenerateColumns="False"
+                          CanUserAddRows="False"
+                          SelectionMode="Single"
+                          IsReadOnly="True">
+                    <DataGrid.Columns>
+                        <DataGridTextColumn Header="ID" Binding="{Binding ItemId}" Width="41"/>
+                        <DataGridTextColumn Header="Name" Binding="{Binding Name}" Width="*"/>
+                        <DataGridTemplateColumn Header="Quantity" Width="58">
+                            <DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate>
+                                    <hc:NumericUpDown x:Name="nmpQuantity" Value="{Binding OrderQuantity}"
+                             Minimum="{Binding CaseSize}"
+                             Increment="{Binding CaseSize}"
+                                                      IsReadOnly="False" ValueChanged="nupQuantity_ValueChanged"/>
+                                </DataTemplate>
+                            </DataGridTemplateColumn.CellTemplate>
+                        </DataGridTemplateColumn>
+                        <DataGridTextColumn Header="Case Size" Binding="{Binding CaseSize}" Width="60"/>
+                    </DataGrid.Columns>
+                </DataGrid>
+            </DockPanel>
+        </Grid>
+        <Button x:Name="btnBack" Content="Go back" Grid.Row="1" Style="{StaticResource ButtonDefault}"
+Margin="10,0,0,3" Click="btnBack_Click" Width="80" Height="33" Background="#FFC8BCDE" BorderBrush="#FFC8BCDE" HorizontalAlignment="Left" VerticalAlignment="Bottom"/>
+
+
+        <StackPanel Grid.Row="1" 
+                    Orientation="Horizontal" 
+                    HorizontalAlignment="Right" 
+                    Margin="0,8,0,3" x:Name="all2">
+            <Button x:Name="btnCancel" 
+            Content="Cancel"
+            Style="{StaticResource ButtonDanger}"
+            Margin="5,0" Width="80" Height="33" Click="btnCancel_Click"/>
+
+            <Button x:Name="btnSave" Content="Save" Margin="5,0" 
+            Style="{StaticResource ButtonPrimary}" Click="btnSave_Click" Width="80" Height="33"/>
+
+            <Button x:Name="btnSubmit" Content="Submit" 
+            Style="{StaticResource ButtonSuccess}" Click="btnSubmit_Click" Width="80" Height="33"/>
+
+        </StackPanel>
+        <ScrollViewer VerticalScrollBarVisibility="Hidden" HorizontalAlignment="Right">
+            <StackPanel hc:Growl.Token="SuccessMsg" VerticalAlignment="Top" Margin="0,10,10,10"/>
+        </ScrollViewer>
+    </Grid>
+</UserControl>

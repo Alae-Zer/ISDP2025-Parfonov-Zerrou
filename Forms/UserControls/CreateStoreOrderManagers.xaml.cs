@@ -1,5 +1,6 @@
 ﻿using System.Windows;
 using System.Windows.Controls;
+using HandyControl.Controls;
 using ISDP2025_Parfonov_Zerrou.Models;
 using Microsoft.EntityFrameworkCore;
 
@@ -10,28 +11,15 @@ namespace ISDP2025_Parfonov_Zerrou.Forms.UserControls
     /// </summary>
     public partial class CreateStoreOrderManagers : UserControl
     {
-        public CreateStoreOrderManagers()
-        {
-            InitializeComponent();
-            context = new BestContext();
-            LoadInitialData();
-        }
-
-        public CreateStoreOrderManagers(Employee emp)
-        {
-            InitializeComponent();
-            context = new BestContext();
-            LoadInitialData();
-            employee = emp;
-        }
-
         private readonly BestContext context;
         private readonly List<OrderLineItem> orderItems = new();
         private readonly List<Inventory> AllOfInventory = new();
+        private readonly List<Site> Stores = new();
 
-        private const int ItemsPerPage = 12;
+        private const int ItemsPerPage = 11;
         private List<OrderItem> allItems = new();
         private string currentSearchText = "";
+        private int? existingTxnId = null;
 
 
         Employee employee;
@@ -56,11 +44,74 @@ namespace ISDP2025_Parfonov_Zerrou.Forms.UserControls
             public decimal Weight { get; set; }
         }
 
-        private void LoadInitialData()
+
+        private void disable(bool incase)
+        {
+            all1.IsEnabled = incase;
+            all2.IsEnabled = incase;
+        }
+        public CreateStoreOrderManagers()
+        {
+            InitializeComponent();
+            context = new BestContext();
+            loadStores();
+        }
+
+        public CreateStoreOrderManagers(Employee emp)
+        {
+            InitializeComponent();
+            context = new BestContext();
+            employee = emp;
+            loadStores();
+            disable(false);
+        }
+
+        public CreateStoreOrderManagers(Employee emp, int ID)
+        {
+            InitializeComponent();
+            employee = emp;
+            existingTxnId = ID;
+            context = new BestContext();
+            loadStores();
+            LoadExistingOrder();
+            disable(false);
+        }
+
+        private void LoadExistingOrder()
+        {
+            if (!existingTxnId.HasValue) return;
+
+            var existingOrder = context.Txns
+                .Include(t => t.Txnitems)
+                .ThenInclude(ti => ti.Item)
+                .FirstOrDefault(t => t.TxnId == existingTxnId);
+
+            if (existingOrder != null)
+            {
+                // Populate UI with existing order data
+                StoreComboBox.SelectedValue = existingOrder.SiteIdto;
+                DeliveryDatePicker.SelectedDate = existingOrder.ShipDate;
+
+                orderItems.Clear();
+                foreach (var item in existingOrder.Txnitems)
+                {
+                    orderItems.Add(new OrderLineItem
+                    {
+                        ItemId = item.ItemId,
+                        Name = item.Item.Name,
+                        OrderQuantity = item.Quantity,
+                        CaseSize = item.Item.CaseSize,
+                        Weight = item.Item.Weight
+                    });
+                }
+                dgvOrders.ItemsSource = orderItems;
+            }
+        }
+
+        private void loadStores()
         {
             try
             {
-                // Load stores (excluding warehouse, corporate, etc.)
                 var stores = context.Sites
                     .Select(s => new
                     {
@@ -70,13 +121,14 @@ namespace ISDP2025_Parfonov_Zerrou.Forms.UserControls
                     })
                     .OrderBy(s => s.SiteName)
                     .ToList();
+                stores.RemoveAt(0); // Corporate Headquarters
+                stores.RemoveAt(4); // Online
+                stores.RemoveAt(7); // Truck
+                stores.RemoveAt(8); // Warehouse Bay
 
                 StoreComboBox.ItemsSource = stores;
                 StoreComboBox.DisplayMemberPath = "SiteName";
                 StoreComboBox.SelectedValuePath = "SiteId";
-
-                // Load inventory items with current stock levels
-                LoadInventoryItems();
 
 
                 //PrePopulateOrder();
@@ -85,7 +137,7 @@ namespace ISDP2025_Parfonov_Zerrou.Forms.UserControls
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Error loading initial data: {ex.Message}",
+                HandyControl.Controls.MessageBox.Show($"Error loading initial data: {ex.Message}",
                     "Error", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
@@ -95,32 +147,34 @@ namespace ISDP2025_Parfonov_Zerrou.Forms.UserControls
             orderItems.Clear(); // Clear existing pre-populated items
 
             int selectedSiteId = (int)StoreComboBox.SelectedValue;
-
-            var inventoryData = context.Inventories
-                .Include(i => i.Item)
-                .Where(i => i.SiteId == selectedSiteId)
-                .ToList();
-
-            foreach (var inventory in inventoryData)
+            if (orderItems == null)
             {
-                if (inventory.Quantity <= inventory.ReorderThreshold)
-                {
-                    int needed = inventory.OptimumThreshold - inventory.Quantity;
-                    int cases = inventory.Item.CaseSize > 0 ? (int)Math.Ceiling((double)needed / inventory.Item.CaseSize) : needed;
+                var inventoryData = context.Inventories
+                    .Include(i => i.Item)
+                    .Where(i => i.SiteId == selectedSiteId)
+                    .ToList();
 
-                    orderItems.Add(new OrderLineItem
+                foreach (var inventory in inventoryData)
+                {
+                    if (inventory.Quantity <= inventory.ReorderThreshold)
                     {
-                        ItemId = inventory.ItemId,
-                        Name = inventory.Item.Name,
-                        OrderQuantity = cases * inventory.Item.CaseSize,
-                        CaseSize = inventory.Item.CaseSize,
-                        Weight = inventory.Item.Weight
-                    });
+                        int needed = inventory.OptimumThreshold - inventory.Quantity;
+                        int cases = inventory.Item.CaseSize > 0 ? (int)Math.Ceiling((double)needed / inventory.Item.CaseSize) : needed;
+
+                        orderItems.Add(new OrderLineItem
+                        {
+                            ItemId = inventory.ItemId,
+                            Name = inventory.Item.Name,
+                            OrderQuantity = cases * inventory.Item.CaseSize,
+                            CaseSize = inventory.Item.CaseSize,
+                            Weight = inventory.Item.Weight
+                        });
+                    }
                 }
             }
 
-            OrderGrid.ItemsSource = null;
-            OrderGrid.ItemsSource = orderItems;
+            dgvOrders.ItemsSource = null;
+            dgvOrders.ItemsSource = orderItems;
         }
 
 
@@ -157,7 +211,7 @@ namespace ISDP2025_Parfonov_Zerrou.Forms.UserControls
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Error loading inventory: {ex.Message}",
+                HandyControl.Controls.MessageBox.Show($"Error loading inventory: {ex.Message}",
                     "Error", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
@@ -211,7 +265,7 @@ namespace ISDP2025_Parfonov_Zerrou.Forms.UserControls
             var selectedItem = InventoryGrid.SelectedItem as OrderItem;
             if (selectedItem == null)
             {
-                MessageBox.Show("Please select an item to add.",
+                HandyControl.Controls.MessageBox.Show("Please select an item to add.",
                     "No Item Selected", MessageBoxButton.OK, MessageBoxImage.Warning);
                 return;
             }
@@ -223,8 +277,8 @@ namespace ISDP2025_Parfonov_Zerrou.Forms.UserControls
                 existingItem.OrderQuantity += selectedItem.CaseSize;
 
                 // Refresh the OrderGrid to show the updated quantity
-                OrderGrid.ItemsSource = null;
-                OrderGrid.ItemsSource = orderItems;
+                dgvOrders.ItemsSource = null;
+                dgvOrders.ItemsSource = orderItems;
                 return;
             }
 
@@ -238,23 +292,23 @@ namespace ISDP2025_Parfonov_Zerrou.Forms.UserControls
             };
 
             orderItems.Add(newOrderItem);
-            OrderGrid.ItemsSource = null;
-            OrderGrid.ItemsSource = orderItems;
+            dgvOrders.ItemsSource = null;
+            dgvOrders.ItemsSource = orderItems;
         }
 
         private void btnRemove_Click(object sender, RoutedEventArgs e)
         {
-            var selectedItem = OrderGrid.SelectedItem as OrderLineItem;
+            var selectedItem = dgvOrders.SelectedItem as OrderLineItem;
             if (selectedItem == null)
             {
-                MessageBox.Show("Please select an item to remove.",
+                HandyControl.Controls.MessageBox.Show("Please select an item to remove.",
                     "No Item Selected", MessageBoxButton.OK, MessageBoxImage.Warning);
                 return;
             }
 
             orderItems.Remove(selectedItem);
-            OrderGrid.ItemsSource = null;
-            OrderGrid.ItemsSource = orderItems;
+            dgvOrders.ItemsSource = null;
+            dgvOrders.ItemsSource = orderItems;
         }
 
         private void btnRefresh_Click(object sender, RoutedEventArgs e)
@@ -266,14 +320,14 @@ namespace ISDP2025_Parfonov_Zerrou.Forms.UserControls
         {
             if (StoreComboBox.SelectedItem == null)
             {
-                MessageBox.Show("Please select a store location.",
+                HandyControl.Controls.MessageBox.Show("Please select a store location.",
                     "Missing Information", MessageBoxButton.OK, MessageBoxImage.Warning);
                 return;
             }
 
             if (!orderItems.Any())
             {
-                MessageBox.Show("Please add items to the order.",
+                HandyControl.Controls.MessageBox.Show("Please add items to the order.",
                     "Empty Order", MessageBoxButton.OK, MessageBoxImage.Warning);
                 return;
             }
@@ -310,30 +364,121 @@ namespace ISDP2025_Parfonov_Zerrou.Forms.UserControls
                 }
 
                 context.SaveChanges();
-                MessageBox.Show("Order created successfully!",
+                HandyControl.Controls.MessageBox.Show("Order created successfully!",
                     "Success", MessageBoxButton.OK, MessageBoxImage.Information);
 
                 // Clear the form
                 orderItems.Clear();
-                OrderGrid.ItemsSource = null;
+                dgvOrders.ItemsSource = null;
                 StoreComboBox.SelectedItem = null;
                 DeliveryDatePicker.SelectedDate = DateTime.Now.AddDays(1);
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Error creating order: {ex.Message}",
+                HandyControl.Controls.MessageBox.Show($"Error creating order: {ex.Message}",
                     "Error", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
 
         private string GenerateBarcode()
         {
-            return $"ORD-{DateTime.Now:yyyyMMddHHmmss}";
+            return $"TXN-{DateTime.Now:yyyyMMddHHmmss}";
         }
 
         private void StoreComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             LoadInventoryItems();
+        }
+
+        private void nupQuantity_ValueChanged(object sender, HandyControl.Data.FunctionEventArgs<double> e)
+        {
+
+            NumericUpDown npm = (NumericUpDown)sender;
+            OrderLineItem selectedItem = (OrderLineItem)dgvOrders.SelectedItem;
+            if (selectedItem != null)
+            {
+                orderItems[dgvOrders.SelectedIndex].OrderQuantity = (int)npm.Value;
+                dgvOrders.ItemsSource = orderItems;
+            }
+        }
+
+        private void btnSave_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                if (existingTxnId.GetValueOrDefault() != 0)
+                    return;
+
+                // Add order items
+                foreach (var item in orderItems)
+                {
+                    var txnItem = new Txnitem
+                    {
+                        TxnId = (int)existingTxnId,
+                        ItemId = item.ItemId,
+                        Quantity = item.OrderQuantity
+                    };
+                    context.Txnitems.Add(txnItem);
+                }
+
+                context.SaveChanges();
+                HandyControl.Controls.MessageBox.Show("Order created successfully!",
+                    "Success", MessageBoxButton.OK, MessageBoxImage.Information);
+
+                // Clear the form
+                orderItems.Clear();
+                dgvOrders.ItemsSource = null;
+                StoreComboBox.SelectedItem = null;
+                DeliveryDatePicker.SelectedDate = DateTime.Now.AddDays(1);
+            }
+            catch (Exception ex)
+            {
+                HandyControl.Controls.MessageBox.Show($"Error creating order: {ex.Message}",
+                    "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+        }
+
+        private void btnCreate_Click(object sender, RoutedEventArgs e)
+        {
+            disable(true);
+
+            try
+            {
+                int selectedSite = int.Parse(StoreComboBox.SelectedValue.ToString());
+                var txn = new Txn
+                {
+                    EmployeeId = employee.EmployeeID,
+                    SiteIdto = selectedSite,
+                    SiteIdfrom = 2, // Warehouse
+                    TxnStatus = "NEW",
+                    ShipDate = DeliveryDatePicker.SelectedDate ?? DateTime.Now.AddDays(1),
+                    TxnType = "Store Order",
+                    BarCode = GenerateBarcode(),
+                    CreatedDate = DateTime.Now,
+                    EmergencyDelivery = 0
+                };
+
+                context.Txns.Add(txn);
+                context.SaveChanges();
+
+                existingTxnId = txn.TxnId;
+
+                context.SaveChanges();
+                HandyControl.Controls.MessageBox.Show("Order created successfully!",
+                    "Success", MessageBoxButton.OK, MessageBoxImage.Information);
+
+                // Clear the form
+                orderItems.Clear();
+                dgvOrders.ItemsSource = null;
+                StoreComboBox.SelectedItem = null;
+                DeliveryDatePicker.SelectedDate = DateTime.Now.AddDays(1);
+            }
+            catch (Exception ex)
+            {
+                HandyControl.Controls.MessageBox.Show($"Error creating order: {ex.Message}",
+                    "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+
         }
     }
 }

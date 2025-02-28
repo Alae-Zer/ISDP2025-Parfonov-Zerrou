@@ -1,10 +1,12 @@
-﻿<UserControl x:Class="ISDP2025_Parfonov_Zerrou.Forms.AdminUserControls.CreateStoreOrder"
+﻿<UserControl
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:hc="https://handyorg.github.io/handycontrol"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-             mc:Ignorable="d">
+             xmlns:Primitives="clr-namespace:Microsoft.Windows.Controls.Primitives;assembly=HandyControl" x:Class="ISDP2025_Parfonov_Zerrou.Forms.AdminUserControls.CreateStoreOrder"
+             mc:Ignorable="d" Unloaded="UserControl_Unloaded"  SizeChanged="UserControl_SizeChanged">
+
     <Grid Margin="10">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
@@ -23,33 +25,28 @@
                 </Grid.ColumnDefinitions>
 
                 <!-- Store Selection -->
-                <StackPanel Grid.Column="0" Margin="5">
-                    <TextBlock Text="Store Location:"/>
-                    <hc:ComboBox x:Name="StoreComboBox" 
-                                DisplayMemberPath="SiteName"
-                                SelectedValuePath="SiteID"
-                                Margin="0,5,0,0" SelectionChanged="StoreComboBox_SelectionChanged"/>
-                </StackPanel>
+                <hc:ComboBox  Grid.Column="0" Margin="5,5,5,5" x:Name="cmbStores" hc:TitleElement.Title="Store Location:"
+                             hc:InfoElement.Necessary="True" DisplayMemberPath="SiteName" hc:InfoElement.Symbol="*"
+                             SelectedValuePath="SiteID" SelectionChanged="StoreComboBox_SelectionChanged"/>
 
                 <!-- Order Type -->
-                <StackPanel Grid.Column="2" Margin="10,5,5,5">
-                    <TextBlock Text="Order Type:"/>
-                    <StackPanel Orientation="Horizontal" Margin="0,5,0,0" >
-                        <RadioButton Content="Normal" IsChecked="True" Margin="0,0,10,0"/>
-                        <RadioButton Content="Emergency"/>
+                <StackPanel Grid.Column="1" Margin="35,10,5,5" x:Name="radio">
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock Text="Order Type:"/>
+                        <TextBlock Text="*" Foreground="Red" Margin="2,0,0,0"/>
+                    </StackPanel>
+                    <StackPanel Orientation="Horizontal" Margin="0,5,0,0">
+                        <RadioButton Content="Normal" Margin="0,0,10,0" x:Name="radNormal"/>
+                        <RadioButton Content="Emergency" x:Name="radEmergency"/>
                     </StackPanel>
                 </StackPanel>
 
-                <!-- Delivery Date -->
-                <StackPanel Grid.Column="1" Margin="5">
-                    <TextBlock Text="Delivery Date:"/>
-                    <hc:DatePicker x:Name="DeliveryDatePicker" Margin="0,5,0,0"/>
-                </StackPanel>
+
             </Grid>
         </StackPanel>
 
         <!-- Main Content -->
-        <Grid Grid.Row="2">
+        <Grid Grid.Row="2" x:Name="all1">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="*"/>
                 <ColumnDefinition Width="Auto"/>
@@ -57,11 +54,11 @@
             </Grid.ColumnDefinitions>
 
             <!-- Inventory Items -->
-            <DockPanel Grid.Column="0" x:Name="all1">
+            <DockPanel Grid.Column="0">
                 <StackPanel DockPanel.Dock="Top" Margin="0,0,0,3">
                     <TextBox x:Name="SearchBox" 
                 hc:InfoElement.Placeholder="Search Inventory..."
-                hc:InfoElement.Title="Inventory Items"
+                hc:TitleElement.Title="Inventory Items"
                 Style="{StaticResource TextBoxExtend}"
                 TextChanged="SearchBox_TextChanged"/>
                     <hc:Pagination x:Name="InventoryPagination" 
@@ -76,7 +73,7 @@
           SelectionMode="Single"
           IsReadOnly="True">
                     <DataGrid.ColumnHeaderStyle>
-                        <Style TargetType="DataGridColumnHeader">
+                        <Style TargetType="{x:Type DataGridColumnHeader}">
                             <Setter Property="Height" Value="40"/>
                             <Setter Property="VerticalContentAlignment" Value="Center"/>
                             <Setter Property="ContentTemplate">
@@ -93,9 +90,10 @@
                     <DataGrid.Columns>
                         <DataGridTextColumn Header="ID" 
                           Binding="{Binding ItemId}" 
-                          Width="40"/>
+                          Width="SizeToHeader"
+                          MinWidth="40"/>
 
-                        <DataGridTemplateColumn Header="Name" Width="*" MinWidth="150">
+                        <DataGridTemplateColumn Header="Name" Width="*" MinWidth="227">
                             <DataGridTemplateColumn.CellTemplate>
                                 <DataTemplate>
                                     <TextBlock Text="{Binding Name}" 
@@ -118,34 +116,35 @@
 
                         <DataGridTextColumn Header="Store Quantity" 
                           Binding="{Binding Quantity}" 
-                          Width="57"/>
+                          Width="SizeToHeader"
+                          MinWidth="57"/>
 
                         <DataGridTextColumn Header="Case Size" 
                           Binding="{Binding CaseSize}" 
-                          Width="40"/>
+                          Width="SizeToHeader"
+                          MinWidth="40"/>
 
                         <DataGridTextColumn Header="Reorder Level" 
                           Binding="{Binding ReorderThreshold}" 
-                          Width="53"/>
+                          Width="SizeToHeader"
+                          MinWidth="53"/>
                     </DataGrid.Columns>
                 </DataGrid>
             </DockPanel>
 
             <!-- Transfer Buttons -->
             <StackPanel Grid.Column="1" VerticalAlignment="Center" Margin="7">
-                <Button x:Name="btnAdd" Content="-&gt;" 
-                        Style="{StaticResource ButtonPrimary}"
-                        Margin="5" Click="btnAdd_Click"/>
-                <Button x:Name="btnRemove" Content="&lt;-" 
-                        Style="{StaticResource ButtonPrimary}"
-                        Margin="5"
-                        Click="btnRemove_Click"/>
+                <Button x:Name="btnAdd" Content="-&gt;" ToolTip="Add selected item to order"
+                        Style="{StaticResource ButtonPrimary}" Margin="5" Click="btnAdd_Click"/>
+                
+                <Button x:Name="btnRemove" Content="&lt;-" ToolTip="Remove selected item from order"
+                        Style="{StaticResource ButtonPrimary}" Margin="5" Click="btnRemove_Click"/>
             </StackPanel>
 
             <!-- Order Items -->
             <DockPanel Grid.Column="2">
                 <TextBox hc:InfoElement.Placeholder="Search Order..."
-                         hc:InfoElement.Title="Order Items"
+                         hc:TitleElement.Title="Order Items"
                          Style="{StaticResource TextBoxExtend}"
                          Margin="0,0,0,5"
                          DockPanel.Dock="Top"/>
@@ -174,33 +173,40 @@
         </Grid>
 
         <!-- Bottom Buttons -->
-        
+
 
 
         <StackPanel Grid.Row="1" 
             Orientation="Horizontal" 
             HorizontalAlignment="Right" 
             Margin="0,7,0,3">
-            <Button x:Name="btnCreate" Content="Create" Margin="0" 
-            Style="{StaticResource ButtonWarning}" HorizontalAlignment="Right" Width="77" Height="33" Click="btnCreate_Click"/>
-            
-            <Button x:Name="btnRefresh" Content="Refresh" Style="{StaticResource ButtonDefault}"
-            Margin="5,0" Click="btnRefresh_Click" Width="77" Height="33"/>
+            <Button x:Name="btnCreate" Content="Create" Margin="0" ToolTip="Create a new order with the current selections"
+            Style="{StaticResource ButtonWarning}" HorizontalAlignment="Right" Width="80" Height="33" Click="btnCreate_Click"/>
+
+            <Button x:Name="btnRefresh" Content="Refresh" Style="{StaticResource ButtonDefault}" ToolTip="Refresh the inventory data"
+            Margin="5,0" Click="btnRefresh_Click" Width="80" Height="33" Background="#FFC8BCDE" BorderBrush="#FFC8BCDE"/>
 
         </StackPanel>
-        
-        
+        <Button x:Name="btnBack" Content="Go back" Grid.Row="3" Style="{StaticResource ButtonDefault}"
+Margin="10,0,0,3" Click="btnBack_Click" Width="80" Height="33" Background="#FFC8BCDE" BorderBrush="#FFC8BCDE" HorizontalAlignment="Left" VerticalAlignment="Bottom"/>
+
+
         <StackPanel Grid.Row="3" 
                     Orientation="Horizontal" 
                     HorizontalAlignment="Right" 
-                    Margin="0,7,0,3" x:Name="all2">
-            
-            <Button x:Name="btnSave" Content="Save" Margin="5,0" 
-            Style="{StaticResource ButtonPrimary}" Click="btnSave_Click" Width="77" Height="33"/>
+                    Margin="0,8,0,3" x:Name="all2">
+            <Button x:Name="btnCancel" Content="Cancel" ToolTip="Cancel the current order"
+            Style="{StaticResource ButtonDanger}" Margin="5,0" Width="80" Height="33" Click="btnCancel_Click"/>
 
-            <Button x:Name="btnSubmit" Content="Submit" 
-            Style="{StaticResource ButtonSuccess}" Click="btnSubmit_Click" Width="77" Height="33"/>
+            <Button x:Name="btnSave" Content="Save" Margin="5,0" ToolTip="Save the current order without submitting" 
+            Style="{StaticResource ButtonPrimary}" Click="btnSave_Click" Width="80" Height="33"/>
+
+            <Button x:Name="btnSubmit" Content="Submit" ToolTip="Submit the order to the warehouse for processing"
+            Style="{StaticResource ButtonSuccess}" Click="btnSubmit_Click" Width="80" Height="33"/>
 
         </StackPanel>
+        <ScrollViewer VerticalScrollBarVisibility="Hidden" HorizontalAlignment="Right">
+            <StackPanel hc:Growl.Token="SuccessMsg" VerticalAlignment="Top" Margin="0,10,10,10"/>
+        </ScrollViewer>
     </Grid>
 </UserControl>

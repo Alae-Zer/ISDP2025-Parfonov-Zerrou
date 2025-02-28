@@ -1,6 +1,9 @@
 ﻿using System.Windows;
 using System.Windows.Controls;
+using HandyControl.Controls;
+using HandyControl.Data;
 using ISDP2025_Parfonov_Zerrou.Forms.AdminUserControls;
+using ISDP2025_Parfonov_Zerrou.Forms.ForemanUserControls;
 using ISDP2025_Parfonov_Zerrou.Models;
 using Microsoft.EntityFrameworkCore;
 
@@ -10,7 +13,7 @@ namespace ISDP2025_Parfonov_Zerrou.Forms.UserControls
     {
         private BestContext context;
         private Employee Employee;
-        private int? selectedTxnId = null;
+        private int? selectedOrderTxnId = null;
 
         public ViewOrders()
         {
@@ -27,6 +30,11 @@ namespace ISDP2025_Parfonov_Zerrou.Forms.UserControls
             Employee = employee;
         }
 
+        private bool checkOrder()
+        {
+            return context.Txns.Any(t => t.TxnStatus == "SUBMITTED" && (t.TxnType == "Store Order" || t.TxnType == "Emergency Order"));
+        }
+
         private async void LoadTransactions()
         {
             try
@@ -38,7 +46,8 @@ namespace ISDP2025_Parfonov_Zerrou.Forms.UserControls
                     .AsQueryable();
 
                 // Apply filters if selected
-                if (cmbOrderType.SelectedItem != null)
+                if (cmbOrderType.SelectedItem != null &&
+                    ((ComboBoxItem)cmbOrderType.SelectedItem).Content.ToString() != "ALL")
                 {
                     string orderType = ((ComboBoxItem)cmbOrderType.SelectedItem).Content.ToString();
                     query = query.Where(t => t.TxnType == orderType);
@@ -59,16 +68,18 @@ namespace ISDP2025_Parfonov_Zerrou.Forms.UserControls
                         Location = t.SiteIdtoNavigation.SiteName,
                         Status = t.TxnStatus,
                         Items = t.Txnitems.Count(),
-                        Weight = t.Txnitems.Sum(ti => ti.Item.Weight * ti.Quantity),
-                        DeliveryDate = t.ShipDate
+                        Weight = t.Txnitems.Sum(ti => ti.Item.Weight * ti.Quantity) > 0 ? t.Txnitems.Sum(ti => ti.Item.Weight * ti.Quantity).ToString("#.## KG") : "0 KG",
+                        DeliveryDate = t.ShipDate,
+                        OrderType = t.TxnType
                     })
                     .ToListAsync();
 
                 dgOrders.ItemsSource = orders;
+                Alert.Visibility = checkOrder() == true ? Visibility.Visible : Visibility.Collapsed;
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Error loading transactions: {ex.Message}",
+                HandyControl.Controls.MessageBox.Show($"Error loading transactions: {ex.Message}",
                               "Error",
                               MessageBoxButton.OK,
                               MessageBoxImage.Error);
@@ -82,27 +93,11 @@ namespace ISDP2025_Parfonov_Zerrou.Forms.UserControls
 
         private void btnCreate_Click(object sender, RoutedEventArgs e)
         {
-            var existingOrder = context.Txns.FirstOrDefault(t => t.TxnStatus == "NEW"); //t.SiteIdto == Employee.SiteId &&
-
-
             var mainContent = this.Parent as ContentControl;
             if (mainContent != null)
             {
-                if (existingOrder != null)
-                {
-                    // Open existing order for modification
-                    mainContent.Content = new CreateStoreOrder(Employee, existingOrder.TxnId);
-                }
-                else if (selectedTxnId.HasValue)
-                {
-                    // Open selected order for modification
-                    mainContent.Content = new CreateStoreOrder(Employee, selectedTxnId.Value);
-                }
-                else
-                {
-                    // Create brand new order
-                    mainContent.Content = new CreateStoreOrder(Employee);
-                }
+                // Create brand new order
+                mainContent.Content = new CreateStoreOrder(Employee);
             }
         }
 
@@ -111,10 +106,12 @@ namespace ISDP2025_Parfonov_Zerrou.Forms.UserControls
             var selectedOrder = dgOrders.SelectedItem;
             if (selectedOrder == null)
             {
-                MessageBox.Show("Please select an order to receive.",
-                              "No Order Selected",
-                              MessageBoxButton.OK,
-                              MessageBoxImage.Warning);
+                Growl.Warning(new GrowlInfo
+                {
+                    Message = "Please select an order to receive.",
+                    ShowDateTime = false,
+                    WaitTime = 2
+                });
                 return;
             }
             int txnID = (int)selectedOrder.GetType().GetProperty("TxnId").GetValue(selectedOrder);
@@ -123,6 +120,13 @@ namespace ISDP2025_Parfonov_Zerrou.Forms.UserControls
             context.Txns.Update(transaction);
             context.SaveChanges();
             LoadTransactions();
+            selectedOrderTxnId = null;
+            Growl.Success(new GrowlInfo
+            {
+                Message = "Order Received successfully!",
+                ShowDateTime = false,
+                WaitTime = 2
+            });
         }
 
         private void btnDelete_Click(object sender, RoutedEventArgs e)
@@ -130,10 +134,12 @@ namespace ISDP2025_Parfonov_Zerrou.Forms.UserControls
             var selectedOrder = dgOrders.SelectedItem;
             if (selectedOrder == null)
             {
-                MessageBox.Show("Please select an order to delete.",
-                              "No Order Selected",
-                              MessageBoxButton.OK,
-                              MessageBoxImage.Warning);
+                Growl.Warning(new GrowlInfo
+                {
+                    Message = "Please select an order to delete.",
+                    ShowDateTime = false,
+                    WaitTime = 2
+                });
                 return;
             }
             // write delete functionality
@@ -146,11 +152,67 @@ namespace ISDP2025_Parfonov_Zerrou.Forms.UserControls
                 dynamic selectedOrder = dgOrders.SelectedItem;
                 if (selectedOrder.GetType().GetProperty("Status").GetValue(selectedOrder) == "NEW")
                 {
-                    selectedTxnId = selectedOrder.TxnId;
+                    selectedOrderTxnId = selectedOrder.TxnId;
 
                 }
+            }
+        }
+
+        private void btnEdit_Click(object sender, RoutedEventArgs e)
+        {
+            var existingOrder = context.Txns.FirstOrDefault(t => t.TxnStatus == "NEW" && (t.TxnType == "Store Order" || t.TxnType == "Emergency Order")); //t.SiteIdto == Employee.SiteId &&
+
+            var mainContent = this.Parent as ContentControl;
+            if (mainContent != null)
+            {
+                if (selectedOrderTxnId.HasValue)
+                {
+                    // Open selected order for modification
+                    mainContent.Content = new CreateStoreOrder(Employee, selectedOrderTxnId.Value);
+                }
+                else if (existingOrder != null)
+                {
+                    // Open existing order for modification
+                    mainContent.Content = new CreateStoreOrder(Employee, existingOrder.TxnId);
+                }
                 else
-                    MessageBox.Show("No");
+                {
+                    Growl.Warning(new GrowlInfo
+                    {
+                        Message = "Please select an open order.",
+                        ShowDateTime = false,
+                        WaitTime = 2
+                    });
+                }
+            }
+        }
+
+        private void btnReceiveWarehouse_Click(object sender, RoutedEventArgs e)
+        {
+            var existingOrder = context.Txns.FirstOrDefault(t => t.TxnStatus == "SUBMITTED" && (t.TxnType == "Store Order" || t.TxnType == "Emergency Order")); //t.SiteIdto == Employee.SiteId &&
+
+            var mainContent = this.Parent as ContentControl;
+            if (mainContent != null)
+            {
+                if (selectedOrderTxnId.HasValue)
+                {
+                    // Open selected order for modification
+                    mainContent.Content = new ReceiveStoreOrder(Employee, selectedOrderTxnId.Value, context);
+                }
+                else if (existingOrder != null)
+                {
+                    // Open existing order for modification
+                    mainContent.Content = new ReceiveStoreOrder(Employee, existingOrder.TxnId, context);
+                }
+                else
+                {
+                    Growl.Warning(new GrowlInfo
+                    {
+                        Message = "Please select an open order.",
+                        ShowDateTime = false,
+                        WaitTime = 2
+                    });
+                }
             }
         }
     }

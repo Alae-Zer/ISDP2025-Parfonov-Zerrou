@@ -1,4 +1,12 @@
-﻿public static class ValidatorsFormatters
+﻿
+//LOTS OF CONTENT JUST FROM STACKOVERFLOW!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
+//ISDP Project
+//Mohammed Alae-Zerrou, Serhii Parfonov
+//NBCC, Winter 2025
+//Completed By Mohammed with some changes from serhii
+//Last Modified by Serhii on Feb 16,2025
+public static class ValidatorsFormatters
 {
     //Checks if string is empty or whitespace
     //Sends String to check

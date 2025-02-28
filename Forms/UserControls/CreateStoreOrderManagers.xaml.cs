@@ -3,9 +3,16 @@ using System.Windows.Controls;
 using HandyControl.Controls;
 using ISDP2025_Parfonov_Zerrou.Models;
 using Microsoft.EntityFrameworkCore;
+using System.Windows;
+using System.Windows.Controls;
 
 namespace ISDP2025_Parfonov_Zerrou.Forms.UserControls
 {
+    //public class BestGLobals
+    //{
+    //    public required BestContext Context { get; set; }
+    //    public required Employee Employee { get; set; }
+    //}
     /// <summary>
     /// Interaction logic for CreateStoreOrderManagers.xaml
     /// </summary>
@@ -39,7 +46,7 @@ namespace ISDP2025_Parfonov_Zerrou.Forms.UserControls
         {
             public int ItemId { get; set; }
             public string Name { get; set; }
-            public int OrderQuantity { get; set; }  // Quantity being ordered
+            public int OrderQuantity { get; set; }  // Quantity being 
             public int CaseSize { get; set; }
             public decimal Weight { get; set; }
         }

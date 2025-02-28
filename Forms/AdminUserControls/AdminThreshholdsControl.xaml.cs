@@ -3,32 +3,45 @@ using Microsoft.EntityFrameworkCore;
 using System.Windows;
 using System.Windows.Controls;
 
+//ISDP Project
+//Mohammed Alae-Zerrou, Serhii Parfonov
+//NBCC, Winter 2025
+//Completed By Equal Share of Mohammed and Serhii
+//Last Modified by Mohammed on February 20,2025
 namespace ISDP2025_Parfonov_Zerrou.Forms.AdminUserControls
 {
     public partial class AdminThreshholdsControl : UserControl
     {
+        //Database context and category list for dropdown
         BestContext context;
         List<string> categoriesList = new();
 
+        //Initialize control and disable UI elements until data is loaded
         public AdminThreshholdsControl(Employee employee)
         {
             InitializeComponent();
             context = new BestContext();
             EnableControls(false);
             ClearFields();
+            txtSearch.IsEnabled = false;
+            cmbLocation.IsEnabled = false;
+            cmbSearchCategory.IsEnabled = false;
         }
 
+        //Loads active locations excluding system sites (9999, 10000)
         private void LoadLocations()
         {
             try
             {
                 var excludedSites = new[] { 9999, 10000 };
 
+                //Get active sites except excluded ones
                 var query = context.Sites
                     .Where(s => s.Active == 1 && !excludedSites.Contains(s.SiteId))
                     .OrderBy(s => s.SiteName)
                     .ToList();
 
+                //Add "All Locations" option
                 var allSites = new Site { SiteId = 0, SiteName = "All Locations" };
                 var sitesList = new List<Site> { allSites };
                 sitesList.AddRange(query);
@@ -49,6 +62,7 @@ namespace ISDP2025_Parfonov_Zerrou.Forms.AdminUserControls
             }
         }
 
+        //Loads active categories for filtering
         private void LoadCategories()
         {
             try
@@ -56,6 +70,7 @@ namespace ISDP2025_Parfonov_Zerrou.Forms.AdminUserControls
                 categoriesList.Clear();
                 categoriesList.Add("All Categories");
 
+                //Get active categories
                 var categories = context.Categories
                     .Where(c => c.Active == 1)
                     .Select(c => c.CategoryName)
@@ -76,33 +91,38 @@ namespace ISDP2025_Parfonov_Zerrou.Forms.AdminUserControls
             }
         }
 
+        //Loads inventory data based on selected filters
         private void LoadInventory()
         {
             try
             {
+                //Base query with related data
                 var query = context.Inventories
                     .Include(i => i.Item)
                     .Include(i => i.Site)
                     .AsQueryable();
 
+                //Apply search filter
                 if (!string.IsNullOrWhiteSpace(txtSearch.Text))
                 {
                     string searchText = txtSearch.Text.ToLower();
                     query = query.Where(i => i.Item.Name.ToLower().Contains(searchText));
                 }
 
+                //Apply category filter
                 if (cmbSearchCategory.SelectedIndex > 0)
                 {
-                    string category = cmbSearchCategory.SelectedItem.ToString();
+                    string? category = cmbSearchCategory.SelectedItem.ToString();
                     query = query.Where(i => i.Item.Category == category);
                 }
 
-                // Apply location filter
+                //Apply location filter if specific location selected
                 if (cmbLocation.SelectedItem is Site selectedSite && selectedSite.SiteId != 0)
                 {
                     query = query.Where(i => i.SiteId == selectedSite.SiteId);
                 }
 
+                //Project and load filtered data
                 var inventory = query
                     .Select(i => new
                     {
@@ -129,6 +149,7 @@ namespace ISDP2025_Parfonov_Zerrou.Forms.AdminUserControls
             }
         }
 
+        //Enables or disables edit controls
         private void EnableControls(bool enabled)
         {
             nudReorderThreshold.IsEnabled = enabled;
@@ -137,6 +158,7 @@ namespace ISDP2025_Parfonov_Zerrou.Forms.AdminUserControls
             btnSave.IsEnabled = enabled;
         }
 
+        //Clears all input fields
         private void ClearFields()
         {
             lblItemId.Content = string.Empty;
@@ -148,6 +170,7 @@ namespace ISDP2025_Parfonov_Zerrou.Forms.AdminUserControls
             EnableControls(false);
         }
 
+        //Populates form fields with selected inventory item data
         private void PopulateFields()
         {
             if (dgvInventory.SelectedItem != null)
@@ -155,12 +178,13 @@ namespace ISDP2025_Parfonov_Zerrou.Forms.AdminUserControls
                 var selected = dgvInventory.SelectedItem;
                 try
                 {
-                    lblItemId.Content = selected.GetType().GetProperty("ItemId")?.GetValue(selected)?.ToString() ?? "";
-                    txtItemName.Text = selected.GetType().GetProperty("Name")?.GetValue(selected)?.ToString() ?? "";
-                    txtCurrentQuantity.Text = selected.GetType().GetProperty("Quantity")?.GetValue(selected)?.ToString() ?? "0";
-                    nudReorderThreshold.Value = Convert.ToDouble(selected.GetType().GetProperty("ReorderThreshold")?.GetValue(selected) ?? 0);
-                    nudOptimumThreshold.Value = Convert.ToDouble(selected.GetType().GetProperty("OptimumThreshold")?.GetValue(selected) ?? 0);
-                    txtNotes.Text = selected.GetType().GetProperty("Notes")?.GetValue(selected)?.ToString() ?? "";
+                    // Get and set properties from selected item
+                    lblItemId.Content = selected.GetType().GetProperty("ItemId").GetValue(selected).ToString();
+                    txtItemName.Text = selected.GetType().GetProperty("Name").GetValue(selected).ToString();
+                    txtCurrentQuantity.Text = selected.GetType().GetProperty("Quantity").GetValue(selected).ToString();
+                    nudReorderThreshold.Value = Convert.ToDouble(selected.GetType().GetProperty("ReorderThreshold").GetValue(selected));
+                    nudOptimumThreshold.Value = Convert.ToDouble(selected.GetType().GetProperty("OptimumThreshold").GetValue(selected));
+                    txtNotes.Text = selected.GetType().GetProperty("Notes").GetValue(selected)?.ToString() ?? "";
                     EnableControls(true);
                 }
                 catch (Exception ex)
@@ -174,6 +198,7 @@ namespace ISDP2025_Parfonov_Zerrou.Forms.AdminUserControls
             }
         }
 
+        //Validates threshold values
         private bool ValidateThresholds()
         {
             if (nudOptimumThreshold.Value <= nudReorderThreshold.Value)
@@ -188,6 +213,7 @@ namespace ISDP2025_Parfonov_Zerrou.Forms.AdminUserControls
             return true;
         }
 
+        //Saves changes to selected inventory item
         private void SaveChanges()
         {
             if (dgvInventory.SelectedItem == null)
@@ -204,10 +230,12 @@ namespace ISDP2025_Parfonov_Zerrou.Forms.AdminUserControls
 
             try
             {
+                //Get selected item details
                 int itemId = int.Parse(lblItemId.Content.ToString());
                 var selected = dgvInventory.SelectedItem;
                 int siteId = (int)selected.GetType().GetProperty("SiteId").GetValue(selected);
 
+                //Update inventory record
                 var inventory = context.Inventories.FirstOrDefault(i =>
                     i.ItemId == itemId && i.SiteId == siteId);
 
@@ -236,6 +264,7 @@ namespace ISDP2025_Parfonov_Zerrou.Forms.AdminUserControls
             }
         }
 
+        //Event handlers for UI interactions
         private void TxtSearch_TextChanged(object sender, TextChangedEventArgs e)
         {
             LoadInventory();

@@ -31,8 +31,7 @@ namespace ISDP2025_Parfonov_Zerrou.Managers
                     .Include(t => t.SiteIdtoNavigation)
                     .Where(t => t.TxnType == "Back Order" &&
                                (t.TxnStatus == "NEW" ||
-                                t.TxnStatus == "RECEIVED" ||
-                                t.TxnStatus == "ASSEMBLING"))
+                                t.TxnStatus == "RECEIVED"))
                     .OrderByDescending(t => t.CreatedDate)
                     .ToList();
             }
@@ -53,7 +52,7 @@ namespace ISDP2025_Parfonov_Zerrou.Managers
                 return context.Txns
                     .FirstOrDefault(t => t.SiteIdto == siteId
                                     && t.TxnType == "Back Order"
-                                    && t.TxnStatus == "NEW");
+                                    && (t.TxnStatus == "NEW" || t.TxnStatus == "RECEIVED"));
             }
             catch (Exception ex)
             {
@@ -99,6 +98,7 @@ namespace ISDP2025_Parfonov_Zerrou.Managers
             }
         }
 
+        //Adds or Updates items in backorders
         public bool AddItemToBackorder(int txnId, int itemId, int quantity)
         {
             try
@@ -139,6 +139,7 @@ namespace ISDP2025_Parfonov_Zerrou.Managers
             }
         }
 
+        //Add Item to backorder
         public bool AddToBackorder(Txn originalTransaction, int itemId, int quantity)
         {
             try

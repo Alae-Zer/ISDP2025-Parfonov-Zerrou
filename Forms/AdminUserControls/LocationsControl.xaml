@@ -160,7 +160,7 @@
                 <ColumnDefinition Width="Auto"/>
             </Grid.ColumnDefinitions>
 
-            <Button x:Name="btnRefresh" Content="Refresh" Width="100" Height="25" 
+            <Button x:Name="btnRefresh" Content="Refresh" Width="100" Height="30" 
                   Grid.Column="0"
                   Click="BtnRefresh_Click"
                   Style="{StaticResource RoundedButton}"
@@ -168,22 +168,22 @@
                   Foreground="White" Cursor="Hand"/>
 
             <StackPanel Grid.Column="2" Orientation="Horizontal">
-                <Button x:Name="btnClear" Content="Clear" Width="100" Height="25" 
+                <Button x:Name="btnClear" Content="Clear" Width="100" Height="30" 
                       Margin="0,0,10,0" Click="BtnClear_Click"
                       Style="{StaticResource RoundedButton}"
                       Background="#FFF62D2D"
                       Foreground="White" Cursor="Hand"/>
-                <Button x:Name="btnAdd" Content="Add" Width="100" Height="25" 
+                <Button x:Name="btnAdd" Content="Add" Width="100" Height="30" 
                       Margin="0,0,10,0" Click="BtnAdd_Click"
                       Style="{StaticResource RoundedButton}"
                       Background="#4CAF50"
                       Foreground="White" Cursor="Hand"/>
-                <Button x:Name="btnUpdate" Content="Update" Width="100" Height="25" 
+                <Button x:Name="btnUpdate" Content="Update" Width="100" Height="30" 
                       Margin="0,0,10,0" Click="BtnUpdate_Click"
                       Style="{StaticResource RoundedButton}"
                       Background="#FFD700"
                       Foreground="Black" Cursor="Hand"/>
-                <Button x:Name="btnSave" Content="Save/Cancel" Width="100" Height="25" 
+                <Button x:Name="btnSave" Content="Save/Cancel" Width="100" Height="30" 
                       Click="BtnSave_Click"
                       Style="{StaticResource RoundedButton}"
                       Background="#4CAF50"

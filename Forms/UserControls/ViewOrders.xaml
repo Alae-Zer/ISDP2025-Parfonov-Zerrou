@@ -34,6 +34,7 @@
                 <TextBlock Text="Status:" VerticalAlignment="Center"/>
                 <hc:ComboBox x:Name="cmbStatus" Width="120" Margin="5,0">
                     <ComboBoxItem Content="ALL"/>
+                    <ComboBoxItem Content="New"/>
                     <ComboBoxItem Content="Submitted"/>
                     <ComboBoxItem Content="Received"/>
                     <ComboBoxItem Content="Processing"/>

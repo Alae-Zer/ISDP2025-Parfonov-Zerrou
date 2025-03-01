@@ -14,6 +14,7 @@ namespace ISDP2025_Parfonov_Zerrou.Forms.UserControls
         private BestContext context;
         private Employee Employee;
         private int? selectedOrderTxnId = null;
+        string permissionLevel;
 
         public ViewOrders()
         {
@@ -25,10 +26,12 @@ namespace ISDP2025_Parfonov_Zerrou.Forms.UserControls
         public ViewOrders(Employee employee)
         {
             InitializeComponent();
-            context = new BestContext();
-            LoadTransactions(); // Load transactions (aka orders) when control is initialized
             Employee = employee;
+            context = new BestContext();
             ConfigureUIForUserRole();
+            LoadTransactions(); // Load transactions (aka orders) when control is initialized
+
+
         }
         private void ConfigureUIForUserRole()
         {
@@ -44,7 +47,7 @@ namespace ISDP2025_Parfonov_Zerrou.Forms.UserControls
             }
 
             // Get the permission level from employee
-            var permissionLevel = Employee.Position.PermissionLevel;
+            permissionLevel = Employee.Position.PermissionLevel;
 
 
             switch (permissionLevel)
@@ -72,6 +75,7 @@ namespace ISDP2025_Parfonov_Zerrou.Forms.UserControls
         {
             try
             {
+
                 var query = context.Txns
                     .Include(t => t.SiteIdtoNavigation)
                     .Include(t => t.Txnitems)
@@ -79,22 +83,30 @@ namespace ISDP2025_Parfonov_Zerrou.Forms.UserControls
                     .AsQueryable();
 
                 // Apply filters if selected
-                if (cmbOrderType.SelectedItem != null &&
-                    ((ComboBoxItem)cmbOrderType.SelectedItem).Content.ToString() != "ALL")
+                if (cmbOrderType.SelectedItem != null)
                 {
-                    string orderType = ((ComboBoxItem)cmbOrderType.SelectedItem).Content.ToString();
-                    query = query.Where(t => t.TxnType == orderType);
+                    string selectedContent = ((ComboBoxItem)cmbOrderType.SelectedItem).Content.ToString();
+                    if (selectedContent != "All" && selectedContent != "ALL")
+                    {
+                        string orderType = selectedContent;
+                        query = query.Where(t => t.TxnType == orderType);
+                    }
                 }
 
-                if (cmbStatus.SelectedItem != null &&
-                    ((ComboBoxItem)cmbStatus.SelectedItem).Content.ToString() != "ALL")
+                if (cmbStatus.SelectedItem != null)
                 {
-                    string status = ((ComboBoxItem)cmbStatus.SelectedItem).Content.ToString();
-                    query = query.Where(t => t.TxnStatus == status);
+                    string selectedContent = ((ComboBoxItem)cmbStatus.SelectedItem).Content.ToString();
+                    if (selectedContent != "All" && selectedContent != "ALL")
+                    {
+                        string status = selectedContent;
+                        query = query.Where(t => t.TxnStatus == status);
+                    }
                 }
 
-                // Execute query and transform results (synchronous version)
-                var orders = query
+                if (permissionLevel == "Store Manager")
+                {
+                    var orders = query
+                    .Where(t => t.SiteIdto == Employee.SiteId)
                     .Select(t => new
                     {
                         TxnId = t.TxnId,
@@ -105,10 +117,28 @@ namespace ISDP2025_Parfonov_Zerrou.Forms.UserControls
                         DeliveryDate = t.ShipDate,
                         OrderType = t.TxnType
                     })
-                    .ToList(); // Changed from ToListAsync() to ToList()
+                    .ToList();
+                    dgOrders.ItemsSource = orders;
+                }
+                else
+                {
+                    var orders = query
+                    .Select(t => new
+                    {
+                        TxnId = t.TxnId,
+                        Location = t.SiteIdtoNavigation.SiteName,
+                        Status = t.TxnStatus,
+                        Items = t.Txnitems.Count(),
+                        Weight = t.Txnitems.Sum(ti => ti.Item.Weight * ti.Quantity) > 0 ? t.Txnitems.Sum(ti => ti.Item.Weight * ti.Quantity).ToString("#.## KG") : "0 KG",
+                        DeliveryDate = t.ShipDate,
+                        OrderType = t.TxnType
+                    })
+                    .ToList();
+                    dgOrders.ItemsSource = orders;
+                    Alert.Visibility = checkOrder() == true ? Visibility.Visible : Visibility.Collapsed;
+                }
 
-                dgOrders.ItemsSource = orders;
-                Alert.Visibility = checkOrder() == true ? Visibility.Visible : Visibility.Collapsed;
+
             }
             catch (Exception ex)
             {

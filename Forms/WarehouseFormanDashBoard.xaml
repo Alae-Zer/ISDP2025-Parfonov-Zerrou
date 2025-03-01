@@ -191,6 +191,13 @@
                             <TextBlock Text="Fulfil Orders" VerticalAlignment="Center"/>
                         </StackPanel>
                     </Button>
+                    <Button x:Name="btnOrders" Tag="SuppliersPage" Height="41" Margin="0,9" 
+                        Style="{StaticResource SidebarButtonStyle}" Click="btnOrders_Click">
+                        <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                            <Label Style="{StaticResource SidebarLabelStyle}" Content="&#xf07a;" Padding="7,5,2,5" />
+                            <TextBlock Text="Orders" VerticalAlignment="Center" />
+                        </StackPanel>
+                    </Button>
                 </StackPanel>
 
                 <!-- Footer -->

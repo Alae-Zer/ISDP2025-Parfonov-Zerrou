@@ -4,6 +4,7 @@ using System.Windows.Controls;
 using HandyControl.Controls;
 using HandyControl.Data;
 using ISDP2025_Parfonov_Zerrou.Forms.UserControls;
+using ISDP2025_Parfonov_Zerrou.Functionality;
 using ISDP2025_Parfonov_Zerrou.Models;
 using Microsoft.EntityFrameworkCore;
 
@@ -20,11 +21,37 @@ namespace ISDP2025_Parfonov_Zerrou.Forms.AdminUserControls
         private string currentSearchText = "";
         private int? existingTxnId = null;
         private string searchText = "";
-
         Employee employee;
+        private bool isEmergencyOrder = false;
 
+        public CreateStoreOrder()
+        {
+            InitializeComponent();
+            context = new BestContext();
+            loadStores();
+        }
 
-        //private int ItemsPerPage => CalculateItemsPerPage();
+        public CreateStoreOrder(Employee emp)
+        {
+            InitializeComponent();
+            context = new BestContext();
+            employee = emp;
+            loadStores();
+            disable(false);
+            ConfigureUIForUserRole();
+        }
+
+        public CreateStoreOrder(Employee emp, int ID)
+        {
+            InitializeComponent();
+            employee = emp;
+            existingTxnId = ID;
+            context = new BestContext();
+            loadStores();
+            LoadExistingOrder();
+            disable(true);
+            ConfigureUIForUserRole();
+        }
 
         public class OrderItem  // For inventory display
         {
@@ -45,7 +72,42 @@ namespace ISDP2025_Parfonov_Zerrou.Forms.AdminUserControls
             public int CaseSize { get; set; }
             public decimal Weight { get; set; }
         }
+        private void ConfigureUIForUserRole()
+        {
+            //if (employee == null || employee.Position == null)
+            //{
+            //    // If employee or position is null, reload the employee with position included
+            //    if (employee != null)
+            //    {
+            //        employee = context.Employees
+            //            .Include(e => e.Position)
+            //            .FirstOrDefault(e => e.EmployeeID == employee.EmployeeID);
+            //    }
+            //    return;
+            //}
 
+            // Get the permission level from employee
+            var permissionLevel = employee.Position.PermissionLevel;
+
+            // Configure UI based on role
+            switch (permissionLevel)
+            {
+                case "Store Manager":
+                    // Store managers can only see/edit their own store
+                    cmbStores.IsEnabled = false;
+                    cmbStores.SelectedValue = employee.SiteId;
+                    break;
+
+                case "Warehouse Manager":
+                    // Warehouse managers can see all stores but not create new orders
+                    btnCreate.Visibility = Visibility.Collapsed;
+                    break;
+
+                case "Administrator":
+                    // Admins have full access - no restrictions
+                    break;
+            }
+        }
 
         private void disable(bool incase)
         {
@@ -56,34 +118,6 @@ namespace ISDP2025_Parfonov_Zerrou.Forms.AdminUserControls
             btnSave.IsEnabled = incase;
             btnSubmit.IsEnabled = incase;
             btnCreate.IsEnabled = !incase;
-        }
-
-
-        public CreateStoreOrder()
-        {
-            InitializeComponent();
-            context = new BestContext();
-            loadStores();
-        }
-
-        public CreateStoreOrder(Employee emp)
-        {
-            InitializeComponent();
-            context = new BestContext();
-            employee = emp;
-            loadStores();
-            disable(false);
-        }
-
-        public CreateStoreOrder(Employee emp, int ID)
-        {
-            InitializeComponent();
-            employee = emp;
-            existingTxnId = ID;
-            context = new BestContext();
-            loadStores();
-            LoadExistingOrder();
-            disable(true);
         }
 
         private void LoadExistingOrder()
@@ -123,23 +157,42 @@ namespace ISDP2025_Parfonov_Zerrou.Forms.AdminUserControls
         {
             try
             {
-                var stores = context.Sites
-                    .Select(s => new
+                var query = context.Sites
+                .Where(s => s.SiteId != 1 && s.SiteId != 3 && s.SiteId != 10000 && s.SiteId != 9999)
+                .OrderBy(s => s.SiteName);
+
+                // For store managers, filter to only show their store
+                if (employee != null)
+                {
+                    // If employee.Position is null, load it from the database
+                    if (employee.Position == null)
                     {
-                        s.SiteId,
-                        s.SiteName,
-                        s.DayOfWeek
-                    })
-                    .OrderBy(s => s.SiteName)
-                    .ToList();
-                stores.RemoveAt(0); // Corporate Headquarters
-                stores.RemoveAt(4); // Online
-                stores.RemoveAt(7); // Truck
-                stores.RemoveAt(8); // Warehouse Bay
+                        // Reload the employee with the Position included
+                        employee = context.Employees
+                            .Include(e => e.Position)
+                            .FirstOrDefault(e => e.EmployeeID == employee.EmployeeID);
+                    }
+                    if (employee.Position.PermissionLevel == "Store Manager")
+                    {
+                        query = (IOrderedQueryable<Site>)query.Where(s => s.SiteId == employee.SiteId);
+                    }
+                }
+                var stores = query.Select(s => new
+                {
+                    s.SiteId,
+                    s.SiteName,
+                    s.DayOfWeek
+                }).ToList();
 
                 cmbStores.ItemsSource = stores;
                 cmbStores.DisplayMemberPath = "SiteName";
                 cmbStores.SelectedValuePath = "SiteId";
+
+                // Auto-select the store manager's store
+                if (employee.Position.PermissionLevel == "Store Manager")
+                {
+                    cmbStores.SelectedValue = employee.SiteId;
+                }
 
 
                 PrePopulateOrder();
@@ -154,7 +207,7 @@ namespace ISDP2025_Parfonov_Zerrou.Forms.AdminUserControls
         {
             if (cmbStores.SelectedItem == null || !existingTxnId.HasValue) return;
 
-            orderItems.Clear(); // Clear existing pre-populated items
+            orderItems.Clear();
 
             int selectedSiteId = (int)cmbStores.SelectedValue;
             try
@@ -248,6 +301,26 @@ namespace ISDP2025_Parfonov_Zerrou.Forms.AdminUserControls
             }
         }
 
+        public DateTime GetNextDeliveryDate(string dayOfWeek)
+        {
+            DateTime today = DateTime.Now;
+            DateTime nextDate = today;
+
+            // Keep adding days until we hit the right day of week
+            while (nextDate.DayOfWeek.ToString().ToUpper() != dayOfWeek.ToUpper())
+            {
+                nextDate = nextDate.AddDays(1);
+            }
+
+            // If it's today and past business hours, add a week
+            if (nextDate.Date == today.Date && today.Hour >= 17)
+            {
+                nextDate = nextDate.AddDays(7);
+            }
+
+            return nextDate.Date;
+        }
+
         private int CalculateItemsPerPage()
         {
             // Get the actual height of the grid
@@ -308,7 +381,6 @@ namespace ISDP2025_Parfonov_Zerrou.Forms.AdminUserControls
         {
             if (radEmergency.IsChecked == true)
             {
-                var orderItems = dgvOrders.ItemsSource as List<OrderLineItem>;
                 if (orderItems != null && orderItems.Count >= 5)
                 {
                     Growl.Warning(new GrowlInfo
@@ -324,8 +396,12 @@ namespace ISDP2025_Parfonov_Zerrou.Forms.AdminUserControls
             var selectedItem = InventoryGrid.SelectedItem as OrderItem;
             if (selectedItem == null)
             {
-                HandyControl.Controls.MessageBox.Show("Please select an item to add.",
-                    "No Item Selected", MessageBoxButton.OK, MessageBoxImage.Warning);
+                Growl.Warning(new GrowlInfo
+                {
+                    Message = "Please select an item to add.",
+                    ShowDateTime = false,
+                    WaitTime = 2
+                });
                 return;
             }
 
@@ -370,6 +446,101 @@ namespace ISDP2025_Parfonov_Zerrou.Forms.AdminUserControls
             dgvOrders.ItemsSource = orderItems;
         }
 
+        private void btnCreate_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                if (cmbStores.SelectedValue is null)
+                {
+                    Growl.Warning(new GrowlInfo
+                    {
+                        Message = "Please select a store.",
+                        ShowDateTime = false,
+                        WaitTime = 2,
+                    });
+
+                    return;
+                }
+                if (radEmergency.IsChecked == false && radNormal.IsChecked == false)
+                {
+                    Growl.Warning(new GrowlInfo
+                    {
+                        Message = "Please select an order type.",
+                        ShowDateTime = false,
+                        WaitTime = 2
+                    });
+                    return;
+                }
+
+                int radioBtn = radEmergency.IsChecked == true ? 1 : 0;
+                int selectedSite = (int)cmbStores.SelectedValue;
+
+                var existingOrder = context.Txns.FirstOrDefault(t => t.SiteIdto == selectedSite && t.TxnStatus == "NEW" && t.EmergencyDelivery == radioBtn);
+
+                if (existingOrder != null)
+                {
+                    HandyControl.Controls.MessageBox.Show($"An open {(radioBtn == 1 ? "emergency" : "normal")} order already exists for this store.",
+                    "Duplicate Order", MessageBoxButton.OK, MessageBoxImage.Warning);
+
+                    var mainContent = this.Parent as ContentControl;
+                    mainContent.Content = new ViewOrders(employee);
+
+                    return;
+                }
+
+                disable(true);
+
+                var site = context.Sites.FirstOrDefault(s => s.SiteId == selectedSite);
+
+                var txn = new Txn
+                {
+                    EmployeeId = employee.EmployeeID,
+                    SiteIdto = selectedSite,
+                    SiteIdfrom = 2, // Warehouse
+                    TxnStatus = "NEW",
+                    ShipDate = radioBtn != 1 ? GetNextDeliveryDate(site.DayOfWeek) : DateTime.Today.AddDays(1),
+                    TxnType = radioBtn == 1 ? "Emergency Order" : "Store Order",
+                    BarCode = GenerateBarcode(),
+                    CreatedDate = DateTime.Now,
+                    EmergencyDelivery = (sbyte)(radioBtn)
+                };
+
+                context.Txns.Add(txn);
+                context.SaveChanges();
+
+                existingTxnId = txn.TxnId;
+
+                AuditTransactions.LogActivity(
+                employee,
+                txn.TxnId,
+                txn.TxnType,
+                "NEW",
+                txn.SiteIdto,
+                null,
+                $"Order created by {employee.FirstName} {employee.LastName}"
+            );
+
+                if (radioBtn == 0)
+                {
+                    PrePopulateOrder();
+                }
+
+                Growl.Success(new GrowlInfo
+                {
+                    Message = "Order created successfully!",
+                    ShowDateTime = false,
+                    WaitTime = 2
+                });
+            }
+            catch (Exception ex)
+            {
+                HandyControl.Controls.MessageBox.Show($"Error creating order: {ex.Message}",
+                    "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+
+        }
+
+
         private void btnRefresh_Click(object sender, RoutedEventArgs e)
         {
             LoadInventoryItems();
@@ -411,12 +582,13 @@ namespace ISDP2025_Parfonov_Zerrou.Forms.AdminUserControls
                     MessageBoxImage.Error);
                 return;
             }
+
             var result = HandyControl.Controls.MessageBox.Show(
-        "Are you sure you want to submit this order?\n\n" +
-        "Once submitted, the order will be sent to the warehouse for processing.",
-        "Confirm Submission",
-        MessageBoxButton.YesNo,
-        MessageBoxImage.Question);
+            "Are you sure you want to submit this order?\n\n" +
+            "Once submitted, the order will be sent to the warehouse for processing.",
+            "Confirm Submission",
+            MessageBoxButton.YesNo,
+            MessageBoxImage.Question);
 
             if (result == MessageBoxResult.No)
             {
@@ -425,11 +597,23 @@ namespace ISDP2025_Parfonov_Zerrou.Forms.AdminUserControls
 
             try
             {
+                SaveOrder();
+
                 var transaction = context.Txns.Find(existingTxnId);
                 transaction.TxnStatus = "SUBMITTED";
-                SaveOrder();
-                context.Txns.Update(transaction);
+
+                //context.Txns.Update(transaction);
                 context.SaveChanges();
+
+                AuditTransactions.LogActivity(
+                    employee,
+                    transaction.TxnId,
+                    transaction.TxnType,
+                    "SUBMITTED",
+                    transaction.SiteIdto,
+                    null,
+                    $"Order submitted to warehouse by {employee.FirstName} {employee.LastName}"
+                );
 
                 Growl.Success(new GrowlInfo
                 {
@@ -444,7 +628,7 @@ namespace ISDP2025_Parfonov_Zerrou.Forms.AdminUserControls
             }
             catch (Exception ex)
             {
-                HandyControl.Controls.MessageBox.Show($"Error creating order: {ex.Message}",
+                HandyControl.Controls.MessageBox.Show($"Error submitting order: {ex.Message}",
                     "Error", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
@@ -475,47 +659,57 @@ namespace ISDP2025_Parfonov_Zerrou.Forms.AdminUserControls
 
         private void SaveOrder()
         {
-            // First, get existing txnitems for this transaction
-            var existingItems = context.Txnitems
-                .Where(t => t.TxnId == existingTxnId)
-                .ToList();
+            if (!existingTxnId.HasValue) return;
 
-            foreach (var item in orderItems)
+            try
             {
-                // Check if this item already exists in the transaction
-                var existingItem = existingItems
-                    .FirstOrDefault(e => e.ItemId == item.ItemId);
+                // First, get existing txnitems for this transaction
+                var existingItems = context.Txnitems
+                    .Where(t => t.TxnId == existingTxnId)
+                    .ToList();
 
-                if (existingItem != null)
+                foreach (var item in orderItems)
                 {
-                    // Update existing item
-                    existingItem.Quantity = item.OrderQuantity;
-                    context.Txnitems.Update(existingItem);
-                }
-                else
-                {
-                    // Add new item
-                    var txnItem = new Txnitem
+                    // Check if this item already exists in the transaction
+                    var existingItem = existingItems
+                        .FirstOrDefault(e => e.ItemId == item.ItemId);
+
+                    if (existingItem != null)
                     {
-                        TxnId = (int)existingTxnId,
-                        ItemId = item.ItemId,
-                        Quantity = item.OrderQuantity
-                    };
-                    context.Txnitems.Add(txnItem);
+                        // Update existing item
+                        existingItem.Quantity = item.OrderQuantity;
+                        context.Txnitems.Update(existingItem);
+                    }
+                    else
+                    {
+                        // Add new item
+                        var txnItem = new Txnitem
+                        {
+                            TxnId = (int)existingTxnId,
+                            ItemId = item.ItemId,
+                            Quantity = item.OrderQuantity
+                        };
+                        context.Txnitems.Add(txnItem);
+                    }
                 }
+
+                // Remove items that are no longer in the order
+                var itemsToRemove = existingItems
+                    .Where(e => !orderItems.Any(o => o.ItemId == e.ItemId))
+                    .ToList();
+
+                foreach (var item in itemsToRemove)
+                {
+                    context.Txnitems.Remove(item);
+                }
+
+                context.SaveChanges();
             }
-
-            // Remove items that are no longer in the order
-            var itemsToRemove = existingItems
-                .Where(e => !orderItems.Any(o => o.ItemId == e.ItemId))
-                .ToList();
-
-            foreach (var item in itemsToRemove)
+            catch (Exception ex)
             {
-                context.Txnitems.Remove(item);
-            }
 
-            context.SaveChanges();
+                throw new Exception($"Error saving order: {ex.Message}");
+            }
         }
 
         private void btnSave_Click(object sender, RoutedEventArgs e)
@@ -535,110 +729,6 @@ namespace ISDP2025_Parfonov_Zerrou.Forms.AdminUserControls
                 HandyControl.Controls.MessageBox.Show($"Error creating order: {ex.Message}",
                     "Error", MessageBoxButton.OK, MessageBoxImage.Error);
             }
-        }
-
-
-
-        private void btnCreate_Click(object sender, RoutedEventArgs e)
-        {
-            try
-            {
-                if (cmbStores.SelectedValue is null)
-                {
-                    Growl.Warning(new GrowlInfo
-                    {
-                        Message = "Please select a store.",
-                        ShowDateTime = false,
-                        WaitTime = 2,
-                    });
-
-                    return;
-                }
-                if (radEmergency.IsChecked == false && radNormal.IsChecked == false)
-                {
-                    Growl.Warning(new GrowlInfo
-                    {
-                        Message = "Please select an order type.",
-                        ShowDateTime = false,
-                        WaitTime = 2
-                    });
-                    return;
-                }
-                int radioBtn = radEmergency.IsChecked == true ? 1 : 0;
-                int selectedSite = int.Parse(cmbStores.SelectedValue.ToString());
-                var existingOrder = context.Txns.FirstOrDefault(t => t.SiteIdto == selectedSite && t.TxnStatus == "NEW" && t.EmergencyDelivery == radioBtn);
-
-                if (existingOrder != null)
-                {
-                    HandyControl.Controls.MessageBox.Show($"An open {(radioBtn == 1 ? "emergency" : "normal")} order already exists for this store.",
-                    "Duplicate Order", MessageBoxButton.OK, MessageBoxImage.Warning);
-
-                    var mainContent = this.Parent as ContentControl;
-                    mainContent.Content = new ViewOrders(employee);
-
-                    return;
-                }
-
-                disable(true);
-
-                var site = context.Sites.FirstOrDefault(s => s.SiteId == selectedSite);
-
-                var txn = new Txn
-                {
-                    EmployeeId = employee.EmployeeID,
-                    SiteIdto = selectedSite,
-                    SiteIdfrom = 2, // Warehouse
-                    TxnStatus = "NEW",
-                    ShipDate = radioBtn != 1 ? GetNextDeliveryDate(site.DayOfWeek) : DateTime.Today.AddDays(1),
-                    TxnType = radioBtn == 1 ? "Emergency Order" : "Store Order",
-                    BarCode = GenerateBarcode(),
-                    CreatedDate = DateTime.Now,
-                    EmergencyDelivery = (sbyte)(radioBtn)
-                };
-
-                context.Txns.Add(txn);
-                context.SaveChanges();
-
-                existingTxnId = txn.TxnId;
-
-                if (radioBtn == 0)
-                {
-                    PrePopulateOrder();
-                }
-
-                Growl.Success(new GrowlInfo
-                {
-                    Message = "Order created successfully!",
-                    ShowDateTime = false,
-                    WaitTime = 2
-                });
-            }
-            catch (Exception ex)
-            {
-                HandyControl.Controls.MessageBox.Show($"Error creating order: {ex.Message}",
-                    "Error", MessageBoxButton.OK, MessageBoxImage.Error);
-            }
-
-        }
-
-        public DateTime GetNextDeliveryDate(string dayOfWeek)
-        {
-            DateTime today = DateTime.Now;
-            DateTime nextDate = today;
-
-            // Keep adding days until we hit the right day of week
-            while (nextDate.DayOfWeek.ToString().ToUpper() != dayOfWeek.ToUpper())
-            {
-                nextDate = nextDate.AddDays(1);
-            }
-
-            // If it's today and past business hours, add a week
-            if (nextDate.Date == today.Date && today.Hour >= 17)
-            {
-                nextDate = nextDate.AddDays(7);
-            }
-
-            return nextDate.Date;
         }
 
         private void UserControl_Unloaded(object sender, RoutedEventArgs e)

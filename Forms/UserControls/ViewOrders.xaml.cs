@@ -28,6 +28,39 @@ namespace ISDP2025_Parfonov_Zerrou.Forms.UserControls
             context = new BestContext();
             LoadTransactions(); // Load transactions (aka orders) when control is initialized
             Employee = employee;
+            ConfigureUIForUserRole();
+        }
+        private void ConfigureUIForUserRole()
+        {
+            if (Employee == null || Employee.Position == null)
+            {
+                // If employee or position is null, reload the employee with position included
+                if (Employee != null)
+                {
+                    Employee = context.Employees
+                        .Include(e => e.Position)
+                        .FirstOrDefault(e => e.EmployeeID == Employee.EmployeeID);
+                }
+            }
+
+            // Get the permission level from employee
+            var permissionLevel = Employee.Position.PermissionLevel;
+
+
+            switch (permissionLevel)
+            {
+                case "Store Manager":
+                    Alert.Visibility = Visibility.Collapsed;
+                    btnReceiveWarehouse.Visibility = Visibility.Collapsed;
+                    break;
+
+                case "Warehouse Manager":
+                    btnCreate.Visibility = Visibility.Collapsed;
+                    break;
+
+                case "Administrator":
+                    break;
+            }
         }
 
         private bool checkOrder()
@@ -35,7 +68,7 @@ namespace ISDP2025_Parfonov_Zerrou.Forms.UserControls
             return context.Txns.Any(t => t.TxnStatus == "SUBMITTED" && (t.TxnType == "Store Order" || t.TxnType == "Emergency Order"));
         }
 
-        private async void LoadTransactions()
+        private void LoadTransactions()
         {
             try
             {
@@ -60,8 +93,8 @@ namespace ISDP2025_Parfonov_Zerrou.Forms.UserControls
                     query = query.Where(t => t.TxnStatus == status);
                 }
 
-                // Execute query and transform results
-                var orders = await query
+                // Execute query and transform results (synchronous version)
+                var orders = query
                     .Select(t => new
                     {
                         TxnId = t.TxnId,
@@ -72,7 +105,7 @@ namespace ISDP2025_Parfonov_Zerrou.Forms.UserControls
                         DeliveryDate = t.ShipDate,
                         OrderType = t.TxnType
                     })
-                    .ToListAsync();
+                    .ToList(); // Changed from ToListAsync() to ToList()
 
                 dgOrders.ItemsSource = orders;
                 Alert.Visibility = checkOrder() == true ? Visibility.Visible : Visibility.Collapsed;

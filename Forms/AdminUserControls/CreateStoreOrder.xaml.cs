@@ -74,17 +74,17 @@ namespace ISDP2025_Parfonov_Zerrou.Forms.AdminUserControls
         }
         private void ConfigureUIForUserRole()
         {
-            //if (employee == null || employee.Position == null)
-            //{
-            //    // If employee or position is null, reload the employee with position included
-            //    if (employee != null)
-            //    {
-            //        employee = context.Employees
-            //            .Include(e => e.Position)
-            //            .FirstOrDefault(e => e.EmployeeID == employee.EmployeeID);
-            //    }
-            //    return;
-            //}
+            if (employee == null || employee.Position == null)
+            {
+                // If employee or position is null, reload the employee with position included
+                if (employee != null)
+                {
+                    employee = context.Employees
+                        .Include(e => e.Position)
+                        .FirstOrDefault(e => e.EmployeeID == employee.EmployeeID);
+                }
+                return;
+            }
 
             // Get the permission level from employee
             var permissionLevel = employee.Position.PermissionLevel;

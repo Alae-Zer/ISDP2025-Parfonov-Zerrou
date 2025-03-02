@@ -105,40 +105,37 @@ namespace ISDP2025_Parfonov_Zerrou.Forms.UserControls
 
                 if (permissionLevel == "Store Manager")
                 {
-                    var orders = query
-                    .Where(t => t.SiteIdto == Employee.SiteId)
-                    .Select(t => new
-                    {
-                        TxnId = t.TxnId,
-                        Location = t.SiteIdtoNavigation.SiteName,
-                        Status = t.TxnStatus,
-                        Items = t.Txnitems.Count(),
-                        Weight = t.Txnitems.Sum(ti => ti.Item.Weight * ti.Quantity) > 0 ? t.Txnitems.Sum(ti => ti.Item.Weight * ti.Quantity).ToString("#.## KG") : "0 KG",
-                        DeliveryDate = t.ShipDate,
-                        OrderType = t.TxnType
-                    })
-                    .ToList();
-                    dgOrders.ItemsSource = orders;
+                    query = query.Where(t => t.SiteIdto == Employee.SiteId && (t.TxnType == "Store Order" || t.TxnType == "Emergency Order"));
+
+                }
+                var results = query
+                .Select(t => new
+                {
+                    TxnId = t.TxnId,
+                    Location = t.SiteIdtoNavigation.SiteName,
+                    Status = t.TxnStatus,
+                    Items = t.Txnitems.Count(),
+                    Weight = t.Txnitems.Sum(ti => ti.Item.Weight * ti.Quantity) > 0 ? t.Txnitems.Sum(ti => ti.Item.Weight * ti.Quantity).ToString("#.## KG") : "0 KG",
+                    DeliveryDate = t.ShipDate,
+                    OrderType = t.TxnType
+                })
+                .ToList();
+
+                var orderedResults = results
+                .OrderByDescending(t => t.Status == "NEW")
+                .ThenByDescending(t => t.DeliveryDate)
+                .ToList();
+
+                dgOrders.ItemsSource = orderedResults;
+
+                if (permissionLevel != "Store Manager")
+                {
+                    Alert.Visibility = checkOrder() == true ? Visibility.Visible : Visibility.Collapsed;
                 }
                 else
                 {
-                    var orders = query
-                    .Select(t => new
-                    {
-                        TxnId = t.TxnId,
-                        Location = t.SiteIdtoNavigation.SiteName,
-                        Status = t.TxnStatus,
-                        Items = t.Txnitems.Count(),
-                        Weight = t.Txnitems.Sum(ti => ti.Item.Weight * ti.Quantity) > 0 ? t.Txnitems.Sum(ti => ti.Item.Weight * ti.Quantity).ToString("#.## KG") : "0 KG",
-                        DeliveryDate = t.ShipDate,
-                        OrderType = t.TxnType
-                    })
-                    .ToList();
-                    dgOrders.ItemsSource = orders;
-                    Alert.Visibility = checkOrder() == true ? Visibility.Visible : Visibility.Collapsed;
+                    Alert.Visibility = Visibility.Collapsed;
                 }
-
-
             }
             catch (Exception ex)
             {

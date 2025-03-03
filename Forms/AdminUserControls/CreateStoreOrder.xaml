@@ -40,7 +40,29 @@
                         <RadioButton Content="Emergency" x:Name="radEmergency"/>
                     </StackPanel>
                 </StackPanel>
-
+                
+                <Grid Grid.Column="2" Margin="5,0" Height="33" HorizontalAlignment="Right" x:Name="Alert" Visibility="Hidden">
+                    <hc:Card >
+                        <hc:SimplePanel>
+                            <Border Background="#c82121" CornerRadius="4">
+                                <Border.Triggers>
+                                    <EventTrigger RoutedEvent="Border.Loaded">
+                                        <BeginStoryboard>
+                                            <Storyboard>
+                                                <ColorAnimation 
+             Storyboard.TargetProperty="Background.(SolidColorBrush.Color)"
+             From="Red" To="DarkOrange" Duration="0:0:0.6" 
+             AutoReverse="True" RepeatBehavior="Forever"/>
+                                            </Storyboard>
+                                        </BeginStoryboard>
+                                    </EventTrigger>
+                                </Border.Triggers>
+                            </Border>
+                            <TextBlock Text="EMERGENCY ORDER" FontSize="15" FontWeight="Bold" Foreground="White"
+HorizontalAlignment="Right" VerticalAlignment="Center" Margin="8,2,10,0" Height="23"/>
+                        </hc:SimplePanel>
+                    </hc:Card>
+                </Grid>
 
             </Grid>
         </StackPanel>

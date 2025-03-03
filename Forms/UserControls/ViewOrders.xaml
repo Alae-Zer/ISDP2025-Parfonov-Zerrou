@@ -78,7 +78,8 @@
                       AutoGenerateColumns="False"
                       CanUserAddRows="False"
                       SelectionMode="Single"
-                      SelectionUnit="FullRow" SelectionChanged="dgOrders_SelectionChanged">
+                      SelectionUnit="FullRow" SelectionChanged="dgOrders_SelectionChanged"
+                      Style="{StaticResource DataGridBaseStyle}">
                 <DataGrid.Columns>
                     <DataGridTextColumn Header="Order ID" Binding="{Binding TxnId}" Width="Auto"/>
                     <DataGridTextColumn Header="Location" Binding="{Binding Location}"/>

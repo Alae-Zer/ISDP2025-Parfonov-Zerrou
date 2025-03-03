@@ -142,9 +142,12 @@
                         </StackPanel>
                     </Button>
                 </StackPanel>
+                
+                    
+                
+                <!-- Navigation -->
                 <Grid>
                 <ScrollViewer VerticalScrollBarVisibility="Auto" Height="434" ScrollChanged="ScrollViewer_ScrollChanged">
-                <!-- Navigation -->
                 <StackPanel Margin="10,10,10,0">
 
                     <!-- Employees Button -->
@@ -153,6 +156,15 @@
                         <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
                             <Label Style="{StaticResource SidebarLabelStyle}" Content="&#xF0C0;" Width="35" Padding="4,5,5,5" />
                             <TextBlock Text="Employees" VerticalAlignment="Center" />
+                        </StackPanel>
+                    </Button>
+
+                    <!-- Fulfil Button -->
+                    <Button x:Name="btnFulfil" Tag="Fulfil Order" Height="41" Margin="0,9" 
+                            Style="{StaticResource SidebarButtonStyle}" Click="btnFulfil_Click">
+                        <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                             <Label Style="{StaticResource SidebarLabelStyle}" Content="&#xF466;" Padding="9,5,0,5" Margin="10,0,10,0" Width="34" />
+                             <TextBlock Text="Fulfil Order" VerticalAlignment="Center" />
                         </StackPanel>
                     </Button>
 

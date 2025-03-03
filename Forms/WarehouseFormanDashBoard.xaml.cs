@@ -103,5 +103,13 @@ namespace ISDP2025_Parfonov_Zerrou
         {
             MainContent.Content = new ViewOrders(employee);
         }
+
+        private void ScrollViewer_ScrollChanged(object sender, System.Windows.Controls.ScrollChangedEventArgs e)
+        {
+            if (e.VerticalOffset + e.ViewportHeight >= e.ExtentHeight || e.ExtentHeight <= e.ViewportHeight)
+                scrollIndicator.Visibility = Visibility.Collapsed;
+            else
+                scrollIndicator.Visibility = Visibility.Visible;
+        }
     }
 }

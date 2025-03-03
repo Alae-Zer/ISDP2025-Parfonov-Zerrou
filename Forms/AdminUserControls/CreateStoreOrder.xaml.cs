@@ -13,6 +13,9 @@ namespace ISDP2025_Parfonov_Zerrou.Forms.AdminUserControls
     /// <summary>
     /// Interaction logic for CreateStoreOrder.xaml
     /// </summary>
+    /// 
+    //    TO DO: APPLY THE MENU TO ALL DASHBOARDS
+    //           APPLY THE AUTO SUBMISSION OF ORDER
     public partial class CreateStoreOrder : UserControl
     {
         private BestContext context;
@@ -149,8 +152,16 @@ namespace ISDP2025_Parfonov_Zerrou.Forms.AdminUserControls
                 }
                 dgvOrders.ItemsSource = orderItems;
             }
-            if (existingOrder.TxnType == "Emergency Order") radEmergency.IsChecked = true;
-            else if (existingOrder.TxnType == "Store Order") radNormal.IsChecked = true;
+            if (existingOrder.TxnType == "Emergency Order")
+            {
+                radEmergency.IsChecked = true;
+                Alert.Visibility = Visibility.Visible;
+            }
+            else if (existingOrder.TxnType == "Store Order")
+            {
+                radNormal.IsChecked = true;
+                Alert.Visibility = Visibility.Collapsed;
+            }
         }
 
         private void loadStores()
@@ -524,6 +535,10 @@ namespace ISDP2025_Parfonov_Zerrou.Forms.AdminUserControls
                 {
                     PrePopulateOrder();
                 }
+                else
+                {
+                    Alert.Visibility = Visibility.Visible;
+                }
 
                 Growl.Success(new GrowlInfo
                 {
@@ -635,7 +650,10 @@ namespace ISDP2025_Parfonov_Zerrou.Forms.AdminUserControls
 
         private string GenerateBarcode()
         {
-            return $"TXN-{DateTime.Now:yyyyMMddHHmmss}";
+            if (radEmergency.IsChecked == true)
+                return $"EMERGENCY_TXN-{DateTime.Now:yyyyMMddHHmmss}";
+            else
+                return $"NORAMAL_TXN-{DateTime.Now:yyyyMMddHHmmss}";
         }
 
         private void StoreComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)

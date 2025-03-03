@@ -30,8 +30,6 @@ namespace ISDP2025_Parfonov_Zerrou.Forms.UserControls
             context = new BestContext();
             ConfigureUIForUserRole();
             LoadTransactions(); // Load transactions (aka orders) when control is initialized
-
-
         }
         private void ConfigureUIForUserRole()
         {
@@ -120,6 +118,7 @@ namespace ISDP2025_Parfonov_Zerrou.Forms.UserControls
                     OrderType = t.TxnType
                 })
                 .ToList();
+                // replace the Items = t.Txnitems.Sum(t => t.Quantity), to get how many single items you have
 
                 var orderedResults = results
                 .OrderByDescending(t => t.Status == "NEW")

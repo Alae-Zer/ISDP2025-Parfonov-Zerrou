@@ -10,7 +10,8 @@
         Background="#F7F7F7"
         WindowStartupLocation="CenterScreen"
         MinWidth="1200" MinHeight="800" Closing="Window_Closing"
-        Icon="/Forms/bullseye.png">
+        Icon="/Forms/bullseye.png"
+        xmlns:hc="https://handyorg.github.io/handycontrol">
 
     <!-- Resources -->
     <Window.Resources>
@@ -119,16 +120,42 @@
         </Grid.ColumnDefinitions>
         <DockPanel Grid.ColumnSpan="2">
             <!-- Sidebar -->
-            <StackPanel Background="#333" Width="250" DockPanel.Dock="Left" VerticalAlignment="Stretch">
+            <DockPanel Background="#333" Width="250" DockPanel.Dock="Left">
                 <!-- Logo -->
-                <StackPanel Margin="10" VerticalAlignment="Top" Height="140">
+                <StackPanel DockPanel.Dock="Top" Margin="10" Height="140">
                     <Image Source="/Forms/bullseye.png" Width="126" Height="100" HorizontalAlignment="Center" Stretch="UniformToFill" />
                     <TextBlock Text="Bullseye IMS" Foreground="White" FontWeight="Bold" 
-                             FontSize="20" TextAlignment="Center" Margin="0,12,0,0" />
+ FontSize="20" TextAlignment="Center" Margin="0,12,0,0" />
                 </StackPanel>
 
+                <!-- Footer -->
+                <StackPanel DockPanel.Dock="Bottom" Margin="10">
+                    <StackPanel DockPanel.Dock="Bottom" Margin="0,10,0,0">
+                        <!-- User Label -->
+                        <TextBlock x:Name="txtLoggedUser" Text="Logged in as: [Current User]" Foreground="White" FontSize="14" 
+                HorizontalAlignment="Center" Margin="0,0,0,5" />
+                        <TextBlock x:Name="txtUserRole" Text="Your Permission is:&#x0a;   Store Manager" Foreground="White" FontSize="14" 
+                HorizontalAlignment="Center" Margin="0,0,0,10" />
+
+                        <!-- Logout Button -->
+                        <Button Tag="Logout" Height="42" 
+                Style="{StaticResource SidebarButtonStyle}" VerticalAlignment="Bottom" Click="btnLogout_Click">
+                            <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                                <Label Style="{StaticResource SidebarLabelStyle}" Content="&#xF2F5;" />
+                                <TextBlock Text="Logout" VerticalAlignment="Center" />
+                            </StackPanel>
+                        </Button>
+
+                        <!-- Logout Button -->
+                    </StackPanel>
+                </StackPanel>
+                
+                
+
                 <!-- Navigation -->
-                <StackPanel Margin="10,10,10,86">
+                <Grid>
+                    <ScrollViewer VerticalScrollBarVisibility="Auto" Height="434" ScrollChanged="ScrollViewer_ScrollChanged">
+                        <StackPanel Margin="10,10,10,0">
                     <!-- Dashboard Button -->
                     <!-- Employees Button -->
                     <Button x:Name="btnEmployee" Tag="EmployeesPage" Height="41" Margin="0,9" 
@@ -191,29 +218,13 @@
                         </StackPanel>
                     </Button>
                 </StackPanel>
+                    </ScrollViewer>
+                    <TextBlock x:Name="scrollIndicator" Text="▼ More options" Foreground="#AAA" 
+FontSize="10" HorizontalAlignment="Center" VerticalAlignment="Bottom" 
+Margin="0,0,0,5" Visibility="Visible"/>
+                </Grid>
 
-                <!-- Footer -->
-                <DockPanel LastChildFill="True" Margin="10" VerticalAlignment="Stretch">
-                    <StackPanel DockPanel.Dock="Bottom" Margin="0,10,0,0">
-                        <!-- User Label -->
-                        <TextBlock x:Name="txtLoggedUser" Text="Logged in as: [Current User]" Foreground="White" FontSize="14" 
-                                HorizontalAlignment="Center" Margin="0,0,0,5" />
-                        <TextBlock x:Name="txtUserRole" Text="Your Permission is:&#x0a;   Store Manager" Foreground="White" FontSize="14" 
-                                HorizontalAlignment="Center" Margin="0,0,0,10" />
-
-                        <!-- Logout Button -->
-                        <Button Tag="Logout" Height="42" 
-                                Style="{StaticResource SidebarButtonStyle}" VerticalAlignment="Bottom" Click="btnLogout_Click">
-                            <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
-                                <Label Style="{StaticResource SidebarLabelStyle}" Content="&#xF2F5;" />
-                                <TextBlock Text="Logout" VerticalAlignment="Center" />
-                            </StackPanel>
-                        </Button>
-
-                        <!-- Logout Button -->
-                    </StackPanel>
-                </DockPanel>
-            </StackPanel>
+            </DockPanel>
 
             <!-- Main Content Area -->
             <Grid Background="White" Margin="0">

@@ -114,22 +114,42 @@
 
     <Grid>
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="5*"/>
             <ColumnDefinition Width="38*"/>
             <ColumnDefinition Width="557*"/>
         </Grid.ColumnDefinitions>
-        <DockPanel Grid.ColumnSpan="3">
+        <DockPanel Grid.ColumnSpan="2">
             <!-- Sidebar -->
-            <StackPanel Background="#333" Width="250" DockPanel.Dock="Left" VerticalAlignment="Stretch">
+            <DockPanel Background="#333" Width="250" DockPanel.Dock="Left">
                 <!-- Logo -->
-                <StackPanel Margin="10" VerticalAlignment="Top" Height="140">
+                <StackPanel DockPanel.Dock="Top" Margin="10" Height="140">
                     <Image Source="/Forms/bullseye.png" Width="126" Height="100" HorizontalAlignment="Center" Stretch="UniformToFill" />
-                    <TextBlock Text="Bullseye IMS" Foreground="White" FontWeight="Bold" 
-                             FontSize="20" TextAlignment="Center" Margin="0,12,0,0" />
+                    <TextBlock Text="Bullseye IMS" Foreground="White" FontWeight="Bold" FontSize="20" TextAlignment="Center" Margin="0,12,0,0" />
+                </StackPanel>
+
+                <!-- Footer -->
+                <StackPanel DockPanel.Dock="Bottom" Margin="10">
+                    <StackPanel DockPanel.Dock="Bottom" Margin="0,10,0,0">
+                        <!-- User Label -->
+                        <TextBlock x:Name="txtLoggedUser" Text="Logged in as: [Current User]" Foreground="White" FontSize="14" 
+                HorizontalAlignment="Center" Margin="0,0,0,5" />
+                        <TextBlock x:Name="txtUserRole" Text="  Your Permission is:&#x0a;Warehouse Manager" Foreground="White" FontSize="14" 
+                HorizontalAlignment="Center" Margin="0,0,0,10" />
+
+                        <!-- Logout Button -->
+                        <Button x:Name="btnLogout" Tag="Logout" Height="42" 
+                Style="{StaticResource SidebarButtonStyle}" VerticalAlignment="Bottom" Click="btnLogout_Click">
+                            <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                                <Label Style="{StaticResource SidebarLabelStyle}" Content="&#xF2F5;" />
+                                <TextBlock Text="Logout" VerticalAlignment="Center" />
+                            </StackPanel>
+                        </Button>
+                    </StackPanel>
                 </StackPanel>
 
                 <!-- Navigation -->
-                <StackPanel Margin="10,10,10,86">
+                <Grid>
+                    <ScrollViewer VerticalScrollBarVisibility="Auto" Height="431" ScrollChanged="ScrollViewer_ScrollChanged">
+                        <StackPanel Margin="10,10,10,0">
                     <!-- Employees Button -->
                     <Button x:Name="btnEmployee" Tag="EmployeesPage" Height="41" Margin="0,9" 
                             Style="{StaticResource SidebarButtonStyle}" Click="btnEmployee_Click">
@@ -159,7 +179,7 @@
 
                     <Button x:Name="btnReorderThresholds" Tag="ReorderThresholdsPage" Height="41" Margin="0,9" 
                             Style="{StaticResource SidebarButtonStyle}" Click="btnReorderThresholds_Click">
-                            <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                        <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
                             <Label Style="{StaticResource SidebarLabelStyle}" Content="&#xF201;" Padding="6,5,3,5" Margin="10,0,9,0" />
                             <TextBlock Text="Reorder Thresholds" VerticalAlignment="Center" />
                         </StackPanel>
@@ -199,27 +219,12 @@
                         </StackPanel>
                     </Button>
                 </StackPanel>
-
-                <!-- Footer -->
-                <DockPanel LastChildFill="True" Margin="10" VerticalAlignment="Stretch">
-                    <StackPanel DockPanel.Dock="Bottom" Margin="0,10,0,0">
-                        <!-- User Label -->
-                        <TextBlock x:Name="txtLoggedUser" Text="Logged in as: [Current User]" Foreground="White" FontSize="14" 
-                                HorizontalAlignment="Center" Margin="0,0,0,5" />
-                        <TextBlock x:Name="txtUserRole" Text="Your Permission is:&#x0a;Warehouse Manager" Foreground="White" FontSize="14" 
-                                HorizontalAlignment="Center" Margin="0,0,0,10" />
-
-                        <!-- Logout Button -->
-                        <Button x:Name="btnLogout" Tag="Logout" Height="42" 
-                                Style="{StaticResource SidebarButtonStyle}" VerticalAlignment="Bottom" Click="btnLogout_Click">
-                            <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
-                                <Label Style="{StaticResource SidebarLabelStyle}" Content="&#xF2F5;" />
-                                <TextBlock Text="Logout" VerticalAlignment="Center" />
-                            </StackPanel>
-                        </Button>
-                    </StackPanel>
-                </DockPanel>
-            </StackPanel>
+                    </ScrollViewer>
+                    <TextBlock x:Name="scrollIndicator" Text="▼ More options" Foreground="#AAA" 
+FontSize="10" HorizontalAlignment="Center" VerticalAlignment="Bottom" 
+Margin="0,0,0,5" Visibility="Visible"/>
+                </Grid>
+            </DockPanel>
 
             <!-- Main Content Area -->
             <Grid Background="White" Margin="0">

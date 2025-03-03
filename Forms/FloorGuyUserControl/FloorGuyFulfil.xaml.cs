@@ -1,8 +1,10 @@
-﻿using ISDP2025_Parfonov_Zerrou.Functionality;
+﻿using System.Windows;
+using System.Windows.Controls;
+using HandyControl.Controls;
+using HandyControl.Data;
+using ISDP2025_Parfonov_Zerrou.Functionality;
 using ISDP2025_Parfonov_Zerrou.Models;
 using Microsoft.EntityFrameworkCore;
-using System.Windows;
-using System.Windows.Controls;
 
 //ISDP Project
 //Mohammed Alae-Zerrou, Serhii Parfonov
@@ -65,7 +67,7 @@ namespace ISDP2025_Parfonov_Zerrou.Forms.FloorGuyUserControl
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Error loading stores: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                HandyControl.Controls.MessageBox.Show($"Error loading stores: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
 
@@ -99,7 +101,7 @@ namespace ISDP2025_Parfonov_Zerrou.Forms.FloorGuyUserControl
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Error loading orders: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                HandyControl.Controls.MessageBox.Show($"Error loading orders: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
 
@@ -147,7 +149,7 @@ namespace ISDP2025_Parfonov_Zerrou.Forms.FloorGuyUserControl
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Error loading order items: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                HandyControl.Controls.MessageBox.Show($"Error loading order items: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
 
@@ -158,10 +160,14 @@ namespace ISDP2025_Parfonov_Zerrou.Forms.FloorGuyUserControl
                 var selectedOrder = dgvOrders.SelectedItem as OrderViewModel;
                 if (selectedOrder == null) return;
 
-                if (item.CurrentStock < item.CaseSize)
+                if (item.CurrentStock < item.Quantity)
                 {
-                    MessageBox.Show($"Insufficient stock for {item.Name}. Current stock: {item.CurrentStock}",
-                        "Warning", MessageBoxButton.OK, MessageBoxImage.Warning);
+                    Growl.Warning(new GrowlInfo
+                    {
+                        Message = $"Insufficient stock for {item.Name}. Current stock: {item.CurrentStock}",
+                        ShowDateTime = false,
+                        WaitTime = 3,
+                    });
                     return;
                 }
 
@@ -214,21 +220,29 @@ namespace ISDP2025_Parfonov_Zerrou.Forms.FloorGuyUserControl
                         orderItems.Remove(originalItem);
                     }
 
-                    var popup = new ItemToCartMovement($"Moving {item.CaseSize} units of {item.Name} to assembly area");
-                    popup.Show();
+                    Growl.Success(new GrowlInfo
+                    {
+                        Message = $"Moving {item.CaseSize} units of {item.Name} to assembly area",
+                        ShowDateTime = false,
+                        WaitTime = 2
+                    });
 
                     RefreshGrids();
                     CheckOrderCompletion();
                 }
                 else
                 {
-                    MessageBox.Show($"Failed to move {item.Name} from warehouse to assembly area. Please check inventory levels.",
-                        "Warning", MessageBoxButton.OK, MessageBoxImage.Warning);
+                    Growl.Warning(new GrowlInfo
+                    {
+                        Message = $"Failed to move {item.Name} from warehouse to assembly area. Please check inventory levels.",
+                        ShowDateTime = false,
+                        WaitTime = 3
+                    });
                 }
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Error moving item: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                HandyControl.Controls.MessageBox.Show($"Error moving item: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
 
@@ -327,8 +341,12 @@ namespace ISDP2025_Parfonov_Zerrou.Forms.FloorGuyUserControl
                     orderItem.CurrentStock += selectedItem.CaseSize;
                     selectedItem.Quantity -= selectedItem.CaseSize;
 
-                    var popup = new ItemToCartMovement($"Moving {selectedItem.CaseSize} units of {selectedItem.Name} back to warehouse");
-                    popup.Show();
+                    Growl.Success(new GrowlInfo
+                    {
+                        Message = $"Moving {selectedItem.CaseSize} units of {selectedItem.Name} back to warehouse",
+                        ShowDateTime = false,
+                        WaitTime = 2
+                    });
 
                     if (selectedItem.Quantity == 0)
                     {
@@ -340,7 +358,12 @@ namespace ISDP2025_Parfonov_Zerrou.Forms.FloorGuyUserControl
                 }
                 else
                 {
-                    MessageBox.Show("Failed to move item back to warehouse", "Warning", MessageBoxButton.OK, MessageBoxImage.Warning);
+                    Growl.Warning(new GrowlInfo
+                    {
+                        Message = "Failed to move item back to warehouse",
+                        ShowDateTime = false,
+                        WaitTime = 3
+                    });
                 }
             }
         }
@@ -372,7 +395,12 @@ namespace ISDP2025_Parfonov_Zerrou.Forms.FloorGuyUserControl
                                 $"Order assembly completed. Total items assembled: {totalItems}"
                             );
 
-                            MessageBox.Show("Order marked as assembled", "Success", MessageBoxButton.OK, MessageBoxImage.Information);
+                            Growl.Success(new GrowlInfo
+                            {
+                                Message = "Order marked as assembled",
+                                ShowDateTime = false,
+                                WaitTime = 3
+                            });
                             LoadOpenOrders();
                             InitializeControls(true);
                         }
@@ -381,7 +409,7 @@ namespace ISDP2025_Parfonov_Zerrou.Forms.FloorGuyUserControl
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Error completing order: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                HandyControl.Controls.MessageBox.Show($"Error completing order: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
     }

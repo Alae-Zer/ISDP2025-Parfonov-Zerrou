@@ -53,7 +53,16 @@
                   SelectionMode="Single"
                   IsReadOnly="True"
                   ScrollViewer.HorizontalScrollBarVisibility="Auto">
-                        <DataGrid.ColumnHeaderStyle>
+                    <DataGrid.RowStyle>
+                        <Style TargetType="DataGridRow">
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding LowStock}" Value="True">
+                                    <Setter Property="Background" Value="#FFFF9999"/>
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </DataGrid.RowStyle>
+                    <DataGrid.ColumnHeaderStyle>
                             <Style TargetType="{x:Type DataGridColumnHeader}">
                                 <Setter Property="Height" Value="40"/>
                                 <Setter Property="VerticalContentAlignment" Value="Center"/>
@@ -154,10 +163,7 @@
                 </DataGrid>
             </DockPanel>
         </Grid>
-        <Button x:Name="btnBack" Content="Go back" Grid.Row="1" Style="{StaticResource ButtonDefault}"
-Margin="10,0,0,3" Click="btnBack_Click" Width="80" Height="33" Background="#FFC8BCDE" BorderBrush="#FFC8BCDE" HorizontalAlignment="Left" VerticalAlignment="Bottom"/>
-
-
+        
         <StackPanel Grid.Row="1" 
                     Orientation="Horizontal" 
                     HorizontalAlignment="Right" 

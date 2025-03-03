@@ -32,6 +32,7 @@ namespace ISDP2025_Parfonov_Zerrou.Forms.ForemanUserControls
             public decimal Weight { get; set; }
             public int ReorderThreshold { get; set; }
             public string Description { get; set; }
+            public bool LowStock => Quantity <= ReorderThreshold;
         }
 
         public class OrderLineItem  // For order grid
@@ -520,7 +521,7 @@ namespace ISDP2025_Parfonov_Zerrou.Forms.ForemanUserControls
                         transaction.TxnId,
                         transaction.TxnType,
                         "CANCELLED",
-                        transaction.SiteIdto,
+                        transaction.SiteIdfrom,
                         transaction.DeliveryId,
                         $"Order cancelled by {employee.FirstName} {employee.LastName}"
                     );
@@ -547,12 +548,6 @@ namespace ISDP2025_Parfonov_Zerrou.Forms.ForemanUserControls
                         MessageBoxImage.Error);
                 }
             }
-        }
-
-        private void btnBack_Click(object sender, RoutedEventArgs e)
-        {
-            var mainContent = this.Parent as ContentControl;
-            mainContent.Content = new ViewOrders(employee);
         }
 
         private void nupQuantity_ValueChanged(object sender, HandyControl.Data.FunctionEventArgs<double> e)

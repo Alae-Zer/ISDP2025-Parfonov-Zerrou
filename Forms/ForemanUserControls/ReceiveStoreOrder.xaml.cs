@@ -9,9 +9,11 @@ using Microsoft.EntityFrameworkCore;
 
 namespace ISDP2025_Parfonov_Zerrou.Forms.ForemanUserControls
 {
-    /// <summary>
-    /// Interaction logic for ReceiveStoreOrder.xaml
-    /// </summary>
+    //ISDP Project
+    //Mohammed Alae-Zerrou, Serhii Parfonov
+    //NBCC, Winter 2025
+    //Completed By Mohammed
+    //Last Modified by Mohammed on march 02,2025
     public partial class ReceiveStoreOrder : UserControl
     {
         private readonly BestContext context;
@@ -301,7 +303,7 @@ namespace ISDP2025_Parfonov_Zerrou.Forms.ForemanUserControls
 
                 // Get all warehouse inventory items
                 var warehouseInventories = context.Inventories
-                    .Where(i => i.SiteId == 2)  // Warehouse ID
+                    .Where(i => i.SiteId == 2)
                     .ToList();
 
                 int backorderedItemCount = 0;
@@ -468,7 +470,7 @@ namespace ISDP2025_Parfonov_Zerrou.Forms.ForemanUserControls
                     $"Order updated by {employee.FirstName} {employee.LastName}"
                 );
 
-                // Show a success message
+                // Show a success growl
                 HandyControl.Controls.Growl.Success(new HandyControl.Data.GrowlInfo
                 {
                     Message = "Order saved successfully!",

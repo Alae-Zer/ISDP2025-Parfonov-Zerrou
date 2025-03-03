@@ -10,12 +10,12 @@ using Microsoft.EntityFrameworkCore;
 
 namespace ISDP2025_Parfonov_Zerrou.Forms.AdminUserControls
 {
-    /// <summary>
-    /// Interaction logic for CreateStoreOrder.xaml
-    /// </summary>
-    /// 
-    //    TO DO: APPLY THE MENU TO ALL DASHBOARDS
-    //           APPLY THE AUTO SUBMISSION OF ORDER
+    //ISDP Project
+    //Mohammed Alae-Zerrou, Serhii Parfonov
+    //NBCC, Winter 2025
+    //Completed By Mohammed
+    //Last Modified by Mohammed on march 02,2025
+
     public partial class CreateStoreOrder : UserControl
     {
         private BestContext context;
@@ -71,7 +71,7 @@ namespace ISDP2025_Parfonov_Zerrou.Forms.AdminUserControls
         {
             public int ItemId { get; set; }
             public string Name { get; set; }
-            public int OrderQuantity { get; set; }  // Quantity being ordered
+            public int OrderQuantity { get; set; }
             public int CaseSize { get; set; }
             public decimal Weight { get; set; }
         }
@@ -134,7 +134,6 @@ namespace ISDP2025_Parfonov_Zerrou.Forms.AdminUserControls
 
             if (existingOrder != null)
             {
-                // Populate UI with existing order data
                 cmbStores.SelectedValue = existingOrder.SiteIdto;
                 //cmbDate.SelectedValue = existingOrder.ShipDate;
 
@@ -507,7 +506,7 @@ namespace ISDP2025_Parfonov_Zerrou.Forms.AdminUserControls
                 {
                     EmployeeId = employee.EmployeeID,
                     SiteIdto = selectedSite,
-                    SiteIdfrom = 2, // Warehouse
+                    SiteIdfrom = 2,
                     TxnStatus = "NEW",
                     ShipDate = radioBtn != 1 ? GetNextDeliveryDate(site.DayOfWeek) : DateTime.Today.AddDays(1),
                     TxnType = radioBtn == 1 ? "Emergency Order" : "Store Order",

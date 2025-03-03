@@ -175,6 +175,7 @@ namespace ISDP2025_Parfonov_Zerrou.Forms.UserControls
             }
             int txnID = (int)selectedOrder.GetType().GetProperty("TxnId").GetValue(selectedOrder);
             var transaction = context.Txns.FirstOrDefault(t => t.TxnId == txnID);
+            if (transaction.TxnStatus != "IN TRANSIT") return;
             transaction.TxnStatus = "DELIVERED";
             context.Txns.Update(transaction);
             context.SaveChanges();

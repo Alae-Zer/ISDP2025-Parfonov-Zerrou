@@ -445,6 +445,13 @@ namespace ISDP2025_Parfonov_Zerrou.Forms.AdminUserControls
                         }
 
                         context.SaveChanges();
+
+                        // Parse the ship date from the textbox and update it using the manager
+                        if (DateTime.TryParse(txtDeliveryDate.Text, out DateTime shipDate))
+                        {
+                            backorderManager.UpdateBackorderShipDate(selectedBackorder.TxnId, shipDate);
+                        }
+
                         MessageBox.Show("Changes saved successfully", "Success", MessageBoxButton.OK, MessageBoxImage.Information);
                         LoadBackorders();
                         LoadBackorderItems(selectedBackorder.TxnId);
@@ -497,21 +504,14 @@ namespace ISDP2025_Parfonov_Zerrou.Forms.AdminUserControls
                         daysToAdd = 7;
                     }
 
-                    //Update delivery date
                     DateTime newShipDate = currentDate.AddDays(daysToAdd);
-                    backorderManager.UpdateBackorderShipDate(selectedTxn.TxnId, newShipDate);
                     txtDeliveryDate.Text = newShipDate.ToString("MM/dd/yyyy");
                 }
                 catch (Exception ex)
                 {
-                    MessageBox.Show($"Error updating delivery date: {ex.Message}", "Error",
+                    MessageBox.Show($"Error calculating delivery date: {ex.Message}", "Error",
                         MessageBoxButton.OK, MessageBoxImage.Error);
                 }
-            }
-            else
-            {
-                MessageBox.Show("Please select both backorder and delivery day", "Warning",
-                    MessageBoxButton.OK, MessageBoxImage.Warning);
             }
         }
 

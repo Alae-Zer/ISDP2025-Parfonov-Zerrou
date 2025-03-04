@@ -123,12 +123,12 @@ namespace ISDP2025_Parfonov_Zerrou.Forms.ForemanUserControls
         }
 
         //Enables or disables the edit controls based on selection state
-        private void EnableControls(bool enabled)
+        private void EnableControls(bool isEnabled)
         {
-            nudReorderThreshold.IsEnabled = enabled;
-            nudOptimumThreshold.IsEnabled = enabled;
-            txtNotes.IsEnabled = enabled;
-            btnSave.IsEnabled = enabled;
+            nudReorderThreshold.IsEnabled = isEnabled;
+            nudOptimumThreshold.IsEnabled = isEnabled;
+            txtNotes.IsEnabled = isEnabled;
+            btnSave.IsEnabled = isEnabled;
         }
 
         //Clears all input fields and disables controls
@@ -221,6 +221,7 @@ namespace ISDP2025_Parfonov_Zerrou.Forms.ForemanUserControls
 
                     context.SaveChanges();
                     LoadInventory();
+                    EnableControls(false);
                     HandyControl.Controls.MessageBox.Show(
                         "Thresholds updated successfully!",
                         "Success",
@@ -253,6 +254,8 @@ namespace ISDP2025_Parfonov_Zerrou.Forms.ForemanUserControls
             LoadCategories();
             LoadInventory();
             ClearFields();
+            txtSearch.IsEnabled = true;
+            cmbSearchCategory.IsEnabled = true;
         }
 
         private void DgvInventory_SelectionChanged(object sender, SelectionChangedEventArgs e)

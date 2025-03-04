@@ -1,0 +1,70 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net8.0-windows7.0</TargetFramework>
+    <RootNamespace>ISDP2025_Parfonov_Zerrou</RootNamespace>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <UseWPF>true</UseWPF>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Remove="Forms\AdminUserControls\Animation - 1740495174359.gif" />
+    <None Remove="Forms\bullseye - Copy.png" />
+    <None Remove="Forms\bullseye.ico" />
+    <None Remove="Forms\bullseye.png" />
+    <None Remove="Forms\UserControls\bullseye.png" />
+    <None Remove="icons\Font Awesome 6 Brands-Regular-400.otf" />
+    <None Remove="icons\Font Awesome 6 Free-Regular-400.otf" />
+    <None Remove="icons\Font Awesome 6 Free-Solid-900.otf" />
+    <None Remove="Images\bullseye - Copy.png" />
+    <None Remove="Images\bullseye.png" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="HandyControls" Version="3.5.3" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="8.0.11" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="8.0.11">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="8.0.11">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+    <PackageReference Include="Pomelo.EntityFrameworkCore.MySql" Version="8.0.2" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\ISDP_Shared\ISDP_Shared.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Resource Include="Forms\AdminUserControls\Animation - 1740495174359.gif" />
+    <Resource Include="Forms\bullseye.png" />
+    <Resource Include="Forms\UserControls\bullseye.png" />
+    <Resource Include="Images\bullseye - Copy.png" />
+    <Resource Include="Images\bullseye.ico" />
+    <Resource Include="icons\Font Awesome 6 Brands-Regular-400.otf">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="icons\Font Awesome 6 Free-Regular-400.otf">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="icons\Font Awesome 6 Free-Solid-900.otf">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="Images\bullseye.png" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Update="Forms\AdminDashBoard.xaml.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Update="Forms\UserControls\ViewEmployeesControl.xaml.cs">
+      <SubType>Code</SubType>
+    </Compile>
+  </ItemGroup>
+
+</Project>

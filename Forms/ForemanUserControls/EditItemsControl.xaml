@@ -72,11 +72,11 @@
             <Label x:Name="lblEmployeeLocation" FontWeight="Bold" VerticalAlignment="Center" Margin="0,0,10,0"/>
 
             <Label Content="Search:" VerticalAlignment="Center" Margin="0,0,5,0"/>
-            <TextBox x:Name="txtSearch" Width="200" Margin="0,0,10,0" 
+            <TextBox x:Name="txtSearch" Width="200" IsEnabled="False" Margin="0,0,10,0 " 
                      TextChanged="TxtSearch_TextChanged" Cursor="Pen"/>
 
             <Label Content="Category:" VerticalAlignment="Center" Margin="0,0,5,0"/>
-            <ComboBox x:Name="cmbSearchCategory" Width="150" Margin="0,0,10,0"
+            <ComboBox x:Name="cmbSearchCategory" Width="150" IsEnabled="False" Margin="0,0,10,0"
                       SelectionChanged="CmbSearchCategory_SelectionChanged" Cursor="Hand"/>
         </StackPanel>
 
@@ -100,23 +100,23 @@
 
                 <Label Content="Item Name:" Grid.Row="1" Grid.Column="0"/>
                 <TextBox x:Name="txtItemName" Grid.Row="1" Grid.Column="1" 
-                         IsReadOnly="True" Margin="0,2"/>
+                         IsReadOnly="True" IsEnabled="False" Margin="0,2"/>
 
                 <Label Content="Current Quantity:" Grid.Row="2" Grid.Column="0"/>
                 <TextBox x:Name="txtCurrentQuantity" Grid.Row="2" Grid.Column="1" 
-                         IsReadOnly="True" Margin="0,2"/>
+                         IsReadOnly="True" IsEnabled="False" Margin="0,2"/>
 
                 <Label Content="Reorder Threshold:" Grid.Row="1" Grid.Column="2"/>
-                <hc:NumericUpDown x:Name="nudReorderThreshold" Grid.Row="1" Grid.Column="3" 
+                <hc:NumericUpDown x:Name="nudReorderThreshold" IsEnabled="False" Grid.Row="1" Grid.Column="3" 
                                  Minimum="0" Maximum="999" Margin="0,2"/>
 
                 <Label Content="Optimum Threshold:" Grid.Row="2" Grid.Column="2"/>
-                <hc:NumericUpDown x:Name="nudOptimumThreshold" Grid.Row="2" Grid.Column="3"
+                <hc:NumericUpDown x:Name="nudOptimumThreshold" IsEnabled="False" Grid.Row="2" Grid.Column="3"
                                  Minimum="0" Maximum="999" Margin="0,2"/>
 
                 <Label Content="Notes:" Grid.Row="3" Grid.Column="0"/>
                 <TextBox x:Name="txtNotes" Grid.Row="3" Grid.Column="1" Grid.ColumnSpan="3"
-                         TextWrapping="Wrap" AcceptsReturn="True" Height="60" Margin="0,2"/>
+                         TextWrapping="Wrap" IsEnabled ="False" AcceptsReturn="True" Height="60" Margin="0,2"/>
             </Grid>
         </GroupBox>
 

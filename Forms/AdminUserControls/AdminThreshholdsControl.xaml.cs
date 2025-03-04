@@ -280,6 +280,8 @@ namespace ISDP2025_Parfonov_Zerrou.Forms.AdminUserControls
             LoadCategories();
             LoadLocations();
             ClearFields();
+            txtSearch.IsEnabled = true;
+            cmbSearchCategory.IsEnabled = true;
         }
 
         private void DgvInventory_SelectionChanged(object sender, SelectionChangedEventArgs e)

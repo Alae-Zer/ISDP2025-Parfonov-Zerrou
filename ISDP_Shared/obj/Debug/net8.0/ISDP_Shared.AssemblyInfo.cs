@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("ISDP_Shared")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+ba0340f6d2e616d8e9c2e86eca748584860e3173")]
 [assembly: System.Reflection.AssemblyProductAttribute("ISDP_Shared")]
 [assembly: System.Reflection.AssemblyTitleAttribute("ISDP_Shared")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

@@ -157,7 +157,7 @@
 
                         <!-- Delivery Day -->
                         <StackPanel Grid.Column="2" Orientation="Horizontal" VerticalAlignment="Center" Margin="5,0">
-                            <TextBlock Text="Default Day:" Style="{StaticResource TextBlockSubTitle}" VerticalAlignment="Center"/>
+                            <TextBlock Text="Day of Week:" Style="{StaticResource TextBlockSubTitle}" VerticalAlignment="Center"/>
                             <hc:ComboBox x:Name="cboDeliveryDay" 
                                         Width="120"
                                         SelectionChanged="cboDeliveryDay_SelectionChanged"

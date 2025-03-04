@@ -1,0 +1,14 @@
+C:\Users\School\Desktop\ISPD\ISDP_Shared\bin\Debug\net8.0\ISDP_Shared.deps.json
+C:\Users\School\Desktop\ISPD\ISDP_Shared\bin\Debug\net8.0\ISDP_Shared.runtimeconfig.json
+C:\Users\School\Desktop\ISPD\ISDP_Shared\bin\Debug\net8.0\ISDP_Shared.dll
+C:\Users\School\Desktop\ISPD\ISDP_Shared\bin\Debug\net8.0\ISDP_Shared.pdb
+C:\Users\School\Desktop\ISPD\ISDP_Shared\obj\Debug\net8.0\ISDP_Shared.csproj.AssemblyReference.cache
+C:\Users\School\Desktop\ISPD\ISDP_Shared\obj\Debug\net8.0\ISDP_Shared.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\School\Desktop\ISPD\ISDP_Shared\obj\Debug\net8.0\ISDP_Shared.AssemblyInfoInputs.cache
+C:\Users\School\Desktop\ISPD\ISDP_Shared\obj\Debug\net8.0\ISDP_Shared.AssemblyInfo.cs
+C:\Users\School\Desktop\ISPD\ISDP_Shared\obj\Debug\net8.0\ISDP_Shared.csproj.CoreCompileInputs.cache
+C:\Users\School\Desktop\ISPD\ISDP_Shared\obj\Debug\net8.0\ISDP_Shared.dll
+C:\Users\School\Desktop\ISPD\ISDP_Shared\obj\Debug\net8.0\refint\ISDP_Shared.dll
+C:\Users\School\Desktop\ISPD\ISDP_Shared\obj\Debug\net8.0\ISDP_Shared.pdb
+C:\Users\School\Desktop\ISPD\ISDP_Shared\obj\Debug\net8.0\ISDP_Shared.genruntimeconfig.cache
+C:\Users\School\Desktop\ISPD\ISDP_Shared\obj\Debug\net8.0\ref\ISDP_Shared.dll

@@ -6,10 +6,8 @@ using System.Windows.Controls;
 
 namespace ISDP2025_Parfonov_Zerrou.Forms.AdminUserControls
 {
-
     public partial class AdminSupplierControl : UserControl
     {
-
         //DB context
         BestContext context;
         bool isEditMode = false;
@@ -37,9 +35,9 @@ namespace ISDP2025_Parfonov_Zerrou.Forms.AdminUserControls
 
                 //Create list with default "All Provinces" option
                 var searchProvinces = new List<Province>
-               {
-                  new Province { ProvinceId = "-1", ProvinceName = "All Provinces" }
-               };
+        {
+            new Province { ProvinceId = "-1", ProvinceName = "All Provinces" }
+        };
 
                 //Add database provinces to list
                 foreach (var province in provinces)
@@ -54,6 +52,8 @@ namespace ISDP2025_Parfonov_Zerrou.Forms.AdminUserControls
                 cmbProvince.ItemsSource = provinces;
                 cmbCountry.ItemsSource = countries;
                 cmbCountry.SelectedIndex = 0;
+
+                // Set default to Active (index 1)
                 cmbIsActive.SelectedIndex = 1;
 
                 //Disable controls initially
@@ -78,7 +78,6 @@ namespace ISDP2025_Parfonov_Zerrou.Forms.AdminUserControls
                 //Query suppliers with province info
                 var suppliers = context.Suppliers
                     .Include(s => s.ProvinceNavigation)
-                    .Where(s => s.Active == 1)
                     .Select(s => new
                     {
                         s.SupplierId,
@@ -93,7 +92,7 @@ namespace ISDP2025_Parfonov_Zerrou.Forms.AdminUserControls
                         Phone = ValidatorsFormatters.FormatPhoneNumber(s.Phone),
                         s.Contact,
                         s.Notes,
-                        Active = "Yes",
+                        Active = s.Active == 1 ? "Yes" : "No",
                         ActiveValue = s.Active
                     })
                     .OrderBy(s => s.Name)
@@ -309,6 +308,26 @@ namespace ISDP2025_Parfonov_Zerrou.Forms.AdminUserControls
         {
             try
             {
+                // Get supplier ID and check if it exists
+                if (!string.IsNullOrEmpty(lblSupplierId.Content?.ToString()))
+                {
+                    int supplierId = int.Parse(lblSupplierId.Content.ToString());
+                    var supplier = context.Suppliers.Find(supplierId);
+
+                    // Check if this is an inactive supplier being reactivated
+                    if (supplier != null && supplier.Active == 0)
+                    {
+                        // Only update active status for inactive suppliers
+                        supplier.Active = (sbyte)(chkActive.IsChecked == true ? 1 : 0);
+                        context.SaveChanges();
+                        ApplyFilters(); // Refresh the grid with current filters
+                        ResetToDefaultState();
+                        EnableSearchControls(true);
+                        Growl.Success("Supplier status updated successfully");
+                        return;
+                    }
+                }
+
                 if (!ValidateInputs())
                 {
                     btnSave.IsEnabled = true; // Re-enable the button if validation fails
@@ -363,7 +382,7 @@ namespace ISDP2025_Parfonov_Zerrou.Forms.AdminUserControls
                     }
                 }
                 context.SaveChanges();
-                LoadSuppliers();
+                ApplyFilters(); // Update to refresh with current filters
                 ResetToDefaultState();
                 EnableSearchControls(true);
                 Growl.Success("Supplier saved successfully");
@@ -441,6 +460,7 @@ namespace ISDP2025_Parfonov_Zerrou.Forms.AdminUserControls
         private void BtnRefresh_Click(object sender, RoutedEventArgs e)
         {
             LoadSuppliers();
+            ApplyFilters();
         }
 
         // Clear button click - resets form and filters
@@ -467,7 +487,39 @@ namespace ISDP2025_Parfonov_Zerrou.Forms.AdminUserControls
         {
             if (dgvSuppliers.SelectedItem != null)
             {
-                EnterEditMode();
+                dynamic selectedItem = dgvSuppliers.SelectedItem;
+                bool isActive = selectedItem.Active == "Yes";
+
+                if (!isActive)
+                {
+                    // For inactive suppliers, only allow changing the active status
+                    Growl.Ask("This supplier is inactive. Do you want to change its status?", isConfirmed =>
+                    {
+                        if (isConfirmed)
+                        {
+                            // Enter a modified edit mode for inactive suppliers
+                            isEditMode = true;
+                            EnableInputs(false);
+                            chkActive.IsEnabled = true;
+                            EnableSearchControls(false);
+                            btnAdd.Visibility = Visibility.Collapsed;
+                            btnUpdate.Visibility = Visibility.Collapsed;
+                            btnClear.Visibility = Visibility.Collapsed;
+                            btnSave.Visibility = Visibility.Visible;
+                            btnExit.Visibility = Visibility.Visible;
+                            dgvSuppliers.IsEnabled = false;
+
+                            // Toggle to active by default
+                            chkActive.IsChecked = true;
+                        }
+                        return true;
+                    });
+                }
+                else
+                {
+                    // Regular update for active suppliers
+                    EnterEditMode();
+                }
             }
         }
 
@@ -476,7 +528,32 @@ namespace ISDP2025_Parfonov_Zerrou.Forms.AdminUserControls
         {
             btnSave.IsEnabled = false;
 
-            // First validate inputs
+            // First check if this is an inactive supplier
+            if (!string.IsNullOrEmpty(lblSupplierId.Content?.ToString()))
+            {
+                int supplierId = int.Parse(lblSupplierId.Content.ToString());
+                var supplier = context.Suppliers.FirstOrDefault(s => s.SupplierId == supplierId);
+
+                if (supplier != null && supplier.Active == 0 && !ValidateInputs())
+                {
+                    // If inactive, just confirm and save status changes
+                    Growl.Ask("Do you want to save the status change?", isConfirmed =>
+                    {
+                        if (isConfirmed)
+                        {
+                            SaveChanges();
+                        }
+                        else
+                        {
+                            ResetToDefaultState();
+                        }
+                        return true;
+                    });
+                    return;
+                }
+            }
+
+            // For active suppliers or new suppliers, validate first
             if (!ValidateInputs())
             {
                 btnSave.IsEnabled = true;
@@ -518,6 +595,9 @@ namespace ISDP2025_Parfonov_Zerrou.Forms.AdminUserControls
                 txtContact.Text = selectedItem.Contact;
                 txtNotes.Text = selectedItem.Notes;
                 chkActive.IsChecked = selectedItem.Active == "Yes";
+
+                // Enable checkbox only for inactive suppliers
+                bool isActive = selectedItem.Active == "Yes";
 
                 btnUpdate.IsEnabled = true;
                 btnClear.IsEnabled = true;

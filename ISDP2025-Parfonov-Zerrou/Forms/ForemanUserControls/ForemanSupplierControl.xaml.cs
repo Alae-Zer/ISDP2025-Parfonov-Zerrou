@@ -4,17 +4,21 @@ using Microsoft.EntityFrameworkCore;
 using System.Windows;
 using System.Windows.Controls;
 
+//ISDP Project
+//Mohammed Alae-Zerrou, Serhii Parfonov
+//NBCC, Winter 2025
+//Completed By Serhii with some changes from Mohammed
+//Last Modified by Serhii on March 5,2025
 namespace ISDP2025_Parfonov_Zerrou.Forms.ForemanUserControls
 {
     public partial class ForemanSupplierControl : UserControl
     {
-        //DB context
+        //Database context and globals
         BestContext context;
         bool isEditMode = false;
         string[] countries = { "CANADA", "USA", "AUSTRALIA" };
         bool isAdminEnabled;
 
-        //Constructor
         public ForemanSupplierControl(Employee employee)
         {
             InitializeComponent();
@@ -310,15 +314,16 @@ namespace ISDP2025_Parfonov_Zerrou.Forms.ForemanUserControls
             {
                 if (!ValidateInputs())
                 {
-                    btnSave.IsEnabled = true; // Re-enable the button if validation fails
+                    //Re-enable the button if validation fails
+                    btnSave.IsEnabled = true;
                     return;
                 }
 
-                // Clean up formatted input before saving
+                //Clean up formatted input before saving
                 string cleanPostalCode = ValidatorsFormatters.CleanPostalCode(txtPostalCode.Text);
                 string cleanPhone = ValidatorsFormatters.CleanPhoneNumber(txtPhone.Text);
 
-                // Add new record if no ID exists
+                //Add new record if no ID exists
                 if (string.IsNullOrEmpty(lblSupplierId.Content?.ToString()))
                 {
                     var supplier = new Supplier
@@ -337,7 +342,7 @@ namespace ISDP2025_Parfonov_Zerrou.Forms.ForemanUserControls
                     };
                     context.Suppliers.Add(supplier);
                 }
-                // Update record if exists
+                //Update record if exists
                 else
                 {
                     int supplierId = int.Parse(lblSupplierId.Content.ToString());
@@ -374,7 +379,7 @@ namespace ISDP2025_Parfonov_Zerrou.Forms.ForemanUserControls
             }
         }
 
-        // Resets form to default state after operations
+        //Resets form to default state after operations
         private void ResetToDefaultState()
         {
             isEditMode = false;
@@ -397,7 +402,7 @@ namespace ISDP2025_Parfonov_Zerrou.Forms.ForemanUserControls
             btnExit.IsEnabled = true;
         }
 
-        // Prepares form for editing
+        //Prepares form for editing
         private void EnterEditMode()
         {
             isEditMode = true;
@@ -410,12 +415,12 @@ namespace ISDP2025_Parfonov_Zerrou.Forms.ForemanUserControls
             btnExit.Visibility = Visibility.Visible;
             dgvSuppliers.IsEnabled = false;
 
-            // Ensure buttons are enabled
+            //Ensure buttons are enabled
             btnSave.IsEnabled = true;
             btnExit.IsEnabled = true;
         }
 
-        // Event Handlers
+        //Event Handlers
         private void TxtSearch_TextChanged(object sender, TextChangedEventArgs e)
         {
             btnClear.IsEnabled = !string.IsNullOrWhiteSpace(txtSearch.Text);
@@ -436,13 +441,13 @@ namespace ISDP2025_Parfonov_Zerrou.Forms.ForemanUserControls
             ApplyFilters();
         }
 
-        // Refresh button click - reloads data
+        //Reloads data
         private void BtnRefresh_Click(object sender, RoutedEventArgs e)
         {
             LoadSuppliers();
         }
 
-        // Clear button click - resets form and filters
+        //Clear button click - resets form and filters
         private void BtnClear_Click(object sender, RoutedEventArgs e)
         {
             ClearInputs();
@@ -454,14 +459,14 @@ namespace ISDP2025_Parfonov_Zerrou.Forms.ForemanUserControls
             dgvSuppliers.UnselectAll();
         }
 
-        // Add button click - prepares form for new record
+        //Prepares form for new record
         private void BtnAdd_Click(object sender, RoutedEventArgs e)
         {
             ClearInputs();
             EnterEditMode();
         }
 
-        // Update button click - prepares form for editing existing record
+        //Prepares form for editing existing record
         private void BtnUpdate_Click(object sender, RoutedEventArgs e)
         {
             if (dgvSuppliers.SelectedItem != null)
@@ -470,19 +475,19 @@ namespace ISDP2025_Parfonov_Zerrou.Forms.ForemanUserControls
             }
         }
 
-        // Save button click - validates and saves changes
+        //Validates and saves changes
         private void BtnSave_Click(object sender, RoutedEventArgs e)
         {
             btnSave.IsEnabled = false;
 
-            // First validate inputs
+            //First validate inputs
             if (!ValidateInputs())
             {
                 btnSave.IsEnabled = true;
                 return;
             }
 
-            // If validation passes, ask for confirmation
+            //If validation passes, ask for confirmation
             Growl.Ask("Do you want to save the changes?", isConfirmed =>
             {
                 if (isConfirmed)
@@ -497,14 +502,14 @@ namespace ISDP2025_Parfonov_Zerrou.Forms.ForemanUserControls
             });
         }
 
-        // Grid selection changed - populates form with selected record
+        //Populates form with selected record
         private void DgSuppliers_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             if (dgvSuppliers.SelectedItem != null && !isEditMode)
             {
                 dynamic selectedItem = dgvSuppliers.SelectedItem;
 
-                // Populate form fields with selected item data
+                //Populate form fields with selected item data
                 lblSupplierId.Content = selectedItem.SupplierId.ToString();
                 txtName.Text = selectedItem.Name;
                 txtAddress.Text = selectedItem.Address;
@@ -523,7 +528,7 @@ namespace ISDP2025_Parfonov_Zerrou.Forms.ForemanUserControls
             }
         }
 
-        // Active checkbox click - confirms deactivation
+        //Confirms deactivation
         private void ChkActive_Click(object sender, RoutedEventArgs e)
         {
             if (chkActive.IsChecked == false)
@@ -543,7 +548,7 @@ namespace ISDP2025_Parfonov_Zerrou.Forms.ForemanUserControls
             }
         }
 
-        // Exit button click - confirms cancellation
+        //Confirms cancellation
         private void BtnExit_Click(object sender, RoutedEventArgs e)
         {
             btnExit.IsEnabled = false;
@@ -562,7 +567,7 @@ namespace ISDP2025_Parfonov_Zerrou.Forms.ForemanUserControls
             });
         }
 
-        // Cleanup when control is unloaded
+        //Cleanup when control is unloaded
         private void UserControl_Unloaded(object sender, RoutedEventArgs e)
         {
             if (context != null)

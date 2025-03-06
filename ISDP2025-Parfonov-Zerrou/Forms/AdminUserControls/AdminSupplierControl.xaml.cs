@@ -4,11 +4,16 @@ using Microsoft.EntityFrameworkCore;
 using System.Windows;
 using System.Windows.Controls;
 
+//ISDP Project
+//Mohammed Alae-Zerrou, Serhii Parfonov
+//NBCC, Winter 2025
+//Completed By Serhii with some changes from Mohammed
+//Last Modified by Serhii on March 5,2025
 namespace ISDP2025_Parfonov_Zerrou.Forms.AdminUserControls
 {
     public partial class AdminSupplierControl : UserControl
     {
-        //DB context
+        //DB and variables
         BestContext context;
         bool isEditMode = false;
         string[] countries = { "CANADA", "USA", "AUSTRALIA" };
@@ -53,7 +58,7 @@ namespace ISDP2025_Parfonov_Zerrou.Forms.AdminUserControls
                 cmbCountry.ItemsSource = countries;
                 cmbCountry.SelectedIndex = 0;
 
-                // Set default to Active (index 1)
+                //Set default to Active (index 1)
                 cmbIsActive.SelectedIndex = 1;
 
                 //Disable controls initially
@@ -217,6 +222,7 @@ namespace ISDP2025_Parfonov_Zerrou.Forms.AdminUserControls
             {
                 count = dgvSuppliers.Items.Count;
             }
+
             lblRecordCount.Text = "Total Records: " + count.ToString();
         }
 
@@ -308,19 +314,19 @@ namespace ISDP2025_Parfonov_Zerrou.Forms.AdminUserControls
         {
             try
             {
-                // Get supplier ID and check if it exists
+                //Get supplier ID and check if it exists
                 if (!string.IsNullOrEmpty(lblSupplierId.Content?.ToString()))
                 {
                     int supplierId = int.Parse(lblSupplierId.Content.ToString());
                     var supplier = context.Suppliers.Find(supplierId);
 
-                    // Check if this is an inactive supplier being reactivated
+                    //Check if this is an inactive supplier being reactivated
                     if (supplier != null && supplier.Active == 0)
                     {
-                        // Only update active status for inactive suppliers
+                        //Only update active status for inactive suppliers
                         supplier.Active = (sbyte)(chkActive.IsChecked == true ? 1 : 0);
                         context.SaveChanges();
-                        ApplyFilters(); // Refresh the grid with current filters
+                        ApplyFilters();
                         ResetToDefaultState();
                         EnableSearchControls(true);
                         Growl.Success("Supplier status updated successfully");
@@ -330,15 +336,16 @@ namespace ISDP2025_Parfonov_Zerrou.Forms.AdminUserControls
 
                 if (!ValidateInputs())
                 {
-                    btnSave.IsEnabled = true; // Re-enable the button if validation fails
+                    //Re-enable the button if validation fails
+                    btnSave.IsEnabled = true;
                     return;
                 }
 
-                // Clean up formatted input before saving
+                //Clean up formatted input before saving
                 string cleanPostalCode = ValidatorsFormatters.CleanPostalCode(txtPostalCode.Text);
                 string cleanPhone = ValidatorsFormatters.CleanPhoneNumber(txtPhone.Text);
 
-                // Add new record if no ID exists
+                //Add new record if no ID exists
                 if (string.IsNullOrEmpty(lblSupplierId.Content?.ToString()))
                 {
                     var supplier = new Supplier
@@ -357,7 +364,7 @@ namespace ISDP2025_Parfonov_Zerrou.Forms.AdminUserControls
                     };
                     context.Suppliers.Add(supplier);
                 }
-                // Update record if exists
+                //Update record if exists
                 else
                 {
                     int supplierId = int.Parse(lblSupplierId.Content.ToString());
@@ -382,7 +389,7 @@ namespace ISDP2025_Parfonov_Zerrou.Forms.AdminUserControls
                     }
                 }
                 context.SaveChanges();
-                ApplyFilters(); // Update to refresh with current filters
+                ApplyFilters();
                 ResetToDefaultState();
                 EnableSearchControls(true);
                 Growl.Success("Supplier saved successfully");
@@ -394,7 +401,7 @@ namespace ISDP2025_Parfonov_Zerrou.Forms.AdminUserControls
             }
         }
 
-        // Resets form to default state after operations
+        //Resets form to default state after operations
         private void ResetToDefaultState()
         {
             isEditMode = false;
@@ -412,12 +419,12 @@ namespace ISDP2025_Parfonov_Zerrou.Forms.AdminUserControls
             dgvSuppliers.UnselectAll();
             UpdateAddButtonState();
 
-            // Ensure buttons are re-enabled
+            //Ensure buttons are re-enabled
             btnSave.IsEnabled = true;
             btnExit.IsEnabled = true;
         }
 
-        // Prepares form for editing
+        //Prepares form for editing
         private void EnterEditMode()
         {
             isEditMode = true;
@@ -430,12 +437,12 @@ namespace ISDP2025_Parfonov_Zerrou.Forms.AdminUserControls
             btnExit.Visibility = Visibility.Visible;
             dgvSuppliers.IsEnabled = false;
 
-            // Ensure buttons are enabled
+            //Ensure buttons are enabled
             btnSave.IsEnabled = true;
             btnExit.IsEnabled = true;
         }
 
-        // Event Handlers
+        //Event Handlers
         private void TxtSearch_TextChanged(object sender, TextChangedEventArgs e)
         {
             btnClear.IsEnabled = !string.IsNullOrWhiteSpace(txtSearch.Text);
@@ -456,14 +463,14 @@ namespace ISDP2025_Parfonov_Zerrou.Forms.AdminUserControls
             ApplyFilters();
         }
 
-        // Refresh button click - reloads data
+        //Reloads data
         private void BtnRefresh_Click(object sender, RoutedEventArgs e)
         {
             LoadSuppliers();
             ApplyFilters();
         }
 
-        // Clear button click - resets form and filters
+        //Resets form and filters
         private void BtnClear_Click(object sender, RoutedEventArgs e)
         {
             ClearInputs();
@@ -475,14 +482,14 @@ namespace ISDP2025_Parfonov_Zerrou.Forms.AdminUserControls
             dgvSuppliers.UnselectAll();
         }
 
-        // Add button click - prepares form for new record
+        //Prepares form for new record
         private void BtnAdd_Click(object sender, RoutedEventArgs e)
         {
             ClearInputs();
             EnterEditMode();
         }
 
-        // Update button click - prepares form for editing existing record
+        //Prepares form for editing existing record
         private void BtnUpdate_Click(object sender, RoutedEventArgs e)
         {
             if (dgvSuppliers.SelectedItem != null)
@@ -492,12 +499,12 @@ namespace ISDP2025_Parfonov_Zerrou.Forms.AdminUserControls
 
                 if (!isActive)
                 {
-                    // For inactive suppliers, only allow changing the active status
+                    //For inactive suppliers, only allow changing the active status
                     Growl.Ask("This supplier is inactive. Do you want to change its status?", isConfirmed =>
                     {
                         if (isConfirmed)
                         {
-                            // Enter a modified edit mode for inactive suppliers
+                            //Enter a modified edit mode for inactive suppliers
                             isEditMode = true;
                             EnableInputs(false);
                             chkActive.IsEnabled = true;
@@ -509,7 +516,7 @@ namespace ISDP2025_Parfonov_Zerrou.Forms.AdminUserControls
                             btnExit.Visibility = Visibility.Visible;
                             dgvSuppliers.IsEnabled = false;
 
-                            // Toggle to active by default
+                            //Toggle to active by default
                             chkActive.IsChecked = true;
                         }
                         return true;
@@ -517,18 +524,18 @@ namespace ISDP2025_Parfonov_Zerrou.Forms.AdminUserControls
                 }
                 else
                 {
-                    // Regular update for active suppliers
+                    //Regular update for active suppliers
                     EnterEditMode();
                 }
             }
         }
 
-        // Save button click - validates and saves changes
+        //Validates and saves changes
         private void BtnSave_Click(object sender, RoutedEventArgs e)
         {
             btnSave.IsEnabled = false;
 
-            // First check if this is an inactive supplier
+            //First check if this is an inactive supplier
             if (!string.IsNullOrEmpty(lblSupplierId.Content?.ToString()))
             {
                 int supplierId = int.Parse(lblSupplierId.Content.ToString());
@@ -553,14 +560,14 @@ namespace ISDP2025_Parfonov_Zerrou.Forms.AdminUserControls
                 }
             }
 
-            // For active suppliers or new suppliers, validate first
+            //For active suppliers or new suppliers, validate first
             if (!ValidateInputs())
             {
                 btnSave.IsEnabled = true;
                 return;
             }
 
-            // If validation passes, ask for confirmation
+            //If validation passes, ask for confirmation
             Growl.Ask("Do you want to save the changes?", isConfirmed =>
             {
                 if (isConfirmed)
@@ -575,14 +582,14 @@ namespace ISDP2025_Parfonov_Zerrou.Forms.AdminUserControls
             });
         }
 
-        // Grid selection changed - populates form with selected record
+        //Populates form with selected record
         private void DgSuppliers_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             if (dgvSuppliers.SelectedItem != null && !isEditMode)
             {
                 dynamic selectedItem = dgvSuppliers.SelectedItem;
 
-                // Populate form fields with selected item data
+                //Populate form fields with selected item data
                 lblSupplierId.Content = selectedItem.SupplierId.ToString();
                 txtName.Text = selectedItem.Name;
                 txtAddress.Text = selectedItem.Address;
@@ -596,7 +603,7 @@ namespace ISDP2025_Parfonov_Zerrou.Forms.AdminUserControls
                 txtNotes.Text = selectedItem.Notes;
                 chkActive.IsChecked = selectedItem.Active == "Yes";
 
-                // Enable checkbox only for inactive suppliers
+                //Enable checkbox only for inactive suppliers
                 bool isActive = selectedItem.Active == "Yes";
 
                 btnUpdate.IsEnabled = true;
@@ -604,7 +611,7 @@ namespace ISDP2025_Parfonov_Zerrou.Forms.AdminUserControls
             }
         }
 
-        // Active checkbox click - confirms deactivation
+        //Confirms deactivation
         private void ChkActive_Click(object sender, RoutedEventArgs e)
         {
             if (chkActive.IsChecked == false)
@@ -624,7 +631,7 @@ namespace ISDP2025_Parfonov_Zerrou.Forms.AdminUserControls
             }
         }
 
-        // Exit button click - confirms cancellation
+        //Confirms cancellation
         private void BtnExit_Click(object sender, RoutedEventArgs e)
         {
             btnExit.IsEnabled = false;
@@ -643,7 +650,7 @@ namespace ISDP2025_Parfonov_Zerrou.Forms.AdminUserControls
             });
         }
 
-        // Cleanup when control is unloaded
+        //Cleanup when control is unloaded
         private void UserControl_Unloaded(object sender, RoutedEventArgs e)
         {
             if (context != null)

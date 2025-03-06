@@ -447,7 +447,7 @@ namespace ISDP2025_Parfonov_Zerrou.Forms.ForemanUserControls
             LoadSuppliers();
         }
 
-        //Clear button click - resets form and filters
+        //Resets form and filters
         private void BtnClear_Click(object sender, RoutedEventArgs e)
         {
             ClearInputs();

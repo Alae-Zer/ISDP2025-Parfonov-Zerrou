@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("ISDP_WEB")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+2df8f1857f5517e6f92a69601b608e703f0034fa")]
 [assembly: System.Reflection.AssemblyProductAttribute("ISDP_WEB")]
 [assembly: System.Reflection.AssemblyTitleAttribute("ISDP_WEB")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

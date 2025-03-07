@@ -242,7 +242,7 @@ namespace ISDP2025_Parfonov_Zerrou.Managers
         }
 
         //Determines Next Delivery Date
-        private DateTime GetNextDeliveryDay(int siteId)
+        public DateTime GetNextDeliveryDay(int siteId)
         {
             //Get site or throw error if not found
             var site = context.Sites.Find(siteId);

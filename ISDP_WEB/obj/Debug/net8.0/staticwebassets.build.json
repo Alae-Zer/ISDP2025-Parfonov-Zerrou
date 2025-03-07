@@ -1,6 +1,10 @@
 {
   "Version": 1,
+<<<<<<< HEAD
   "Hash": "DvC1BF256lGB8Xfr+0Npy90zlOpLVkPbKoUqHW2ynR8=",
+=======
+  "Hash": "tuXS1JyA8tG5EF3rMWbH4Lt0tXyDzkXTiIEADB6nUv0=",
+>>>>>>> 0702a9367255eb9874ed37207671b740a9cec6b5
   "Source": "ISDP_WEB",
   "BasePath": "_content/ISDP_WEB",
   "Mode": "Default",
@@ -10,13 +14,18 @@
     {
       "Name": "ISDP_WEB\\wwwroot",
       "Source": "ISDP_WEB",
+<<<<<<< HEAD
       "ContentRoot": "C:\\Users\\School\\Desktop\\ISPD\\ISDP2025\\ISDP_WEB\\wwwroot\\",
+=======
+      "ContentRoot": "D:\\WINTER 2025\\ISDP\\CODE\\ISDP_WEB\\wwwroot\\",
+>>>>>>> 0702a9367255eb9874ed37207671b740a9cec6b5
       "BasePath": "_content/ISDP_WEB",
       "Pattern": "**"
     }
   ],
   "Assets": [
     {
+<<<<<<< HEAD
       "Identity": "C:\\Users\\School\\.nuget\\packages\\mudblazor\\8.3.0\\staticwebassets\\MudBlazor.min.css",
       "SourceId": "MudBlazor",
       "SourceType": "Package",
@@ -63,6 +72,12 @@
       "SourceId": "ISDP_WEB",
       "SourceType": "Computed",
       "ContentRoot": "C:\\Users\\School\\Desktop\\ISPD\\ISDP2025\\ISDP_WEB\\obj\\Debug\\net8.0\\scopedcss\\bundle\\",
+=======
+      "Identity": "D:\\WINTER 2025\\ISDP\\CODE\\ISDP_WEB\\obj\\Debug\\net8.0\\scopedcss\\bundle\\ISDP_WEB.styles.css",
+      "SourceId": "ISDP_WEB",
+      "SourceType": "Computed",
+      "ContentRoot": "D:\\WINTER 2025\\ISDP\\CODE\\ISDP_WEB\\obj\\Debug\\net8.0\\scopedcss\\bundle\\",
+>>>>>>> 0702a9367255eb9874ed37207671b740a9cec6b5
       "BasePath": "_content/ISDP_WEB",
       "RelativePath": "ISDP_WEB#[.{fingerprint}]?.styles.css",
       "AssetKind": "All",
@@ -77,6 +92,7 @@
       "Integrity": "R5B3czWj0s7TIDUl2lLr88C9d3NRaeUBFx/ePg2Qdes=",
       "CopyToOutputDirectory": "Never",
       "CopyToPublishDirectory": "PreserveNewest",
+<<<<<<< HEAD
       "OriginalItemSpec": "C:\\Users\\School\\Desktop\\ISPD\\ISDP2025\\ISDP_WEB\\obj\\Debug\\net8.0\\scopedcss\\bundle\\ISDP_WEB.styles.css"
     },
     {
@@ -84,6 +100,15 @@
       "SourceId": "ISDP_WEB",
       "SourceType": "Computed",
       "ContentRoot": "C:\\Users\\School\\Desktop\\ISPD\\ISDP2025\\ISDP_WEB\\obj\\Debug\\net8.0\\scopedcss\\projectbundle\\",
+=======
+      "OriginalItemSpec": "D:\\WINTER 2025\\ISDP\\CODE\\ISDP_WEB\\obj\\Debug\\net8.0\\scopedcss\\bundle\\ISDP_WEB.styles.css"
+    },
+    {
+      "Identity": "D:\\WINTER 2025\\ISDP\\CODE\\ISDP_WEB\\obj\\Debug\\net8.0\\scopedcss\\projectbundle\\ISDP_WEB.bundle.scp.css",
+      "SourceId": "ISDP_WEB",
+      "SourceType": "Computed",
+      "ContentRoot": "D:\\WINTER 2025\\ISDP\\CODE\\ISDP_WEB\\obj\\Debug\\net8.0\\scopedcss\\projectbundle\\",
+>>>>>>> 0702a9367255eb9874ed37207671b740a9cec6b5
       "BasePath": "_content/ISDP_WEB",
       "RelativePath": "ISDP_WEB#[.{fingerprint}]!.bundle.scp.css",
       "AssetKind": "All",
@@ -98,6 +123,7 @@
       "Integrity": "R5B3czWj0s7TIDUl2lLr88C9d3NRaeUBFx/ePg2Qdes=",
       "CopyToOutputDirectory": "Never",
       "CopyToPublishDirectory": "PreserveNewest",
+<<<<<<< HEAD
       "OriginalItemSpec": "C:\\Users\\School\\Desktop\\ISPD\\ISDP2025\\ISDP_WEB\\obj\\Debug\\net8.0\\scopedcss\\projectbundle\\ISDP_WEB.bundle.scp.css"
     },
     {
@@ -105,6 +131,15 @@
       "SourceId": "ISDP_WEB",
       "SourceType": "Discovered",
       "ContentRoot": "C:\\Users\\School\\Desktop\\ISPD\\ISDP2025\\ISDP_WEB\\wwwroot\\",
+=======
+      "OriginalItemSpec": "D:\\WINTER 2025\\ISDP\\CODE\\ISDP_WEB\\obj\\Debug\\net8.0\\scopedcss\\projectbundle\\ISDP_WEB.bundle.scp.css"
+    },
+    {
+      "Identity": "D:\\WINTER 2025\\ISDP\\CODE\\ISDP_WEB\\wwwroot\\css\\bootstrap\\bootstrap.min.css",
+      "SourceId": "ISDP_WEB",
+      "SourceType": "Discovered",
+      "ContentRoot": "D:\\WINTER 2025\\ISDP\\CODE\\ISDP_WEB\\wwwroot\\",
+>>>>>>> 0702a9367255eb9874ed37207671b740a9cec6b5
       "BasePath": "_content/ISDP_WEB",
       "RelativePath": "css/bootstrap/bootstrap.min#[.{fingerprint}]?.css",
       "AssetKind": "All",
@@ -115,17 +150,24 @@
       "RelatedAsset": "",
       "AssetTraitName": "",
       "AssetTraitValue": "",
-      "Fingerprint": "bpk8xqwxhs",
-      "Integrity": "z8OR40MowJ8GgK6P89Y+hiJK5+cclzFHzLhFQLL92bg=",
+      "Fingerprint": "6gzpyzhau4",
+      "Integrity": "SiIVMGgRhdXjKSTIddX7mh9IbOXVcwQWc7/p4nS6D/0=",
       "CopyToOutputDirectory": "Never",
       "CopyToPublishDirectory": "PreserveNewest",
       "OriginalItemSpec": "wwwroot\\css\\bootstrap\\bootstrap.min.css"
     },
     {
+<<<<<<< HEAD
       "Identity": "C:\\Users\\School\\Desktop\\ISPD\\ISDP2025\\ISDP_WEB\\wwwroot\\css\\bootstrap\\bootstrap.min.css.map",
       "SourceId": "ISDP_WEB",
       "SourceType": "Discovered",
       "ContentRoot": "C:\\Users\\School\\Desktop\\ISPD\\ISDP2025\\ISDP_WEB\\wwwroot\\",
+=======
+      "Identity": "D:\\WINTER 2025\\ISDP\\CODE\\ISDP_WEB\\wwwroot\\css\\bootstrap\\bootstrap.min.css.map",
+      "SourceId": "ISDP_WEB",
+      "SourceType": "Discovered",
+      "ContentRoot": "D:\\WINTER 2025\\ISDP\\CODE\\ISDP_WEB\\wwwroot\\",
+>>>>>>> 0702a9367255eb9874ed37207671b740a9cec6b5
       "BasePath": "_content/ISDP_WEB",
       "RelativePath": "css/bootstrap/bootstrap.min.css#[.{fingerprint}]?.map",
       "AssetKind": "All",
@@ -143,10 +185,17 @@
       "OriginalItemSpec": "wwwroot\\css\\bootstrap\\bootstrap.min.css.map"
     },
     {
+<<<<<<< HEAD
       "Identity": "C:\\Users\\School\\Desktop\\ISPD\\ISDP2025\\ISDP_WEB\\wwwroot\\css\\open-iconic\\font\\css\\open-iconic-bootstrap.min.css",
       "SourceId": "ISDP_WEB",
       "SourceType": "Discovered",
       "ContentRoot": "C:\\Users\\School\\Desktop\\ISPD\\ISDP2025\\ISDP_WEB\\wwwroot\\",
+=======
+      "Identity": "D:\\WINTER 2025\\ISDP\\CODE\\ISDP_WEB\\wwwroot\\css\\open-iconic\\font\\css\\open-iconic-bootstrap.min.css",
+      "SourceId": "ISDP_WEB",
+      "SourceType": "Discovered",
+      "ContentRoot": "D:\\WINTER 2025\\ISDP\\CODE\\ISDP_WEB\\wwwroot\\",
+>>>>>>> 0702a9367255eb9874ed37207671b740a9cec6b5
       "BasePath": "_content/ISDP_WEB",
       "RelativePath": "css/open-iconic/font/css/open-iconic-bootstrap.min#[.{fingerprint}]?.css",
       "AssetKind": "All",
@@ -164,10 +213,17 @@
       "OriginalItemSpec": "wwwroot\\css\\open-iconic\\font\\css\\open-iconic-bootstrap.min.css"
     },
     {
+<<<<<<< HEAD
       "Identity": "C:\\Users\\School\\Desktop\\ISPD\\ISDP2025\\ISDP_WEB\\wwwroot\\css\\open-iconic\\font\\fonts\\open-iconic.eot",
       "SourceId": "ISDP_WEB",
       "SourceType": "Discovered",
       "ContentRoot": "C:\\Users\\School\\Desktop\\ISPD\\ISDP2025\\ISDP_WEB\\wwwroot\\",
+=======
+      "Identity": "D:\\WINTER 2025\\ISDP\\CODE\\ISDP_WEB\\wwwroot\\css\\open-iconic\\font\\fonts\\open-iconic.eot",
+      "SourceId": "ISDP_WEB",
+      "SourceType": "Discovered",
+      "ContentRoot": "D:\\WINTER 2025\\ISDP\\CODE\\ISDP_WEB\\wwwroot\\",
+>>>>>>> 0702a9367255eb9874ed37207671b740a9cec6b5
       "BasePath": "_content/ISDP_WEB",
       "RelativePath": "css/open-iconic/font/fonts/open-iconic#[.{fingerprint}]?.eot",
       "AssetKind": "All",
@@ -185,10 +241,17 @@
       "OriginalItemSpec": "wwwroot\\css\\open-iconic\\font\\fonts\\open-iconic.eot"
     },
     {
+<<<<<<< HEAD
       "Identity": "C:\\Users\\School\\Desktop\\ISPD\\ISDP2025\\ISDP_WEB\\wwwroot\\css\\open-iconic\\font\\fonts\\open-iconic.otf",
       "SourceId": "ISDP_WEB",
       "SourceType": "Discovered",
       "ContentRoot": "C:\\Users\\School\\Desktop\\ISPD\\ISDP2025\\ISDP_WEB\\wwwroot\\",
+=======
+      "Identity": "D:\\WINTER 2025\\ISDP\\CODE\\ISDP_WEB\\wwwroot\\css\\open-iconic\\font\\fonts\\open-iconic.otf",
+      "SourceId": "ISDP_WEB",
+      "SourceType": "Discovered",
+      "ContentRoot": "D:\\WINTER 2025\\ISDP\\CODE\\ISDP_WEB\\wwwroot\\",
+>>>>>>> 0702a9367255eb9874ed37207671b740a9cec6b5
       "BasePath": "_content/ISDP_WEB",
       "RelativePath": "css/open-iconic/font/fonts/open-iconic#[.{fingerprint}]?.otf",
       "AssetKind": "All",
@@ -206,10 +269,17 @@
       "OriginalItemSpec": "wwwroot\\css\\open-iconic\\font\\fonts\\open-iconic.otf"
     },
     {
+<<<<<<< HEAD
       "Identity": "C:\\Users\\School\\Desktop\\ISPD\\ISDP2025\\ISDP_WEB\\wwwroot\\css\\open-iconic\\font\\fonts\\open-iconic.svg",
       "SourceId": "ISDP_WEB",
       "SourceType": "Discovered",
       "ContentRoot": "C:\\Users\\School\\Desktop\\ISPD\\ISDP2025\\ISDP_WEB\\wwwroot\\",
+=======
+      "Identity": "D:\\WINTER 2025\\ISDP\\CODE\\ISDP_WEB\\wwwroot\\css\\open-iconic\\font\\fonts\\open-iconic.svg",
+      "SourceId": "ISDP_WEB",
+      "SourceType": "Discovered",
+      "ContentRoot": "D:\\WINTER 2025\\ISDP\\CODE\\ISDP_WEB\\wwwroot\\",
+>>>>>>> 0702a9367255eb9874ed37207671b740a9cec6b5
       "BasePath": "_content/ISDP_WEB",
       "RelativePath": "css/open-iconic/font/fonts/open-iconic#[.{fingerprint}]?.svg",
       "AssetKind": "All",
@@ -227,10 +297,17 @@
       "OriginalItemSpec": "wwwroot\\css\\open-iconic\\font\\fonts\\open-iconic.svg"
     },
     {
+<<<<<<< HEAD
       "Identity": "C:\\Users\\School\\Desktop\\ISPD\\ISDP2025\\ISDP_WEB\\wwwroot\\css\\open-iconic\\font\\fonts\\open-iconic.ttf",
       "SourceId": "ISDP_WEB",
       "SourceType": "Discovered",
       "ContentRoot": "C:\\Users\\School\\Desktop\\ISPD\\ISDP2025\\ISDP_WEB\\wwwroot\\",
+=======
+      "Identity": "D:\\WINTER 2025\\ISDP\\CODE\\ISDP_WEB\\wwwroot\\css\\open-iconic\\font\\fonts\\open-iconic.ttf",
+      "SourceId": "ISDP_WEB",
+      "SourceType": "Discovered",
+      "ContentRoot": "D:\\WINTER 2025\\ISDP\\CODE\\ISDP_WEB\\wwwroot\\",
+>>>>>>> 0702a9367255eb9874ed37207671b740a9cec6b5
       "BasePath": "_content/ISDP_WEB",
       "RelativePath": "css/open-iconic/font/fonts/open-iconic#[.{fingerprint}]?.ttf",
       "AssetKind": "All",
@@ -248,10 +325,17 @@
       "OriginalItemSpec": "wwwroot\\css\\open-iconic\\font\\fonts\\open-iconic.ttf"
     },
     {
+<<<<<<< HEAD
       "Identity": "C:\\Users\\School\\Desktop\\ISPD\\ISDP2025\\ISDP_WEB\\wwwroot\\css\\open-iconic\\font\\fonts\\open-iconic.woff",
       "SourceId": "ISDP_WEB",
       "SourceType": "Discovered",
       "ContentRoot": "C:\\Users\\School\\Desktop\\ISPD\\ISDP2025\\ISDP_WEB\\wwwroot\\",
+=======
+      "Identity": "D:\\WINTER 2025\\ISDP\\CODE\\ISDP_WEB\\wwwroot\\css\\open-iconic\\font\\fonts\\open-iconic.woff",
+      "SourceId": "ISDP_WEB",
+      "SourceType": "Discovered",
+      "ContentRoot": "D:\\WINTER 2025\\ISDP\\CODE\\ISDP_WEB\\wwwroot\\",
+>>>>>>> 0702a9367255eb9874ed37207671b740a9cec6b5
       "BasePath": "_content/ISDP_WEB",
       "RelativePath": "css/open-iconic/font/fonts/open-iconic#[.{fingerprint}]?.woff",
       "AssetKind": "All",
@@ -269,10 +353,17 @@
       "OriginalItemSpec": "wwwroot\\css\\open-iconic\\font\\fonts\\open-iconic.woff"
     },
     {
+<<<<<<< HEAD
       "Identity": "C:\\Users\\School\\Desktop\\ISPD\\ISDP2025\\ISDP_WEB\\wwwroot\\css\\open-iconic\\FONT-LICENSE",
       "SourceId": "ISDP_WEB",
       "SourceType": "Discovered",
       "ContentRoot": "C:\\Users\\School\\Desktop\\ISPD\\ISDP2025\\ISDP_WEB\\wwwroot\\",
+=======
+      "Identity": "D:\\WINTER 2025\\ISDP\\CODE\\ISDP_WEB\\wwwroot\\css\\open-iconic\\FONT-LICENSE",
+      "SourceId": "ISDP_WEB",
+      "SourceType": "Discovered",
+      "ContentRoot": "D:\\WINTER 2025\\ISDP\\CODE\\ISDP_WEB\\wwwroot\\",
+>>>>>>> 0702a9367255eb9874ed37207671b740a9cec6b5
       "BasePath": "_content/ISDP_WEB",
       "RelativePath": "css/open-iconic/FONT-LICENSE#[.{fingerprint}]?",
       "AssetKind": "All",
@@ -290,10 +381,17 @@
       "OriginalItemSpec": "wwwroot\\css\\open-iconic\\FONT-LICENSE"
     },
     {
+<<<<<<< HEAD
       "Identity": "C:\\Users\\School\\Desktop\\ISPD\\ISDP2025\\ISDP_WEB\\wwwroot\\css\\open-iconic\\ICON-LICENSE",
       "SourceId": "ISDP_WEB",
       "SourceType": "Discovered",
       "ContentRoot": "C:\\Users\\School\\Desktop\\ISPD\\ISDP2025\\ISDP_WEB\\wwwroot\\",
+=======
+      "Identity": "D:\\WINTER 2025\\ISDP\\CODE\\ISDP_WEB\\wwwroot\\css\\open-iconic\\ICON-LICENSE",
+      "SourceId": "ISDP_WEB",
+      "SourceType": "Discovered",
+      "ContentRoot": "D:\\WINTER 2025\\ISDP\\CODE\\ISDP_WEB\\wwwroot\\",
+>>>>>>> 0702a9367255eb9874ed37207671b740a9cec6b5
       "BasePath": "_content/ISDP_WEB",
       "RelativePath": "css/open-iconic/ICON-LICENSE#[.{fingerprint}]?",
       "AssetKind": "All",
@@ -311,10 +409,17 @@
       "OriginalItemSpec": "wwwroot\\css\\open-iconic\\ICON-LICENSE"
     },
     {
+<<<<<<< HEAD
       "Identity": "C:\\Users\\School\\Desktop\\ISPD\\ISDP2025\\ISDP_WEB\\wwwroot\\css\\open-iconic\\README.md",
       "SourceId": "ISDP_WEB",
       "SourceType": "Discovered",
       "ContentRoot": "C:\\Users\\School\\Desktop\\ISPD\\ISDP2025\\ISDP_WEB\\wwwroot\\",
+=======
+      "Identity": "D:\\WINTER 2025\\ISDP\\CODE\\ISDP_WEB\\wwwroot\\css\\open-iconic\\README.md",
+      "SourceId": "ISDP_WEB",
+      "SourceType": "Discovered",
+      "ContentRoot": "D:\\WINTER 2025\\ISDP\\CODE\\ISDP_WEB\\wwwroot\\",
+>>>>>>> 0702a9367255eb9874ed37207671b740a9cec6b5
       "BasePath": "_content/ISDP_WEB",
       "RelativePath": "css/open-iconic/README#[.{fingerprint}]?.md",
       "AssetKind": "All",
@@ -332,10 +437,17 @@
       "OriginalItemSpec": "wwwroot\\css\\open-iconic\\README.md"
     },
     {
+<<<<<<< HEAD
       "Identity": "C:\\Users\\School\\Desktop\\ISPD\\ISDP2025\\ISDP_WEB\\wwwroot\\css\\site.css",
       "SourceId": "ISDP_WEB",
       "SourceType": "Discovered",
       "ContentRoot": "C:\\Users\\School\\Desktop\\ISPD\\ISDP2025\\ISDP_WEB\\wwwroot\\",
+=======
+      "Identity": "D:\\WINTER 2025\\ISDP\\CODE\\ISDP_WEB\\wwwroot\\css\\site.css",
+      "SourceId": "ISDP_WEB",
+      "SourceType": "Discovered",
+      "ContentRoot": "D:\\WINTER 2025\\ISDP\\CODE\\ISDP_WEB\\wwwroot\\",
+>>>>>>> 0702a9367255eb9874ed37207671b740a9cec6b5
       "BasePath": "_content/ISDP_WEB",
       "RelativePath": "css/site#[.{fingerprint}]?.css",
       "AssetKind": "All",
@@ -353,10 +465,17 @@
       "OriginalItemSpec": "wwwroot\\css\\site.css"
     },
     {
+<<<<<<< HEAD
       "Identity": "C:\\Users\\School\\Desktop\\ISPD\\ISDP2025\\ISDP_WEB\\wwwroot\\favicon.png",
       "SourceId": "ISDP_WEB",
       "SourceType": "Discovered",
       "ContentRoot": "C:\\Users\\School\\Desktop\\ISPD\\ISDP2025\\ISDP_WEB\\wwwroot\\",
+=======
+      "Identity": "D:\\WINTER 2025\\ISDP\\CODE\\ISDP_WEB\\wwwroot\\favicon.png",
+      "SourceId": "ISDP_WEB",
+      "SourceType": "Discovered",
+      "ContentRoot": "D:\\WINTER 2025\\ISDP\\CODE\\ISDP_WEB\\wwwroot\\",
+>>>>>>> 0702a9367255eb9874ed37207671b740a9cec6b5
       "BasePath": "_content/ISDP_WEB",
       "RelativePath": "favicon#[.{fingerprint}]?.png",
       "AssetKind": "All",
@@ -376,6 +495,7 @@
   ],
   "Endpoints": [
     {
+<<<<<<< HEAD
       "Route": "_content/MudBlazor/MudBlazor.min.css",
       "AssetFile": "C:\\Users\\School\\.nuget\\packages\\mudblazor\\8.3.0\\staticwebassets\\MudBlazor.min.css",
       "Selectors": [],
@@ -542,6 +662,10 @@
     {
       "Route": "css/bootstrap/bootstrap.min.bpk8xqwxhs.css",
       "AssetFile": "C:\\Users\\School\\Desktop\\ISPD\\ISDP2025\\ISDP_WEB\\wwwroot\\css\\bootstrap\\bootstrap.min.css",
+=======
+      "Route": "css/bootstrap/bootstrap.min.6gzpyzhau4.css",
+      "AssetFile": "D:\\WINTER 2025\\ISDP\\CODE\\ISDP_WEB\\wwwroot\\css\\bootstrap\\bootstrap.min.css",
+>>>>>>> 0702a9367255eb9874ed37207671b740a9cec6b5
       "Selectors": [],
       "ResponseHeaders": [
         {
@@ -550,7 +674,7 @@
         },
         {
           "Name": "Content-Length",
-          "Value": "162720"
+          "Value": "162726"
         },
         {
           "Name": "Content-Type",
@@ -558,11 +682,11 @@
         },
         {
           "Name": "ETag",
-          "Value": "\"z8OR40MowJ8GgK6P89Y+hiJK5+cclzFHzLhFQLL92bg=\""
+          "Value": "\"SiIVMGgRhdXjKSTIddX7mh9IbOXVcwQWc7/p4nS6D/0=\""
         },
         {
           "Name": "Last-Modified",
-          "Value": "Tue, 04 Mar 2025 01:04:45 GMT"
+          "Value": "Tue, 04 Mar 2025 15:58:09 GMT"
         },
         {
           "Name": "Cache-Control",
@@ -572,7 +696,7 @@
       "EndpointProperties": [
         {
           "Name": "fingerprint",
-          "Value": "bpk8xqwxhs"
+          "Value": "6gzpyzhau4"
         },
         {
           "Name": "label",
@@ -580,13 +704,17 @@
         },
         {
           "Name": "integrity",
-          "Value": "sha256-z8OR40MowJ8GgK6P89Y+hiJK5+cclzFHzLhFQLL92bg="
+          "Value": "sha256-SiIVMGgRhdXjKSTIddX7mh9IbOXVcwQWc7/p4nS6D/0="
         }
       ]
     },
     {
       "Route": "css/bootstrap/bootstrap.min.css",
+<<<<<<< HEAD
       "AssetFile": "C:\\Users\\School\\Desktop\\ISPD\\ISDP2025\\ISDP_WEB\\wwwroot\\css\\bootstrap\\bootstrap.min.css",
+=======
+      "AssetFile": "D:\\WINTER 2025\\ISDP\\CODE\\ISDP_WEB\\wwwroot\\css\\bootstrap\\bootstrap.min.css",
+>>>>>>> 0702a9367255eb9874ed37207671b740a9cec6b5
       "Selectors": [],
       "ResponseHeaders": [
         {
@@ -595,7 +723,7 @@
         },
         {
           "Name": "Content-Length",
-          "Value": "162720"
+          "Value": "162726"
         },
         {
           "Name": "Content-Type",
@@ -603,11 +731,11 @@
         },
         {
           "Name": "ETag",
-          "Value": "\"z8OR40MowJ8GgK6P89Y+hiJK5+cclzFHzLhFQLL92bg=\""
+          "Value": "\"SiIVMGgRhdXjKSTIddX7mh9IbOXVcwQWc7/p4nS6D/0=\""
         },
         {
           "Name": "Last-Modified",
-          "Value": "Tue, 04 Mar 2025 01:04:45 GMT"
+          "Value": "Tue, 04 Mar 2025 15:58:09 GMT"
         },
         {
           "Name": "Cache-Control",
@@ -617,13 +745,17 @@
       "EndpointProperties": [
         {
           "Name": "integrity",
-          "Value": "sha256-z8OR40MowJ8GgK6P89Y+hiJK5+cclzFHzLhFQLL92bg="
+          "Value": "sha256-SiIVMGgRhdXjKSTIddX7mh9IbOXVcwQWc7/p4nS6D/0="
         }
       ]
     },
     {
       "Route": "css/bootstrap/bootstrap.min.css.8inm30yfxf.map",
+<<<<<<< HEAD
       "AssetFile": "C:\\Users\\School\\Desktop\\ISPD\\ISDP2025\\ISDP_WEB\\wwwroot\\css\\bootstrap\\bootstrap.min.css.map",
+=======
+      "AssetFile": "D:\\WINTER 2025\\ISDP\\CODE\\ISDP_WEB\\wwwroot\\css\\bootstrap\\bootstrap.min.css.map",
+>>>>>>> 0702a9367255eb9874ed37207671b740a9cec6b5
       "Selectors": [],
       "ResponseHeaders": [
         {
@@ -644,7 +776,7 @@
         },
         {
           "Name": "Last-Modified",
-          "Value": "Tue, 04 Mar 2025 01:04:45 GMT"
+          "Value": "Tue, 04 Mar 2025 15:58:09 GMT"
         },
         {
           "Name": "Cache-Control",
@@ -668,7 +800,11 @@
     },
     {
       "Route": "css/bootstrap/bootstrap.min.css.map",
+<<<<<<< HEAD
       "AssetFile": "C:\\Users\\School\\Desktop\\ISPD\\ISDP2025\\ISDP_WEB\\wwwroot\\css\\bootstrap\\bootstrap.min.css.map",
+=======
+      "AssetFile": "D:\\WINTER 2025\\ISDP\\CODE\\ISDP_WEB\\wwwroot\\css\\bootstrap\\bootstrap.min.css.map",
+>>>>>>> 0702a9367255eb9874ed37207671b740a9cec6b5
       "Selectors": [],
       "ResponseHeaders": [
         {
@@ -689,7 +825,7 @@
         },
         {
           "Name": "Last-Modified",
-          "Value": "Tue, 04 Mar 2025 01:04:45 GMT"
+          "Value": "Tue, 04 Mar 2025 15:58:09 GMT"
         },
         {
           "Name": "Cache-Control",
@@ -705,7 +841,11 @@
     },
     {
       "Route": "css/open-iconic/font/css/open-iconic-bootstrap.min.cmapd0fi15.css",
+<<<<<<< HEAD
       "AssetFile": "C:\\Users\\School\\Desktop\\ISPD\\ISDP2025\\ISDP_WEB\\wwwroot\\css\\open-iconic\\font\\css\\open-iconic-bootstrap.min.css",
+=======
+      "AssetFile": "D:\\WINTER 2025\\ISDP\\CODE\\ISDP_WEB\\wwwroot\\css\\open-iconic\\font\\css\\open-iconic-bootstrap.min.css",
+>>>>>>> 0702a9367255eb9874ed37207671b740a9cec6b5
       "Selectors": [],
       "ResponseHeaders": [
         {
@@ -726,7 +866,7 @@
         },
         {
           "Name": "Last-Modified",
-          "Value": "Tue, 04 Mar 2025 01:04:45 GMT"
+          "Value": "Tue, 04 Mar 2025 15:58:09 GMT"
         },
         {
           "Name": "Cache-Control",
@@ -750,7 +890,11 @@
     },
     {
       "Route": "css/open-iconic/font/css/open-iconic-bootstrap.min.css",
+<<<<<<< HEAD
       "AssetFile": "C:\\Users\\School\\Desktop\\ISPD\\ISDP2025\\ISDP_WEB\\wwwroot\\css\\open-iconic\\font\\css\\open-iconic-bootstrap.min.css",
+=======
+      "AssetFile": "D:\\WINTER 2025\\ISDP\\CODE\\ISDP_WEB\\wwwroot\\css\\open-iconic\\font\\css\\open-iconic-bootstrap.min.css",
+>>>>>>> 0702a9367255eb9874ed37207671b740a9cec6b5
       "Selectors": [],
       "ResponseHeaders": [
         {
@@ -771,7 +915,7 @@
         },
         {
           "Name": "Last-Modified",
-          "Value": "Tue, 04 Mar 2025 01:04:45 GMT"
+          "Value": "Tue, 04 Mar 2025 15:58:09 GMT"
         },
         {
           "Name": "Cache-Control",
@@ -787,7 +931,11 @@
     },
     {
       "Route": "css/open-iconic/font/fonts/open-iconic.0uw8dim9nl.eot",
+<<<<<<< HEAD
       "AssetFile": "C:\\Users\\School\\Desktop\\ISPD\\ISDP2025\\ISDP_WEB\\wwwroot\\css\\open-iconic\\font\\fonts\\open-iconic.eot",
+=======
+      "AssetFile": "D:\\WINTER 2025\\ISDP\\CODE\\ISDP_WEB\\wwwroot\\css\\open-iconic\\font\\fonts\\open-iconic.eot",
+>>>>>>> 0702a9367255eb9874ed37207671b740a9cec6b5
       "Selectors": [],
       "ResponseHeaders": [
         {
@@ -808,7 +956,7 @@
         },
         {
           "Name": "Last-Modified",
-          "Value": "Tue, 04 Mar 2025 01:04:45 GMT"
+          "Value": "Tue, 04 Mar 2025 15:58:09 GMT"
         },
         {
           "Name": "Cache-Control",
@@ -832,7 +980,11 @@
     },
     {
       "Route": "css/open-iconic/font/fonts/open-iconic.eot",
+<<<<<<< HEAD
       "AssetFile": "C:\\Users\\School\\Desktop\\ISPD\\ISDP2025\\ISDP_WEB\\wwwroot\\css\\open-iconic\\font\\fonts\\open-iconic.eot",
+=======
+      "AssetFile": "D:\\WINTER 2025\\ISDP\\CODE\\ISDP_WEB\\wwwroot\\css\\open-iconic\\font\\fonts\\open-iconic.eot",
+>>>>>>> 0702a9367255eb9874ed37207671b740a9cec6b5
       "Selectors": [],
       "ResponseHeaders": [
         {
@@ -853,7 +1005,7 @@
         },
         {
           "Name": "Last-Modified",
-          "Value": "Tue, 04 Mar 2025 01:04:45 GMT"
+          "Value": "Tue, 04 Mar 2025 15:58:09 GMT"
         },
         {
           "Name": "Cache-Control",
@@ -869,7 +1021,11 @@
     },
     {
       "Route": "css/open-iconic/font/fonts/open-iconic.h4d0pazwgy.woff",
+<<<<<<< HEAD
       "AssetFile": "C:\\Users\\School\\Desktop\\ISPD\\ISDP2025\\ISDP_WEB\\wwwroot\\css\\open-iconic\\font\\fonts\\open-iconic.woff",
+=======
+      "AssetFile": "D:\\WINTER 2025\\ISDP\\CODE\\ISDP_WEB\\wwwroot\\css\\open-iconic\\font\\fonts\\open-iconic.woff",
+>>>>>>> 0702a9367255eb9874ed37207671b740a9cec6b5
       "Selectors": [],
       "ResponseHeaders": [
         {
@@ -890,7 +1046,7 @@
         },
         {
           "Name": "Last-Modified",
-          "Value": "Tue, 04 Mar 2025 01:04:45 GMT"
+          "Value": "Tue, 04 Mar 2025 15:58:09 GMT"
         },
         {
           "Name": "Cache-Control",
@@ -914,7 +1070,11 @@
     },
     {
       "Route": "css/open-iconic/font/fonts/open-iconic.ll5grcv8wv.ttf",
+<<<<<<< HEAD
       "AssetFile": "C:\\Users\\School\\Desktop\\ISPD\\ISDP2025\\ISDP_WEB\\wwwroot\\css\\open-iconic\\font\\fonts\\open-iconic.ttf",
+=======
+      "AssetFile": "D:\\WINTER 2025\\ISDP\\CODE\\ISDP_WEB\\wwwroot\\css\\open-iconic\\font\\fonts\\open-iconic.ttf",
+>>>>>>> 0702a9367255eb9874ed37207671b740a9cec6b5
       "Selectors": [],
       "ResponseHeaders": [
         {
@@ -935,7 +1095,7 @@
         },
         {
           "Name": "Last-Modified",
-          "Value": "Tue, 04 Mar 2025 01:04:45 GMT"
+          "Value": "Tue, 04 Mar 2025 15:58:09 GMT"
         },
         {
           "Name": "Cache-Control",
@@ -959,7 +1119,11 @@
     },
     {
       "Route": "css/open-iconic/font/fonts/open-iconic.otf",
+<<<<<<< HEAD
       "AssetFile": "C:\\Users\\School\\Desktop\\ISPD\\ISDP2025\\ISDP_WEB\\wwwroot\\css\\open-iconic\\font\\fonts\\open-iconic.otf",
+=======
+      "AssetFile": "D:\\WINTER 2025\\ISDP\\CODE\\ISDP_WEB\\wwwroot\\css\\open-iconic\\font\\fonts\\open-iconic.otf",
+>>>>>>> 0702a9367255eb9874ed37207671b740a9cec6b5
       "Selectors": [],
       "ResponseHeaders": [
         {
@@ -980,7 +1144,7 @@
         },
         {
           "Name": "Last-Modified",
-          "Value": "Tue, 04 Mar 2025 01:04:45 GMT"
+          "Value": "Tue, 04 Mar 2025 15:58:09 GMT"
         },
         {
           "Name": "Cache-Control",
@@ -996,7 +1160,11 @@
     },
     {
       "Route": "css/open-iconic/font/fonts/open-iconic.sjnzgf7e1h.svg",
+<<<<<<< HEAD
       "AssetFile": "C:\\Users\\School\\Desktop\\ISPD\\ISDP2025\\ISDP_WEB\\wwwroot\\css\\open-iconic\\font\\fonts\\open-iconic.svg",
+=======
+      "AssetFile": "D:\\WINTER 2025\\ISDP\\CODE\\ISDP_WEB\\wwwroot\\css\\open-iconic\\font\\fonts\\open-iconic.svg",
+>>>>>>> 0702a9367255eb9874ed37207671b740a9cec6b5
       "Selectors": [],
       "ResponseHeaders": [
         {
@@ -1017,7 +1185,7 @@
         },
         {
           "Name": "Last-Modified",
-          "Value": "Tue, 04 Mar 2025 01:04:45 GMT"
+          "Value": "Tue, 04 Mar 2025 15:58:09 GMT"
         },
         {
           "Name": "Cache-Control",
@@ -1041,7 +1209,11 @@
     },
     {
       "Route": "css/open-iconic/font/fonts/open-iconic.svg",
+<<<<<<< HEAD
       "AssetFile": "C:\\Users\\School\\Desktop\\ISPD\\ISDP2025\\ISDP_WEB\\wwwroot\\css\\open-iconic\\font\\fonts\\open-iconic.svg",
+=======
+      "AssetFile": "D:\\WINTER 2025\\ISDP\\CODE\\ISDP_WEB\\wwwroot\\css\\open-iconic\\font\\fonts\\open-iconic.svg",
+>>>>>>> 0702a9367255eb9874ed37207671b740a9cec6b5
       "Selectors": [],
       "ResponseHeaders": [
         {
@@ -1062,7 +1234,7 @@
         },
         {
           "Name": "Last-Modified",
-          "Value": "Tue, 04 Mar 2025 01:04:45 GMT"
+          "Value": "Tue, 04 Mar 2025 15:58:09 GMT"
         },
         {
           "Name": "Cache-Control",
@@ -1078,7 +1250,11 @@
     },
     {
       "Route": "css/open-iconic/font/fonts/open-iconic.ttf",
+<<<<<<< HEAD
       "AssetFile": "C:\\Users\\School\\Desktop\\ISPD\\ISDP2025\\ISDP_WEB\\wwwroot\\css\\open-iconic\\font\\fonts\\open-iconic.ttf",
+=======
+      "AssetFile": "D:\\WINTER 2025\\ISDP\\CODE\\ISDP_WEB\\wwwroot\\css\\open-iconic\\font\\fonts\\open-iconic.ttf",
+>>>>>>> 0702a9367255eb9874ed37207671b740a9cec6b5
       "Selectors": [],
       "ResponseHeaders": [
         {
@@ -1099,7 +1275,7 @@
         },
         {
           "Name": "Last-Modified",
-          "Value": "Tue, 04 Mar 2025 01:04:45 GMT"
+          "Value": "Tue, 04 Mar 2025 15:58:09 GMT"
         },
         {
           "Name": "Cache-Control",
@@ -1115,7 +1291,11 @@
     },
     {
       "Route": "css/open-iconic/font/fonts/open-iconic.wk8x8xm0ah.otf",
+<<<<<<< HEAD
       "AssetFile": "C:\\Users\\School\\Desktop\\ISPD\\ISDP2025\\ISDP_WEB\\wwwroot\\css\\open-iconic\\font\\fonts\\open-iconic.otf",
+=======
+      "AssetFile": "D:\\WINTER 2025\\ISDP\\CODE\\ISDP_WEB\\wwwroot\\css\\open-iconic\\font\\fonts\\open-iconic.otf",
+>>>>>>> 0702a9367255eb9874ed37207671b740a9cec6b5
       "Selectors": [],
       "ResponseHeaders": [
         {
@@ -1136,7 +1316,7 @@
         },
         {
           "Name": "Last-Modified",
-          "Value": "Tue, 04 Mar 2025 01:04:45 GMT"
+          "Value": "Tue, 04 Mar 2025 15:58:09 GMT"
         },
         {
           "Name": "Cache-Control",
@@ -1160,7 +1340,11 @@
     },
     {
       "Route": "css/open-iconic/font/fonts/open-iconic.woff",
+<<<<<<< HEAD
       "AssetFile": "C:\\Users\\School\\Desktop\\ISPD\\ISDP2025\\ISDP_WEB\\wwwroot\\css\\open-iconic\\font\\fonts\\open-iconic.woff",
+=======
+      "AssetFile": "D:\\WINTER 2025\\ISDP\\CODE\\ISDP_WEB\\wwwroot\\css\\open-iconic\\font\\fonts\\open-iconic.woff",
+>>>>>>> 0702a9367255eb9874ed37207671b740a9cec6b5
       "Selectors": [],
       "ResponseHeaders": [
         {
@@ -1181,7 +1365,7 @@
         },
         {
           "Name": "Last-Modified",
-          "Value": "Tue, 04 Mar 2025 01:04:45 GMT"
+          "Value": "Tue, 04 Mar 2025 15:58:09 GMT"
         },
         {
           "Name": "Cache-Control",
@@ -1197,7 +1381,11 @@
     },
     {
       "Route": "css/open-iconic/FONT-LICENSE",
+<<<<<<< HEAD
       "AssetFile": "C:\\Users\\School\\Desktop\\ISPD\\ISDP2025\\ISDP_WEB\\wwwroot\\css\\open-iconic\\FONT-LICENSE",
+=======
+      "AssetFile": "D:\\WINTER 2025\\ISDP\\CODE\\ISDP_WEB\\wwwroot\\css\\open-iconic\\FONT-LICENSE",
+>>>>>>> 0702a9367255eb9874ed37207671b740a9cec6b5
       "Selectors": [],
       "ResponseHeaders": [
         {
@@ -1218,7 +1406,7 @@
         },
         {
           "Name": "Last-Modified",
-          "Value": "Tue, 04 Mar 2025 01:04:45 GMT"
+          "Value": "Tue, 04 Mar 2025 15:58:09 GMT"
         },
         {
           "Name": "Cache-Control",
@@ -1234,7 +1422,11 @@
     },
     {
       "Route": "css/open-iconic/FONT-LICENSE.48tmkg660f",
+<<<<<<< HEAD
       "AssetFile": "C:\\Users\\School\\Desktop\\ISPD\\ISDP2025\\ISDP_WEB\\wwwroot\\css\\open-iconic\\FONT-LICENSE",
+=======
+      "AssetFile": "D:\\WINTER 2025\\ISDP\\CODE\\ISDP_WEB\\wwwroot\\css\\open-iconic\\FONT-LICENSE",
+>>>>>>> 0702a9367255eb9874ed37207671b740a9cec6b5
       "Selectors": [],
       "ResponseHeaders": [
         {
@@ -1255,7 +1447,7 @@
         },
         {
           "Name": "Last-Modified",
-          "Value": "Tue, 04 Mar 2025 01:04:45 GMT"
+          "Value": "Tue, 04 Mar 2025 15:58:09 GMT"
         },
         {
           "Name": "Cache-Control",
@@ -1279,7 +1471,11 @@
     },
     {
       "Route": "css/open-iconic/ICON-LICENSE",
+<<<<<<< HEAD
       "AssetFile": "C:\\Users\\School\\Desktop\\ISPD\\ISDP2025\\ISDP_WEB\\wwwroot\\css\\open-iconic\\ICON-LICENSE",
+=======
+      "AssetFile": "D:\\WINTER 2025\\ISDP\\CODE\\ISDP_WEB\\wwwroot\\css\\open-iconic\\ICON-LICENSE",
+>>>>>>> 0702a9367255eb9874ed37207671b740a9cec6b5
       "Selectors": [],
       "ResponseHeaders": [
         {
@@ -1300,7 +1496,7 @@
         },
         {
           "Name": "Last-Modified",
-          "Value": "Tue, 04 Mar 2025 01:04:45 GMT"
+          "Value": "Tue, 04 Mar 2025 15:58:09 GMT"
         },
         {
           "Name": "Cache-Control",
@@ -1316,7 +1512,11 @@
     },
     {
       "Route": "css/open-iconic/ICON-LICENSE.4dwjve0o0b",
+<<<<<<< HEAD
       "AssetFile": "C:\\Users\\School\\Desktop\\ISPD\\ISDP2025\\ISDP_WEB\\wwwroot\\css\\open-iconic\\ICON-LICENSE",
+=======
+      "AssetFile": "D:\\WINTER 2025\\ISDP\\CODE\\ISDP_WEB\\wwwroot\\css\\open-iconic\\ICON-LICENSE",
+>>>>>>> 0702a9367255eb9874ed37207671b740a9cec6b5
       "Selectors": [],
       "ResponseHeaders": [
         {
@@ -1337,7 +1537,7 @@
         },
         {
           "Name": "Last-Modified",
-          "Value": "Tue, 04 Mar 2025 01:04:45 GMT"
+          "Value": "Tue, 04 Mar 2025 15:58:09 GMT"
         },
         {
           "Name": "Cache-Control",
@@ -1361,7 +1561,11 @@
     },
     {
       "Route": "css/open-iconic/README.5bzwdl5l6x.md",
+<<<<<<< HEAD
       "AssetFile": "C:\\Users\\School\\Desktop\\ISPD\\ISDP2025\\ISDP_WEB\\wwwroot\\css\\open-iconic\\README.md",
+=======
+      "AssetFile": "D:\\WINTER 2025\\ISDP\\CODE\\ISDP_WEB\\wwwroot\\css\\open-iconic\\README.md",
+>>>>>>> 0702a9367255eb9874ed37207671b740a9cec6b5
       "Selectors": [],
       "ResponseHeaders": [
         {
@@ -1382,7 +1586,7 @@
         },
         {
           "Name": "Last-Modified",
-          "Value": "Tue, 04 Mar 2025 01:04:45 GMT"
+          "Value": "Tue, 04 Mar 2025 15:58:09 GMT"
         },
         {
           "Name": "Cache-Control",
@@ -1406,7 +1610,11 @@
     },
     {
       "Route": "css/open-iconic/README.md",
+<<<<<<< HEAD
       "AssetFile": "C:\\Users\\School\\Desktop\\ISPD\\ISDP2025\\ISDP_WEB\\wwwroot\\css\\open-iconic\\README.md",
+=======
+      "AssetFile": "D:\\WINTER 2025\\ISDP\\CODE\\ISDP_WEB\\wwwroot\\css\\open-iconic\\README.md",
+>>>>>>> 0702a9367255eb9874ed37207671b740a9cec6b5
       "Selectors": [],
       "ResponseHeaders": [
         {
@@ -1427,7 +1635,7 @@
         },
         {
           "Name": "Last-Modified",
-          "Value": "Tue, 04 Mar 2025 01:04:45 GMT"
+          "Value": "Tue, 04 Mar 2025 15:58:09 GMT"
         },
         {
           "Name": "Cache-Control",
@@ -1443,7 +1651,11 @@
     },
     {
       "Route": "css/site.css",
+<<<<<<< HEAD
       "AssetFile": "C:\\Users\\School\\Desktop\\ISPD\\ISDP2025\\ISDP_WEB\\wwwroot\\css\\site.css",
+=======
+      "AssetFile": "D:\\WINTER 2025\\ISDP\\CODE\\ISDP_WEB\\wwwroot\\css\\site.css",
+>>>>>>> 0702a9367255eb9874ed37207671b740a9cec6b5
       "Selectors": [],
       "ResponseHeaders": [
         {
@@ -1464,7 +1676,7 @@
         },
         {
           "Name": "Last-Modified",
-          "Value": "Tue, 04 Mar 2025 01:04:45 GMT"
+          "Value": "Tue, 04 Mar 2025 15:58:09 GMT"
         },
         {
           "Name": "Cache-Control",
@@ -1480,7 +1692,11 @@
     },
     {
       "Route": "css/site.zh9s866nx2.css",
+<<<<<<< HEAD
       "AssetFile": "C:\\Users\\School\\Desktop\\ISPD\\ISDP2025\\ISDP_WEB\\wwwroot\\css\\site.css",
+=======
+      "AssetFile": "D:\\WINTER 2025\\ISDP\\CODE\\ISDP_WEB\\wwwroot\\css\\site.css",
+>>>>>>> 0702a9367255eb9874ed37207671b740a9cec6b5
       "Selectors": [],
       "ResponseHeaders": [
         {
@@ -1501,7 +1717,7 @@
         },
         {
           "Name": "Last-Modified",
-          "Value": "Tue, 04 Mar 2025 01:04:45 GMT"
+          "Value": "Tue, 04 Mar 2025 15:58:09 GMT"
         },
         {
           "Name": "Cache-Control",
@@ -1525,7 +1741,11 @@
     },
     {
       "Route": "favicon.ifv42okdf2.png",
+<<<<<<< HEAD
       "AssetFile": "C:\\Users\\School\\Desktop\\ISPD\\ISDP2025\\ISDP_WEB\\wwwroot\\favicon.png",
+=======
+      "AssetFile": "D:\\WINTER 2025\\ISDP\\CODE\\ISDP_WEB\\wwwroot\\favicon.png",
+>>>>>>> 0702a9367255eb9874ed37207671b740a9cec6b5
       "Selectors": [],
       "ResponseHeaders": [
         {
@@ -1546,7 +1766,7 @@
         },
         {
           "Name": "Last-Modified",
-          "Value": "Tue, 04 Mar 2025 01:04:45 GMT"
+          "Value": "Tue, 04 Mar 2025 15:58:09 GMT"
         },
         {
           "Name": "Cache-Control",
@@ -1570,7 +1790,11 @@
     },
     {
       "Route": "favicon.png",
+<<<<<<< HEAD
       "AssetFile": "C:\\Users\\School\\Desktop\\ISPD\\ISDP2025\\ISDP_WEB\\wwwroot\\favicon.png",
+=======
+      "AssetFile": "D:\\WINTER 2025\\ISDP\\CODE\\ISDP_WEB\\wwwroot\\favicon.png",
+>>>>>>> 0702a9367255eb9874ed37207671b740a9cec6b5
       "Selectors": [],
       "ResponseHeaders": [
         {
@@ -1591,7 +1815,7 @@
         },
         {
           "Name": "Last-Modified",
-          "Value": "Tue, 04 Mar 2025 01:04:45 GMT"
+          "Value": "Tue, 04 Mar 2025 15:58:09 GMT"
         },
         {
           "Name": "Cache-Control",
@@ -1607,7 +1831,11 @@
     },
     {
       "Route": "ISDP_WEB.59vmcvkavc.bundle.scp.css",
+<<<<<<< HEAD
       "AssetFile": "C:\\Users\\School\\Desktop\\ISPD\\ISDP2025\\ISDP_WEB\\obj\\Debug\\net8.0\\scopedcss\\projectbundle\\ISDP_WEB.bundle.scp.css",
+=======
+      "AssetFile": "D:\\WINTER 2025\\ISDP\\CODE\\ISDP_WEB\\obj\\Debug\\net8.0\\scopedcss\\projectbundle\\ISDP_WEB.bundle.scp.css",
+>>>>>>> 0702a9367255eb9874ed37207671b740a9cec6b5
       "Selectors": [],
       "ResponseHeaders": [
         {
@@ -1628,7 +1856,7 @@
         },
         {
           "Name": "Last-Modified",
-          "Value": "Tue, 04 Mar 2025 01:05:30 GMT"
+          "Value": "Tue, 04 Mar 2025 15:58:09 GMT"
         },
         {
           "Name": "Cache-Control",
@@ -1652,7 +1880,11 @@
     },
     {
       "Route": "ISDP_WEB.59vmcvkavc.styles.css",
+<<<<<<< HEAD
       "AssetFile": "C:\\Users\\School\\Desktop\\ISPD\\ISDP2025\\ISDP_WEB\\obj\\Debug\\net8.0\\scopedcss\\bundle\\ISDP_WEB.styles.css",
+=======
+      "AssetFile": "D:\\WINTER 2025\\ISDP\\CODE\\ISDP_WEB\\obj\\Debug\\net8.0\\scopedcss\\bundle\\ISDP_WEB.styles.css",
+>>>>>>> 0702a9367255eb9874ed37207671b740a9cec6b5
       "Selectors": [],
       "ResponseHeaders": [
         {
@@ -1673,7 +1905,7 @@
         },
         {
           "Name": "Last-Modified",
-          "Value": "Tue, 04 Mar 2025 01:05:30 GMT"
+          "Value": "Tue, 04 Mar 2025 15:58:09 GMT"
         },
         {
           "Name": "Cache-Control",
@@ -1697,7 +1929,11 @@
     },
     {
       "Route": "ISDP_WEB.bundle.scp.css",
+<<<<<<< HEAD
       "AssetFile": "C:\\Users\\School\\Desktop\\ISPD\\ISDP2025\\ISDP_WEB\\obj\\Debug\\net8.0\\scopedcss\\projectbundle\\ISDP_WEB.bundle.scp.css",
+=======
+      "AssetFile": "D:\\WINTER 2025\\ISDP\\CODE\\ISDP_WEB\\obj\\Debug\\net8.0\\scopedcss\\projectbundle\\ISDP_WEB.bundle.scp.css",
+>>>>>>> 0702a9367255eb9874ed37207671b740a9cec6b5
       "Selectors": [],
       "ResponseHeaders": [
         {
@@ -1718,7 +1954,7 @@
         },
         {
           "Name": "Last-Modified",
-          "Value": "Tue, 04 Mar 2025 01:05:30 GMT"
+          "Value": "Tue, 04 Mar 2025 15:58:09 GMT"
         },
         {
           "Name": "Cache-Control",
@@ -1734,7 +1970,11 @@
     },
     {
       "Route": "ISDP_WEB.styles.css",
+<<<<<<< HEAD
       "AssetFile": "C:\\Users\\School\\Desktop\\ISPD\\ISDP2025\\ISDP_WEB\\obj\\Debug\\net8.0\\scopedcss\\bundle\\ISDP_WEB.styles.css",
+=======
+      "AssetFile": "D:\\WINTER 2025\\ISDP\\CODE\\ISDP_WEB\\obj\\Debug\\net8.0\\scopedcss\\bundle\\ISDP_WEB.styles.css",
+>>>>>>> 0702a9367255eb9874ed37207671b740a9cec6b5
       "Selectors": [],
       "ResponseHeaders": [
         {
@@ -1755,7 +1995,7 @@
         },
         {
           "Name": "Last-Modified",
-          "Value": "Tue, 04 Mar 2025 01:05:30 GMT"
+          "Value": "Tue, 04 Mar 2025 15:58:09 GMT"
         },
         {
           "Name": "Cache-Control",

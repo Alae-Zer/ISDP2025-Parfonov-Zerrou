@@ -27,3 +27,18 @@ C:\Users\School\Desktop\ISPD\ISDP2025\ISDP_Shared\obj\Debug\net8.0\refint\ISDP_S
 C:\Users\School\Desktop\ISPD\ISDP2025\ISDP_Shared\obj\Debug\net8.0\ISDP_Shared.pdb
 C:\Users\School\Desktop\ISPD\ISDP2025\ISDP_Shared\obj\Debug\net8.0\ISDP_Shared.genruntimeconfig.cache
 C:\Users\School\Desktop\ISPD\ISDP2025\ISDP_Shared\obj\Debug\net8.0\ref\ISDP_Shared.dll
+D:\WINTER 2025\ISDP\CODE\ISDP_Shared\bin\Debug\net8.0\ISDP_Shared.deps.json
+D:\WINTER 2025\ISDP\CODE\ISDP_Shared\bin\Debug\net8.0\ISDP_Shared.runtimeconfig.json
+D:\WINTER 2025\ISDP\CODE\ISDP_Shared\bin\Debug\net8.0\ISDP_Shared.dll
+D:\WINTER 2025\ISDP\CODE\ISDP_Shared\bin\Debug\net8.0\ISDP_Shared.pdb
+D:\WINTER 2025\ISDP\CODE\ISDP_Shared\obj\Debug\net8.0\ISDP_Shared.csproj.AssemblyReference.cache
+D:\WINTER 2025\ISDP\CODE\ISDP_Shared\obj\Debug\net8.0\ISDP_Shared.GeneratedMSBuildEditorConfig.editorconfig
+D:\WINTER 2025\ISDP\CODE\ISDP_Shared\obj\Debug\net8.0\ISDP_Shared.AssemblyInfoInputs.cache
+D:\WINTER 2025\ISDP\CODE\ISDP_Shared\obj\Debug\net8.0\ISDP_Shared.AssemblyInfo.cs
+D:\WINTER 2025\ISDP\CODE\ISDP_Shared\obj\Debug\net8.0\ISDP_Shared.csproj.CoreCompileInputs.cache
+D:\WINTER 2025\ISDP\CODE\ISDP_Shared\obj\Debug\net8.0\ISDP_Shared.sourcelink.json
+D:\WINTER 2025\ISDP\CODE\ISDP_Shared\obj\Debug\net8.0\ISDP_Shared.dll
+D:\WINTER 2025\ISDP\CODE\ISDP_Shared\obj\Debug\net8.0\refint\ISDP_Shared.dll
+D:\WINTER 2025\ISDP\CODE\ISDP_Shared\obj\Debug\net8.0\ISDP_Shared.pdb
+D:\WINTER 2025\ISDP\CODE\ISDP_Shared\obj\Debug\net8.0\ISDP_Shared.genruntimeconfig.cache
+D:\WINTER 2025\ISDP\CODE\ISDP_Shared\obj\Debug\net8.0\ref\ISDP_Shared.dll

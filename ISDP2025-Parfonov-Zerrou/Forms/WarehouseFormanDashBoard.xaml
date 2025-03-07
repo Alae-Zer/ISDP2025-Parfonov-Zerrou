@@ -187,7 +187,7 @@
 
                     <!-- Suppliers Button -->
                     <Button x:Name="btnSuppliers" Tag="SuppliersPage" Height="41" Margin="0,9" 
-                            Style="{StaticResource SidebarButtonStyle}">
+                            Style="{StaticResource SidebarButtonStyle}" Click="btnSuppliers_Click">
                         <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
                             <Label Style="{StaticResource SidebarLabelStyle}" Content="&#xF275;" Padding="7,5,2,5" />
                             <TextBlock Text="Suppliers" VerticalAlignment="Center" />

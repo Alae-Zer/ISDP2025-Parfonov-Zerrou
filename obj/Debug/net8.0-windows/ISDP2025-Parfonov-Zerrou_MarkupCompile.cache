@@ -1,0 +1,20 @@
+﻿ISDP2025-Parfonov-Zerrou
+
+
+winexe
+C#
+.cs
+D:\WINTER 2025\ISDP\CODE\obj\Debug\net8.0-windows\
+ISDP2025_Parfonov_Zerrou
+none
+false
+TRACE;DEBUG;NET;NET8_0;NETCOREAPP
+D:\WINTER 2025\ISDP\CODE\App.xaml
+271809047695
+
+551417812848
+213-1578394252
+Forms\AdminDashBoard.xaml;Forms\AdminUserControls\AdminEmployeesControl.xaml;Forms\AdminUserControls\AdminThreshholdsControl.xaml;Forms\AdminUserControls\CreateStoreOrder.xaml;Forms\AdminUserControls\InventoryControl.xaml;Forms\AdminUserControls\LocationsControl.xaml;Forms\AdminUserControls\PermissionsControl.xaml;Forms\AdminUserControls\SettingsControl.xaml;Forms\CustomMessageBoxxaml.xaml;Forms\DashBoard.xaml;Forms\FinanceManagerDashBoard.xaml;Forms\FloorGuyUserControl\FloorGuyFulfil.xaml;Forms\ForemanUserControls\Backorders.xaml;Forms\ForemanUserControls\EditItemsControl.xaml;Forms\ForemanUserControls\ForemanInventoryControl.xaml;Forms\ForemanUserControls\ReceiveStoreOrder.xaml;Forms\ItemToCartMovement.xaml;Forms\MainWindow.xaml;Forms\RegionalManagerDashBoard.xaml;Forms\StoreManagerDashBoard.xaml;Forms\UserControls\CreateStoreOrderManagers.xaml;Forms\UserControls\Testing.xaml;Forms\UserControls\ViewEmployeesControl.xaml;Forms\UserControls\ViewLocationsControl.xaml;Forms\UserControls\ViewOrders.xaml;Forms\WarehouseFormanDashBoard.xaml;Forms\WarehouseWorkerDashBoard.xaml;
+
+False
+

@@ -1,11 +1,11 @@
-﻿using System.Windows;
-using ISDP2025_Parfonov_Zerrou.Forms.AdminUserControls;
+﻿using ISDP2025_Parfonov_Zerrou.Forms.AdminUserControls;
 using ISDP2025_Parfonov_Zerrou.Forms.FloorGuyUserControl;
 using ISDP2025_Parfonov_Zerrou.Forms.ForemanUserControls;
 using ISDP2025_Parfonov_Zerrou.Forms.UserControls;
 using ISDP2025_Parfonov_Zerrou.Functionality;
 using ISDP2025_Parfonov_Zerrou.Models;
 using Microsoft.EntityFrameworkCore;
+using System.Windows;
 
 namespace ISDP2025_Parfonov_Zerrou
 {
@@ -110,6 +110,11 @@ namespace ISDP2025_Parfonov_Zerrou
                 scrollIndicator.Visibility = Visibility.Collapsed;
             else
                 scrollIndicator.Visibility = Visibility.Visible;
+        }
+
+        private void btnSuppliers_Click(object sender, RoutedEventArgs e)
+        {
+            MainContent.Content = new ForemanSupplierControl(employee);
         }
     }
 }

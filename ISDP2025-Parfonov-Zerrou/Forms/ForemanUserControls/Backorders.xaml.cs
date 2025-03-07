@@ -278,7 +278,7 @@ namespace ISDP2025_Parfonov_Zerrou.Forms.AdminUserControls
             {
                 //Show backorder details when a backorder is selected
                 lblBackorderId.Content = selectedBackorder.TxnId.ToString();
-                txtStatus.Text = selectedBackorder.TxnStatus;  // Add this line
+                txtStatus.Text = selectedBackorder.TxnStatus;
 
                 using (var context = new BestContext())
                 {
@@ -290,6 +290,20 @@ namespace ISDP2025_Parfonov_Zerrou.Forms.AdminUserControls
                     if (store != null && !string.IsNullOrEmpty(store.DayOfWeek))
                     {
                         defaultDay = store.DayOfWeek.Trim().ToUpper();
+                    }
+
+                    //Find which day of the week the ship date falls on
+                    string shipDateDay = selectedBackorder.ShipDate.DayOfWeek.ToString().ToUpper();
+
+                    //Set the delivery day based on the actual ship date day
+                    switch (shipDateDay)
+                    {
+                        case "MONDAY": defaultDay = "MONDAY"; break;
+                        case "TUESDAY": defaultDay = "TUESDAY"; break;
+                        case "WEDNESDAY": defaultDay = "WEDNESDAY"; break;
+                        case "THURSDAY": defaultDay = "THURSDAY"; break;
+                        case "FRIDAY": defaultDay = "FRIDAY"; break;
+                        default: break;
                     }
 
                     //Show and set delivery day combo box
@@ -414,7 +428,7 @@ namespace ISDP2025_Parfonov_Zerrou.Forms.AdminUserControls
                 using (var context = new BestContext())
                 {
                     var updatedItems = dgvBackItems.ItemsSource as List<BackorderItemViewModel>;
-                    if (updatedItems == null || !updatedItems.Any())
+                    if (updatedItems == null)
                     {
                         MessageBox.Show("No items to save", "Warning", MessageBoxButton.OK, MessageBoxImage.Warning);
                         return;
@@ -423,6 +437,15 @@ namespace ISDP2025_Parfonov_Zerrou.Forms.AdminUserControls
                     var txn = context.Txns.Find(selectedBackorder.TxnId);
                     if (txn != null)
                     {
+                        //Get initial item count before updates
+                        int initialItemCount = context.Txnitems
+                            .Count(ti => ti.TxnId == selectedBackorder.TxnId);
+
+                        //Get initial total quantity
+                        int initialTotalQuantity = context.Txnitems
+                            .Where(ti => ti.TxnId == selectedBackorder.TxnId)
+                            .Sum(ti => ti.Quantity);
+
                         //Update quantities
                         foreach (var item in updatedItems)
                         {
@@ -434,7 +457,7 @@ namespace ISDP2025_Parfonov_Zerrou.Forms.AdminUserControls
                             }
                         }
 
-                        // Update status based on items
+                        //Update status based on items
                         if (txn.TxnStatus == "NEW" && updatedItems.Any())
                         {
                             txn.TxnStatus = "RECEIVED";
@@ -444,11 +467,39 @@ namespace ISDP2025_Parfonov_Zerrou.Forms.AdminUserControls
                             txn.TxnStatus = "NEW";
                         }
 
+                        //Save item and status changes
                         context.SaveChanges();
+
+                        //Get final item count and total quantity after updates
+                        int finalItemCount = updatedItems.Count;
+                        int finalTotalQuantity = updatedItems.Sum(i => i.Quantity);
+
+                        //Log updates to backorder items with detailed quantity changes
+                        AuditTransactions.LogActivity(
+                            currentUser,
+                            txn.TxnId,
+                            "Back Order",
+                            "UPDATED",
+                            txn.SiteIdto,
+                            null,
+                            $"Backorder had {initialItemCount} unique items with {initialTotalQuantity} total quantity and now has {finalItemCount} unique items with {finalTotalQuantity} total quantity"
+                        );
+
+                        //Update ship date if needed and if it actually changed
+                        if (DateTime.TryParse(txtDeliveryDate.Text, out DateTime newShipDate))
+                        {
+                            // Only update if the date actually changed
+                            if (txn.ShipDate.Date != newShipDate.Date)
+                            {
+                                backorderManager.UpdateBackorderShipDate(selectedBackorder.TxnId, newShipDate);
+                            }
+                        }
+
                         MessageBox.Show("Changes saved successfully", "Success", MessageBoxButton.OK, MessageBoxImage.Information);
                         LoadBackorders();
                         LoadBackorderItems(selectedBackorder.TxnId);
                         UpdateControlsBasedOnStatus(txn.TxnStatus);
+                        dgvBackItems.ItemsSource = null;
                     }
                 }
             }
@@ -497,21 +548,14 @@ namespace ISDP2025_Parfonov_Zerrou.Forms.AdminUserControls
                         daysToAdd = 7;
                     }
 
-                    //Update delivery date
                     DateTime newShipDate = currentDate.AddDays(daysToAdd);
-                    backorderManager.UpdateBackorderShipDate(selectedTxn.TxnId, newShipDate);
                     txtDeliveryDate.Text = newShipDate.ToString("MM/dd/yyyy");
                 }
                 catch (Exception ex)
                 {
-                    MessageBox.Show($"Error updating delivery date: {ex.Message}", "Error",
+                    MessageBox.Show($"Error calculating delivery date: {ex.Message}", "Error",
                         MessageBoxButton.OK, MessageBoxImage.Error);
                 }
-            }
-            else
-            {
-                MessageBox.Show("Please select both backorder and delivery day", "Warning",
-                    MessageBoxButton.OK, MessageBoxImage.Warning);
             }
         }
 

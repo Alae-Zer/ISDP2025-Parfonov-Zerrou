@@ -1,0 +1,50 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="Current" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup />
+  <ItemGroup>
+    <Compile Update="Forms\AdminUserControls\AdminThreshholdsControl.xaml.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Update="Forms\AdminUserControls\LocationsControl.xaml.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Update="Forms\FloorGuyUserControl\FloorGuyFulfil.xaml.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Update="Forms\ForemanUserControls\Backorders.xaml.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Update="Forms\ForemanUserControls\EditItemsControl.xaml.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Update="Forms\ItemToCartMovement.xaml.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Update="Forms\UserControls\ViewLocationsControl.xaml.cs">
+      <SubType>Code</SubType>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <Page Update="Forms\AdminUserControls\AdminThreshholdsControl.xaml">
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Update="Forms\AdminUserControls\LocationsControl.xaml">
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Update="Forms\FloorGuyUserControl\FloorGuyFulfil.xaml">
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Update="Forms\ForemanUserControls\Backorders.xaml">
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Update="Forms\ForemanUserControls\EditItemsControl.xaml">
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Update="Forms\ItemToCartMovement.xaml">
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Update="Forms\UserControls\ViewLocationsControl.xaml">
+      <SubType>Designer</SubType>
+    </Page>
+  </ItemGroup>
+</Project>

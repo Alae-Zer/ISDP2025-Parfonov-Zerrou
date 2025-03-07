@@ -1,5 +1,6 @@
 ﻿using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Data;
 using HandyControl.Controls;
 using HandyControl.Data;
 using ISDP2025_Parfonov_Zerrou.Forms.AdminUserControls;
@@ -21,6 +22,7 @@ namespace ISDP2025_Parfonov_Zerrou.Forms.UserControls
             InitializeComponent();
             context = new BestContext();
             LoadTransactions(); // Load transactions (aka orders) when control is initialized
+            loadStores();
         }
 
         public ViewOrders(Employee employee)
@@ -30,6 +32,7 @@ namespace ISDP2025_Parfonov_Zerrou.Forms.UserControls
             context = new BestContext();
             ConfigureUIForUserRole();
             LoadTransactions(); // Load transactions (aka orders) when control is initialized
+            loadStores();
         }
         private void ConfigureUIForUserRole()
         {
@@ -73,60 +76,87 @@ namespace ISDP2025_Parfonov_Zerrou.Forms.UserControls
         {
             try
             {
-
                 var query = context.Txns
                     .Include(t => t.SiteIdtoNavigation)
                     .Include(t => t.Txnitems)
                         .ThenInclude(ti => ti.Item)
                     .AsQueryable();
 
-                // Apply filters if selected
                 if (cmbOrderType.SelectedItem != null)
                 {
                     string selectedContent = ((ComboBoxItem)cmbOrderType.SelectedItem).Content.ToString();
-                    if (selectedContent != "All" && selectedContent != "ALL")
+                    if (selectedContent != "All")
                     {
                         string orderType = selectedContent;
                         query = query.Where(t => t.TxnType == orderType);
                     }
                 }
 
+                if (cmbStores.SelectedItem != null)
+                {
+                    int selectedContent = (int)cmbStores.SelectedValue;
+                    if (selectedContent != -1)
+                    {
+                        query = query.Where(t => t.SiteIdto == selectedContent);
+                    }
+                }
+                else if (permissionLevel == "Store Manager")
+                {
+                    query = query.Where(t => t.SiteIdto == Employee.SiteId);
+                }
+
                 if (cmbStatus.SelectedItem != null)
                 {
                     string selectedContent = ((ComboBoxItem)cmbStatus.SelectedItem).Content.ToString();
-                    if (selectedContent != "All" && selectedContent != "ALL")
+                    if (selectedContent != "All")
                     {
                         string status = selectedContent;
                         query = query.Where(t => t.TxnStatus == status);
                     }
+                    else
+                    {
+                        query = query.Where(t => t.TxnStatus != "CLOSED" && t.TxnStatus != "CANCELLED");
+                    }
+                }
+                else
+                {
+                    // If no status is selected, apply the default filter
+                    query = query.Where(t => t.TxnStatus != "CLOSED" && t.TxnStatus != "CANCELLED");
                 }
 
                 if (permissionLevel == "Store Manager")
                 {
-                    query = query.Where(t => t.SiteIdto == Employee.SiteId && (t.TxnType == "Store Order" || t.TxnType == "Emergency Order"));
-
+                    query = query.Where(t => t.TxnType == "Store Order" || t.TxnType == "Emergency Order");
                 }
-                var results = query
-                .Select(t => new
+
+                // First, get the data from the database
+                var rawResults = query.ToList();
+
+                // Then, apply our custom transformations in memory
+                var results = rawResults.Select(t => new OrderViewModel
                 {
                     TxnId = t.TxnId,
                     Location = t.SiteIdtoNavigation.SiteName,
                     Status = t.TxnStatus,
                     Items = t.Txnitems.Count(),
-                    Weight = t.Txnitems.Sum(ti => ti.Item.Weight * ti.Quantity) > 0 ? t.Txnitems.Sum(ti => ti.Item.Weight * ti.Quantity).ToString("#.## KG") : "0 KG",
+                    Weight = t.Txnitems.Sum(ti => ti.Item.Weight * ti.Quantity) > 0 ?
+                        t.Txnitems.Sum(ti => ti.Item.Weight * ti.Quantity).ToString("#.## KG") : "0 KG",
                     DeliveryDate = t.ShipDate,
-                    OrderType = t.TxnType
+                    OrderType = t.TxnType,
+                    StatusGroup = GetStatusGroupName(t.TxnStatus)
                 })
-                .ToList();
-                // replace the Items = t.Txnitems.Sum(t => t.Quantity), to get how many single items you have
-
-                var orderedResults = results
-                .OrderByDescending(t => t.Status == "NEW")
+                .OrderBy(t => GetStatusGroupOrder(t.Status))
                 .ThenByDescending(t => t.DeliveryDate)
                 .ToList();
 
-                dgOrders.ItemsSource = orderedResults;
+                // Set up grouping
+                var view = CollectionViewSource.GetDefaultView(results);
+                view.GroupDescriptions.Clear();
+                view.GroupDescriptions.Add(new PropertyGroupDescription("StatusGroup"));
 
+                dgOrders.ItemsSource = view;
+
+                // Rest of the method remains the same
                 if (permissionLevel != "Store Manager")
                 {
                     Alert.Visibility = checkOrder() == true ? Visibility.Visible : Visibility.Collapsed;
@@ -142,6 +172,72 @@ namespace ISDP2025_Parfonov_Zerrou.Forms.UserControls
                               "Error",
                               MessageBoxButton.OK,
                               MessageBoxImage.Error);
+            }
+        }
+
+        public class OrderViewModel
+        {
+            public int TxnId { get; set; }
+            public string Location { get; set; }
+            public string Status { get; set; }
+            public int Items { get; set; }
+            public string Weight { get; set; }
+            public DateTime DeliveryDate { get; set; }
+            public string OrderType { get; set; }
+            public string StatusGroup { get; set; }
+        }
+
+        // Helper method to get readable group names
+        private string GetStatusGroupName(string status)
+        {
+            switch (status)
+            {
+                case "NEW":
+                case "SUBMITTED":
+                    return "New Orders";
+                case "RECEIVED":
+                    return "Received Orders";
+                case "ASSEMBLING":
+                case "ASSEMBLED":
+                    return "Assembly";
+                case "IN TRANSIT":
+                    return "In Transit";
+                case "DELIVERED":
+                    return "Delivered";
+                case "COMPLETE":
+                    return "Completed";
+                case "REJECTED":
+                case "CANCELLED":
+                    return "Rejected/Cancelled";
+                default:
+                    return "Other";
+            }
+        }
+
+        // Helper method for ordering the groups
+        private int GetStatusGroupOrder(string status)
+        {
+            switch (status)
+            {
+                case "NEW":
+                case "SUBMITTED":
+                    return 1;
+                case "RECEIVED":
+                    return 2;
+                case "ASSEMBLING":
+                case "ASSEMBLED":
+                    return 3;
+                case "IN TRANSIT":
+                    return 4;
+                case "DELIVERED":
+                    return 5;
+                case "COMPLETE":
+                    return 6;
+                case "REJECTED":
+                case "CANCELLED":
+                    return 7;
+                default:
+                    return 8;
             }
         }
 
@@ -169,7 +265,8 @@ namespace ISDP2025_Parfonov_Zerrou.Forms.UserControls
                 {
                     Message = "Please select an order to receive.",
                     ShowDateTime = false,
-                    WaitTime = 2
+                    WaitTime = 2,
+
                 });
                 return;
             }
@@ -219,8 +316,21 @@ namespace ISDP2025_Parfonov_Zerrou.Forms.UserControls
         }
 
         private void btnEdit_Click(object sender, RoutedEventArgs e)
+
         {
-            var existingOrder = context.Txns.FirstOrDefault(t => t.TxnStatus == "NEW" && (t.TxnType == "Store Order" || t.TxnType == "Emergency Order")); //t.SiteIdto == Employee.SiteId &&
+            var query = context.Txns
+                    .Where(t => t.TxnStatus == "NEW")
+                    .Include(t => t.SiteIdtoNavigation)
+                    .Include(t => t.Txnitems)
+                        .ThenInclude(ti => ti.Item)
+
+                    .AsQueryable();
+            if (permissionLevel == "Store Manager")
+            {
+                query = query.Where(t => t.SiteIdto == Employee.SiteId);
+            }
+            var existingOrder = query.FirstOrDefault(); // &&
+
 
             var mainContent = this.Parent as ContentControl;
             if (mainContent != null)
@@ -244,6 +354,54 @@ namespace ISDP2025_Parfonov_Zerrou.Forms.UserControls
                         WaitTime = 2
                     });
                 }
+            }
+        }
+
+        private void loadStores()
+        {
+            try
+            {
+                var query = context.Sites
+                .Where(s => s.SiteId != 1 && s.SiteId != 3 && s.SiteId != 10000 && s.SiteId != 9999)
+                .OrderBy(s => s.SiteName);
+
+                //// For store managers, filter to only show their store
+                //if (Employee != null)
+                //{
+                //    // If employee.Position is null, load it from the database
+                //    if (Employee.Position == null)
+                //    {
+                //        // Reload the employee with the Position included
+                //        Employee = context.Employees
+                //            .Include(e => e.Position)
+                //            .FirstOrDefault(e => e.EmployeeID == Employee.EmployeeID);
+                //    }
+                //    if (Employee.Position.PermissionLevel == "Store Manager")
+                //    {
+                //        query = (IOrderedQueryable<Site>)query.Where(s => s.SiteId == Employee.SiteId);
+                //    }
+                //}
+                var stores = query.Select(s => new
+                {
+                    s.SiteId,
+                    s.SiteName,
+                    s.DayOfWeek
+                }).ToList();
+
+                cmbStores.ItemsSource = stores;
+                cmbStores.DisplayMemberPath = "SiteName";
+                cmbStores.SelectedValuePath = "SiteId";
+
+                // Auto-select the store manager's store
+                if (Employee.Position.PermissionLevel == "Store Manager")
+                {
+                    cmbStores.SelectedValue = Employee.SiteId;
+                }
+            }
+            catch (Exception ex)
+            {
+                HandyControl.Controls.MessageBox.Show($"Error loading initial data: {ex.Message}",
+                    "Error", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
 

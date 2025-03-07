@@ -1,7 +1,64 @@
 {
   "Version": 1,
   "WorkspaceRootPath": "C:\\Users\\School\\Desktop\\ISPD\\ISDP2025\\",
-  "Documents": [],
+  "Documents": [
+    {
+      "AbsoluteMoniker": "D:0:0:{3216EEF6-C420-4551-A2C0-8E08DC286471}|ISDP_WEB\\ISDP_WEB.csproj|c:\\users\\school\\desktop\\ispd\\isdp2025\\isdp_web\\shared\\navmenu.razor||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{3216EEF6-C420-4551-A2C0-8E08DC286471}|ISDP_WEB\\ISDP_WEB.csproj|solutionrelative:isdp_web\\shared\\navmenu.razor||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{3216EEF6-C420-4551-A2C0-8E08DC286471}|ISDP_WEB\\ISDP_WEB.csproj|c:\\users\\school\\desktop\\ispd\\isdp2025\\isdp_web\\pages\\testproducts.razor||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{3216EEF6-C420-4551-A2C0-8E08DC286471}|ISDP_WEB\\ISDP_WEB.csproj|solutionrelative:isdp_web\\pages\\testproducts.razor||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{3216EEF6-C420-4551-A2C0-8E08DC286471}|ISDP_WEB\\ISDP_WEB.csproj|c:\\users\\school\\desktop\\ispd\\isdp2025\\isdp_web\\shared\\mainlayout.razor.css||{A5401142-F49D-43DB-90B1-F57BA349E55C}",
+      "RelativeMoniker": "D:0:0:{3216EEF6-C420-4551-A2C0-8E08DC286471}|ISDP_WEB\\ISDP_WEB.csproj|solutionrelative:isdp_web\\shared\\mainlayout.razor.css||{A5401142-F49D-43DB-90B1-F57BA349E55C}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{3216EEF6-C420-4551-A2C0-8E08DC286471}|ISDP_WEB\\ISDP_WEB.csproj|c:\\users\\school\\desktop\\ispd\\isdp2025\\isdp_web\\pages\\order.razor||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{3216EEF6-C420-4551-A2C0-8E08DC286471}|ISDP_WEB\\ISDP_WEB.csproj|solutionrelative:isdp_web\\pages\\order.razor||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{3216EEF6-C420-4551-A2C0-8E08DC286471}|ISDP_WEB\\ISDP_WEB.csproj|c:\\users\\school\\desktop\\ispd\\isdp2025\\isdp_web\\pages\\index.razor||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{3216EEF6-C420-4551-A2C0-8E08DC286471}|ISDP_WEB\\ISDP_WEB.csproj|solutionrelative:isdp_web\\pages\\index.razor||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{3216EEF6-C420-4551-A2C0-8E08DC286471}|ISDP_WEB\\ISDP_WEB.csproj|c:\\users\\school\\desktop\\ispd\\isdp2025\\isdp_web\\shared\\mainlayout.razor||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{3216EEF6-C420-4551-A2C0-8E08DC286471}|ISDP_WEB\\ISDP_WEB.csproj|solutionrelative:isdp_web\\shared\\mainlayout.razor||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{3216EEF6-C420-4551-A2C0-8E08DC286471}|ISDP_WEB\\ISDP_WEB.csproj|c:\\users\\school\\desktop\\ispd\\isdp2025\\isdp_web\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{3216EEF6-C420-4551-A2C0-8E08DC286471}|ISDP_WEB\\ISDP_WEB.csproj|solutionrelative:isdp_web\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{3216EEF6-C420-4551-A2C0-8E08DC286471}|ISDP_WEB\\ISDP_WEB.csproj|c:\\users\\school\\desktop\\ispd\\isdp2025\\isdp_web\\pages\\_host.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{3216EEF6-C420-4551-A2C0-8E08DC286471}|ISDP_WEB\\ISDP_WEB.csproj|solutionrelative:isdp_web\\pages\\_host.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{3216EEF6-C420-4551-A2C0-8E08DC286471}|ISDP_WEB\\ISDP_WEB.csproj|c:\\users\\school\\desktop\\ispd\\isdp2025\\isdp_web\\_imports.razor||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{3216EEF6-C420-4551-A2C0-8E08DC286471}|ISDP_WEB\\ISDP_WEB.csproj|solutionrelative:isdp_web\\_imports.razor||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{C560A1BD-A6A6-446A-A412-605A1A3FBEBB}|ISDP2025-Parfonov-Zerrou\\ISDP2025-WPF.csproj|c:\\users\\school\\desktop\\ispd\\isdp2025\\isdp2025-parfonov-zerrou\\forms\\adminusercontrols\\createstoreorder.xaml.cs||{8B382828-6202-11D1-8870-0000F87579D2}|",
+      "RelativeMoniker": "D:0:0:{C560A1BD-A6A6-446A-A412-605A1A3FBEBB}|ISDP2025-Parfonov-Zerrou\\ISDP2025-WPF.csproj|solutionrelative:isdp2025-parfonov-zerrou\\forms\\adminusercontrols\\createstoreorder.xaml.cs||{8B382828-6202-11D1-8870-0000F87579D2}|"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{C560A1BD-A6A6-446A-A412-605A1A3FBEBB}|ISDP2025-Parfonov-Zerrou\\ISDP2025-WPF.csproj|c:\\users\\school\\desktop\\ispd\\isdp2025\\isdp2025-parfonov-zerrou\\forms\\usercontrols\\vieworders.xaml.cs||{8B382828-6202-11D1-8870-0000F87579D2}|",
+      "RelativeMoniker": "D:0:0:{C560A1BD-A6A6-446A-A412-605A1A3FBEBB}|ISDP2025-Parfonov-Zerrou\\ISDP2025-WPF.csproj|solutionrelative:isdp2025-parfonov-zerrou\\forms\\usercontrols\\vieworders.xaml.cs||{8B382828-6202-11D1-8870-0000F87579D2}|"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{C560A1BD-A6A6-446A-A412-605A1A3FBEBB}|ISDP2025-Parfonov-Zerrou\\ISDP2025-WPF.csproj|c:\\users\\school\\desktop\\ispd\\isdp2025\\isdp2025-parfonov-zerrou\\forms\\usercontrols\\vieworders.xaml||{F11ACC28-31D1-4C80-A34B-F4E09D3D753C}",
+      "RelativeMoniker": "D:0:0:{C560A1BD-A6A6-446A-A412-605A1A3FBEBB}|ISDP2025-Parfonov-Zerrou\\ISDP2025-WPF.csproj|solutionrelative:isdp2025-parfonov-zerrou\\forms\\usercontrols\\vieworders.xaml||{F11ACC28-31D1-4C80-A34B-F4E09D3D753C}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{C560A1BD-A6A6-446A-A412-605A1A3FBEBB}|ISDP2025-Parfonov-Zerrou\\ISDP2025-WPF.csproj|c:\\users\\school\\desktop\\ispd\\isdp2025\\isdp2025-parfonov-zerrou\\forms\\adminusercontrols\\createstoreorder.xaml||{F11ACC28-31D1-4C80-A34B-F4E09D3D753C}",
+      "RelativeMoniker": "D:0:0:{C560A1BD-A6A6-446A-A412-605A1A3FBEBB}|ISDP2025-Parfonov-Zerrou\\ISDP2025-WPF.csproj|solutionrelative:isdp2025-parfonov-zerrou\\forms\\adminusercontrols\\createstoreorder.xaml||{F11ACC28-31D1-4C80-A34B-F4E09D3D753C}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{C560A1BD-A6A6-446A-A412-605A1A3FBEBB}|ISDP2025-Parfonov-Zerrou\\ISDP2025-WPF.csproj|c:\\users\\school\\desktop\\ispd\\isdp2025\\isdp2025-parfonov-zerrou\\app.xaml||{F11ACC28-31D1-4C80-A34B-F4E09D3D753C}",
+      "RelativeMoniker": "D:0:0:{C560A1BD-A6A6-446A-A412-605A1A3FBEBB}|ISDP2025-Parfonov-Zerrou\\ISDP2025-WPF.csproj|solutionrelative:isdp2025-parfonov-zerrou\\app.xaml||{F11ACC28-31D1-4C80-A34B-F4E09D3D753C}"
+    }
+  ],
   "DocumentGroupContainers": [
     {
       "Orientation": 1,
@@ -9,12 +66,8 @@
       "DocumentGroups": [
         {
           "DockedHeight": 200,
-          "SelectedChildIndex": -1,
+          "SelectedChildIndex": 14,
           "Children": [
-            {
-              "$type": "Bookmark",
-              "Name": "ST:129:0:{1fc202d4-d401-403c-9834-5b218574bb67}"
-            },
             {
               "$type": "Bookmark",
               "Name": "ST:131:0:{1fc202d4-d401-403c-9834-5b218574bb67}"
@@ -33,19 +86,184 @@
             },
             {
               "$type": "Bookmark",
-              "Name": "ST:128:0:{116d2292-e37d-41cd-a077-ebacac4c8cc4}"
-            },
-            {
-              "$type": "Bookmark",
-              "Name": "ST:0:0:{1c4feeaa-4718-4aa9-859d-94ce25d182ba}"
-            },
-            {
-              "$type": "Bookmark",
               "Name": "ST:130:0:{116d2292-e37d-41cd-a077-ebacac4c8cc4}"
             },
             {
               "$type": "Bookmark",
               "Name": "ST:133:0:{116d2292-e37d-41cd-a077-ebacac4c8cc4}"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 2,
+              "Title": "MainLayout.razor.css",
+              "DocumentMoniker": "C:\\Users\\School\\Desktop\\ISPD\\ISDP2025\\ISDP_WEB\\Shared\\MainLayout.razor.css",
+              "RelativeDocumentMoniker": "ISDP_WEB\\Shared\\MainLayout.razor.css",
+              "ToolTip": "C:\\Users\\School\\Desktop\\ISPD\\ISDP2025\\ISDP_WEB\\Shared\\MainLayout.razor.css",
+              "RelativeToolTip": "ISDP_WEB\\Shared\\MainLayout.razor.css",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003000|",
+              "WhenOpened": "2025-03-06T16:47:48.412Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 1,
+              "Title": "TestProducts.razor",
+              "DocumentMoniker": "C:\\Users\\School\\Desktop\\ISPD\\ISDP2025\\ISDP_WEB\\Pages\\TestProducts.razor",
+              "RelativeDocumentMoniker": "ISDP_WEB\\Pages\\TestProducts.razor",
+              "ToolTip": "C:\\Users\\School\\Desktop\\ISPD\\ISDP2025\\ISDP_WEB\\Pages\\TestProducts.razor",
+              "RelativeToolTip": "ISDP_WEB\\Pages\\TestProducts.razor",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAQAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
+              "WhenOpened": "2025-03-06T14:01:55.087Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 4,
+              "Title": "Index.razor",
+              "DocumentMoniker": "C:\\Users\\School\\Desktop\\ISPD\\ISDP2025\\ISDP_WEB\\Pages\\Index.razor",
+              "RelativeDocumentMoniker": "ISDP_WEB\\Pages\\Index.razor",
+              "ToolTip": "C:\\Users\\School\\Desktop\\ISPD\\ISDP2025\\ISDP_WEB\\Pages\\Index.razor",
+              "RelativeToolTip": "ISDP_WEB\\Pages\\Index.razor",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAIAAAAWAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
+              "WhenOpened": "2025-03-06T13:42:23.797Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 7,
+              "Title": "_Host.cshtml",
+              "DocumentMoniker": "C:\\Users\\School\\Desktop\\ISPD\\ISDP2025\\ISDP_WEB\\Pages\\_Host.cshtml",
+              "RelativeDocumentMoniker": "ISDP_WEB\\Pages\\_Host.cshtml",
+              "ToolTip": "C:\\Users\\School\\Desktop\\ISPD\\ISDP2025\\ISDP_WEB\\Pages\\_Host.cshtml",
+              "RelativeToolTip": "ISDP_WEB\\Pages\\_Host.cshtml",
+              "ViewState": "AgIAAAcAAAAAAAAAAAAiwCUAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
+              "WhenOpened": "2025-03-05T19:23:08.989Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 5,
+              "Title": "MainLayout.razor",
+              "DocumentMoniker": "C:\\Users\\School\\Desktop\\ISPD\\ISDP2025\\ISDP_WEB\\Shared\\MainLayout.razor",
+              "RelativeDocumentMoniker": "ISDP_WEB\\Shared\\MainLayout.razor",
+              "ToolTip": "C:\\Users\\School\\Desktop\\ISPD\\ISDP2025\\ISDP_WEB\\Shared\\MainLayout.razor",
+              "RelativeToolTip": "ISDP_WEB\\Shared\\MainLayout.razor",
+              "ViewState": "AgIAAA8AAAAAAAAAAAAAAB8AAAABAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
+              "WhenOpened": "2025-03-05T19:21:25.164Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 6,
+              "Title": "Program.cs",
+              "DocumentMoniker": "C:\\Users\\School\\Desktop\\ISPD\\ISDP2025\\ISDP_WEB\\Program.cs",
+              "RelativeDocumentMoniker": "ISDP_WEB\\Program.cs",
+              "ToolTip": "C:\\Users\\School\\Desktop\\ISPD\\ISDP2025\\ISDP_WEB\\Program.cs",
+              "RelativeToolTip": "ISDP_WEB\\Program.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAUAAAAoAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-03-05T19:19:57.509Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 8,
+              "Title": "_Imports.razor",
+              "DocumentMoniker": "C:\\Users\\School\\Desktop\\ISPD\\ISDP2025\\ISDP_WEB\\_Imports.razor",
+              "RelativeDocumentMoniker": "ISDP_WEB\\_Imports.razor",
+              "ToolTip": "C:\\Users\\School\\Desktop\\ISPD\\ISDP2025\\ISDP_WEB\\_Imports.razor",
+              "RelativeToolTip": "ISDP_WEB\\_Imports.razor",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAA0AAAAZAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
+              "WhenOpened": "2025-03-05T18:35:32.716Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 3,
+              "Title": "Order.razor",
+              "DocumentMoniker": "C:\\Users\\School\\Desktop\\ISPD\\ISDP2025\\ISDP_WEB\\Pages\\Order.razor",
+              "RelativeDocumentMoniker": "ISDP_WEB\\Pages\\Order.razor",
+              "ToolTip": "C:\\Users\\School\\Desktop\\ISPD\\ISDP2025\\ISDP_WEB\\Pages\\Order.razor",
+              "RelativeToolTip": "ISDP_WEB\\Pages\\Order.razor",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAoAAAAWAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
+              "WhenOpened": "2025-03-05T18:17:28.471Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 0,
+              "Title": "NavMenu.razor",
+              "DocumentMoniker": "C:\\Users\\School\\Desktop\\ISPD\\ISDP2025\\ISDP_WEB\\Shared\\NavMenu.razor",
+              "RelativeDocumentMoniker": "ISDP_WEB\\Shared\\NavMenu.razor",
+              "ToolTip": "C:\\Users\\School\\Desktop\\ISPD\\ISDP2025\\ISDP_WEB\\Shared\\NavMenu.razor",
+              "RelativeToolTip": "ISDP_WEB\\Shared\\NavMenu.razor",
+              "ViewState": "AgIAABgAAAAAAAAAAAAAADQAAAAaAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
+              "WhenOpened": "2025-03-05T13:26:07.893Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 9,
+              "Title": "CreateStoreOrder.xaml.cs",
+              "DocumentMoniker": "C:\\Users\\School\\Desktop\\ISPD\\ISDP2025\\ISDP2025-Parfonov-Zerrou\\Forms\\AdminUserControls\\CreateStoreOrder.xaml.cs",
+              "RelativeDocumentMoniker": "ISDP2025-Parfonov-Zerrou\\Forms\\AdminUserControls\\CreateStoreOrder.xaml.cs",
+              "ToolTip": "C:\\Users\\School\\Desktop\\ISPD\\ISDP2025\\ISDP2025-Parfonov-Zerrou\\Forms\\AdminUserControls\\CreateStoreOrder.xaml.cs",
+              "RelativeToolTip": "ISDP2025-Parfonov-Zerrou\\Forms\\AdminUserControls\\CreateStoreOrder.xaml.cs",
+              "ViewState": "AgIAAB0AAAAAAAAAAIA9wDQAAAAMAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-03-04T15:47:58.831Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 13,
+              "Title": "App.xaml",
+              "DocumentMoniker": "C:\\Users\\School\\Desktop\\ISPD\\ISDP2025\\ISDP2025-Parfonov-Zerrou\\App.xaml",
+              "RelativeDocumentMoniker": "ISDP2025-Parfonov-Zerrou\\App.xaml",
+              "ToolTip": "C:\\Users\\School\\Desktop\\ISPD\\ISDP2025\\ISDP2025-Parfonov-Zerrou\\App.xaml",
+              "RelativeToolTip": "ISDP2025-Parfonov-Zerrou\\App.xaml",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003549|",
+              "WhenOpened": "2025-03-04T15:46:50.92Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 12,
+              "Title": "CreateStoreOrder.xaml",
+              "DocumentMoniker": "C:\\Users\\School\\Desktop\\ISPD\\ISDP2025\\ISDP2025-Parfonov-Zerrou\\Forms\\AdminUserControls\\CreateStoreOrder.xaml",
+              "RelativeDocumentMoniker": "ISDP2025-Parfonov-Zerrou\\Forms\\AdminUserControls\\CreateStoreOrder.xaml",
+              "ToolTip": "C:\\Users\\School\\Desktop\\ISPD\\ISDP2025\\ISDP2025-Parfonov-Zerrou\\Forms\\AdminUserControls\\CreateStoreOrder.xaml",
+              "RelativeToolTip": "ISDP2025-Parfonov-Zerrou\\Forms\\AdminUserControls\\CreateStoreOrder.xaml",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003549|",
+              "WhenOpened": "2025-03-04T15:42:01.206Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 10,
+              "Title": "ViewOrders.xaml.cs",
+              "DocumentMoniker": "C:\\Users\\School\\Desktop\\ISPD\\ISDP2025\\ISDP2025-Parfonov-Zerrou\\Forms\\UserControls\\ViewOrders.xaml.cs",
+              "RelativeDocumentMoniker": "ISDP2025-Parfonov-Zerrou\\Forms\\UserControls\\ViewOrders.xaml.cs",
+              "ToolTip": "C:\\Users\\School\\Desktop\\ISPD\\ISDP2025\\ISDP2025-Parfonov-Zerrou\\Forms\\UserControls\\ViewOrders.xaml.cs",
+              "RelativeToolTip": "ISDP2025-Parfonov-Zerrou\\Forms\\UserControls\\ViewOrders.xaml.cs",
+              "ViewState": "AgIAAHYAAAAAAAAAAAAcwGYAAAA6AAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-03-04T15:37:47.704Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 11,
+              "Title": "ViewOrders.xaml",
+              "DocumentMoniker": "C:\\Users\\School\\Desktop\\ISPD\\ISDP2025\\ISDP2025-Parfonov-Zerrou\\Forms\\UserControls\\ViewOrders.xaml",
+              "RelativeDocumentMoniker": "ISDP2025-Parfonov-Zerrou\\Forms\\UserControls\\ViewOrders.xaml",
+              "ToolTip": "C:\\Users\\School\\Desktop\\ISPD\\ISDP2025\\ISDP2025-Parfonov-Zerrou\\Forms\\UserControls\\ViewOrders.xaml",
+              "RelativeToolTip": "ISDP2025-Parfonov-Zerrou\\Forms\\UserControls\\ViewOrders.xaml",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003549|",
+              "WhenOpened": "2025-03-04T15:37:36.108Z"
             }
           ]
         }

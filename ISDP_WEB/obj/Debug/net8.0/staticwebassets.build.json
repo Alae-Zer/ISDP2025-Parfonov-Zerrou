@@ -1,6 +1,6 @@
 {
   "Version": 1,
-  "Hash": "W0TQWMtdwSv7KvxumZzzT70xAzK1zzN/9DQ12Kij3ec=",
+  "Hash": "DvC1BF256lGB8Xfr+0Npy90zlOpLVkPbKoUqHW2ynR8=",
   "Source": "ISDP_WEB",
   "BasePath": "_content/ISDP_WEB",
   "Mode": "Default",
@@ -10,17 +10,59 @@
     {
       "Name": "ISDP_WEB\\wwwroot",
       "Source": "ISDP_WEB",
-      "ContentRoot": "C:\\Users\\School\\Desktop\\ISPD\\ISDP_WEB\\wwwroot\\",
+      "ContentRoot": "C:\\Users\\School\\Desktop\\ISPD\\ISDP2025\\ISDP_WEB\\wwwroot\\",
       "BasePath": "_content/ISDP_WEB",
       "Pattern": "**"
     }
   ],
   "Assets": [
     {
-      "Identity": "C:\\Users\\School\\Desktop\\ISPD\\ISDP_WEB\\obj\\Debug\\net8.0\\scopedcss\\bundle\\ISDP_WEB.styles.css",
+      "Identity": "C:\\Users\\School\\.nuget\\packages\\mudblazor\\8.3.0\\staticwebassets\\MudBlazor.min.css",
+      "SourceId": "MudBlazor",
+      "SourceType": "Package",
+      "ContentRoot": "C:\\Users\\School\\.nuget\\packages\\mudblazor\\8.3.0\\staticwebassets\\",
+      "BasePath": "_content/MudBlazor",
+      "RelativePath": "MudBlazor.min.css",
+      "AssetKind": "All",
+      "AssetMode": "All",
+      "AssetRole": "Primary",
+      "AssetMergeBehavior": "",
+      "AssetMergeSource": "",
+      "RelatedAsset": "",
+      "AssetTraitName": "",
+      "AssetTraitValue": "",
+      "Fingerprint": "hmu6kx9mgf",
+      "Integrity": "d1ee8m8CKXHLkW0DDwn00o/ghDNhscMVl/ei7IzThfU=",
+      "CopyToOutputDirectory": "Never",
+      "CopyToPublishDirectory": "PreserveNewest",
+      "OriginalItemSpec": "C:\\Users\\School\\.nuget\\packages\\mudblazor\\8.3.0\\staticwebassets\\MudBlazor.min.css"
+    },
+    {
+      "Identity": "C:\\Users\\School\\.nuget\\packages\\mudblazor\\8.3.0\\staticwebassets\\MudBlazor.min.js",
+      "SourceId": "MudBlazor",
+      "SourceType": "Package",
+      "ContentRoot": "C:\\Users\\School\\.nuget\\packages\\mudblazor\\8.3.0\\staticwebassets\\",
+      "BasePath": "_content/MudBlazor",
+      "RelativePath": "MudBlazor.min.js",
+      "AssetKind": "All",
+      "AssetMode": "All",
+      "AssetRole": "Primary",
+      "AssetMergeBehavior": "",
+      "AssetMergeSource": "",
+      "RelatedAsset": "",
+      "AssetTraitName": "",
+      "AssetTraitValue": "",
+      "Fingerprint": "tspksaymx7",
+      "Integrity": "Y5zCtrV6/XngfIAwnKZESn//G3w6zwlrDewTKl6fojQ=",
+      "CopyToOutputDirectory": "Never",
+      "CopyToPublishDirectory": "PreserveNewest",
+      "OriginalItemSpec": "C:\\Users\\School\\.nuget\\packages\\mudblazor\\8.3.0\\staticwebassets\\MudBlazor.min.js"
+    },
+    {
+      "Identity": "C:\\Users\\School\\Desktop\\ISPD\\ISDP2025\\ISDP_WEB\\obj\\Debug\\net8.0\\scopedcss\\bundle\\ISDP_WEB.styles.css",
       "SourceId": "ISDP_WEB",
       "SourceType": "Computed",
-      "ContentRoot": "C:\\Users\\School\\Desktop\\ISPD\\ISDP_WEB\\obj\\Debug\\net8.0\\scopedcss\\bundle\\",
+      "ContentRoot": "C:\\Users\\School\\Desktop\\ISPD\\ISDP2025\\ISDP_WEB\\obj\\Debug\\net8.0\\scopedcss\\bundle\\",
       "BasePath": "_content/ISDP_WEB",
       "RelativePath": "ISDP_WEB#[.{fingerprint}]?.styles.css",
       "AssetKind": "All",
@@ -35,13 +77,13 @@
       "Integrity": "R5B3czWj0s7TIDUl2lLr88C9d3NRaeUBFx/ePg2Qdes=",
       "CopyToOutputDirectory": "Never",
       "CopyToPublishDirectory": "PreserveNewest",
-      "OriginalItemSpec": "C:\\Users\\School\\Desktop\\ISPD\\ISDP_WEB\\obj\\Debug\\net8.0\\scopedcss\\bundle\\ISDP_WEB.styles.css"
+      "OriginalItemSpec": "C:\\Users\\School\\Desktop\\ISPD\\ISDP2025\\ISDP_WEB\\obj\\Debug\\net8.0\\scopedcss\\bundle\\ISDP_WEB.styles.css"
     },
     {
-      "Identity": "C:\\Users\\School\\Desktop\\ISPD\\ISDP_WEB\\obj\\Debug\\net8.0\\scopedcss\\projectbundle\\ISDP_WEB.bundle.scp.css",
+      "Identity": "C:\\Users\\School\\Desktop\\ISPD\\ISDP2025\\ISDP_WEB\\obj\\Debug\\net8.0\\scopedcss\\projectbundle\\ISDP_WEB.bundle.scp.css",
       "SourceId": "ISDP_WEB",
       "SourceType": "Computed",
-      "ContentRoot": "C:\\Users\\School\\Desktop\\ISPD\\ISDP_WEB\\obj\\Debug\\net8.0\\scopedcss\\projectbundle\\",
+      "ContentRoot": "C:\\Users\\School\\Desktop\\ISPD\\ISDP2025\\ISDP_WEB\\obj\\Debug\\net8.0\\scopedcss\\projectbundle\\",
       "BasePath": "_content/ISDP_WEB",
       "RelativePath": "ISDP_WEB#[.{fingerprint}]!.bundle.scp.css",
       "AssetKind": "All",
@@ -56,13 +98,13 @@
       "Integrity": "R5B3czWj0s7TIDUl2lLr88C9d3NRaeUBFx/ePg2Qdes=",
       "CopyToOutputDirectory": "Never",
       "CopyToPublishDirectory": "PreserveNewest",
-      "OriginalItemSpec": "C:\\Users\\School\\Desktop\\ISPD\\ISDP_WEB\\obj\\Debug\\net8.0\\scopedcss\\projectbundle\\ISDP_WEB.bundle.scp.css"
+      "OriginalItemSpec": "C:\\Users\\School\\Desktop\\ISPD\\ISDP2025\\ISDP_WEB\\obj\\Debug\\net8.0\\scopedcss\\projectbundle\\ISDP_WEB.bundle.scp.css"
     },
     {
-      "Identity": "C:\\Users\\School\\Desktop\\ISPD\\ISDP_WEB\\wwwroot\\css\\bootstrap\\bootstrap.min.css",
+      "Identity": "C:\\Users\\School\\Desktop\\ISPD\\ISDP2025\\ISDP_WEB\\wwwroot\\css\\bootstrap\\bootstrap.min.css",
       "SourceId": "ISDP_WEB",
       "SourceType": "Discovered",
-      "ContentRoot": "C:\\Users\\School\\Desktop\\ISPD\\ISDP_WEB\\wwwroot\\",
+      "ContentRoot": "C:\\Users\\School\\Desktop\\ISPD\\ISDP2025\\ISDP_WEB\\wwwroot\\",
       "BasePath": "_content/ISDP_WEB",
       "RelativePath": "css/bootstrap/bootstrap.min#[.{fingerprint}]?.css",
       "AssetKind": "All",
@@ -80,10 +122,10 @@
       "OriginalItemSpec": "wwwroot\\css\\bootstrap\\bootstrap.min.css"
     },
     {
-      "Identity": "C:\\Users\\School\\Desktop\\ISPD\\ISDP_WEB\\wwwroot\\css\\bootstrap\\bootstrap.min.css.map",
+      "Identity": "C:\\Users\\School\\Desktop\\ISPD\\ISDP2025\\ISDP_WEB\\wwwroot\\css\\bootstrap\\bootstrap.min.css.map",
       "SourceId": "ISDP_WEB",
       "SourceType": "Discovered",
-      "ContentRoot": "C:\\Users\\School\\Desktop\\ISPD\\ISDP_WEB\\wwwroot\\",
+      "ContentRoot": "C:\\Users\\School\\Desktop\\ISPD\\ISDP2025\\ISDP_WEB\\wwwroot\\",
       "BasePath": "_content/ISDP_WEB",
       "RelativePath": "css/bootstrap/bootstrap.min.css#[.{fingerprint}]?.map",
       "AssetKind": "All",
@@ -101,10 +143,10 @@
       "OriginalItemSpec": "wwwroot\\css\\bootstrap\\bootstrap.min.css.map"
     },
     {
-      "Identity": "C:\\Users\\School\\Desktop\\ISPD\\ISDP_WEB\\wwwroot\\css\\open-iconic\\font\\css\\open-iconic-bootstrap.min.css",
+      "Identity": "C:\\Users\\School\\Desktop\\ISPD\\ISDP2025\\ISDP_WEB\\wwwroot\\css\\open-iconic\\font\\css\\open-iconic-bootstrap.min.css",
       "SourceId": "ISDP_WEB",
       "SourceType": "Discovered",
-      "ContentRoot": "C:\\Users\\School\\Desktop\\ISPD\\ISDP_WEB\\wwwroot\\",
+      "ContentRoot": "C:\\Users\\School\\Desktop\\ISPD\\ISDP2025\\ISDP_WEB\\wwwroot\\",
       "BasePath": "_content/ISDP_WEB",
       "RelativePath": "css/open-iconic/font/css/open-iconic-bootstrap.min#[.{fingerprint}]?.css",
       "AssetKind": "All",
@@ -122,10 +164,10 @@
       "OriginalItemSpec": "wwwroot\\css\\open-iconic\\font\\css\\open-iconic-bootstrap.min.css"
     },
     {
-      "Identity": "C:\\Users\\School\\Desktop\\ISPD\\ISDP_WEB\\wwwroot\\css\\open-iconic\\font\\fonts\\open-iconic.eot",
+      "Identity": "C:\\Users\\School\\Desktop\\ISPD\\ISDP2025\\ISDP_WEB\\wwwroot\\css\\open-iconic\\font\\fonts\\open-iconic.eot",
       "SourceId": "ISDP_WEB",
       "SourceType": "Discovered",
-      "ContentRoot": "C:\\Users\\School\\Desktop\\ISPD\\ISDP_WEB\\wwwroot\\",
+      "ContentRoot": "C:\\Users\\School\\Desktop\\ISPD\\ISDP2025\\ISDP_WEB\\wwwroot\\",
       "BasePath": "_content/ISDP_WEB",
       "RelativePath": "css/open-iconic/font/fonts/open-iconic#[.{fingerprint}]?.eot",
       "AssetKind": "All",
@@ -143,10 +185,10 @@
       "OriginalItemSpec": "wwwroot\\css\\open-iconic\\font\\fonts\\open-iconic.eot"
     },
     {
-      "Identity": "C:\\Users\\School\\Desktop\\ISPD\\ISDP_WEB\\wwwroot\\css\\open-iconic\\font\\fonts\\open-iconic.otf",
+      "Identity": "C:\\Users\\School\\Desktop\\ISPD\\ISDP2025\\ISDP_WEB\\wwwroot\\css\\open-iconic\\font\\fonts\\open-iconic.otf",
       "SourceId": "ISDP_WEB",
       "SourceType": "Discovered",
-      "ContentRoot": "C:\\Users\\School\\Desktop\\ISPD\\ISDP_WEB\\wwwroot\\",
+      "ContentRoot": "C:\\Users\\School\\Desktop\\ISPD\\ISDP2025\\ISDP_WEB\\wwwroot\\",
       "BasePath": "_content/ISDP_WEB",
       "RelativePath": "css/open-iconic/font/fonts/open-iconic#[.{fingerprint}]?.otf",
       "AssetKind": "All",
@@ -164,10 +206,10 @@
       "OriginalItemSpec": "wwwroot\\css\\open-iconic\\font\\fonts\\open-iconic.otf"
     },
     {
-      "Identity": "C:\\Users\\School\\Desktop\\ISPD\\ISDP_WEB\\wwwroot\\css\\open-iconic\\font\\fonts\\open-iconic.svg",
+      "Identity": "C:\\Users\\School\\Desktop\\ISPD\\ISDP2025\\ISDP_WEB\\wwwroot\\css\\open-iconic\\font\\fonts\\open-iconic.svg",
       "SourceId": "ISDP_WEB",
       "SourceType": "Discovered",
-      "ContentRoot": "C:\\Users\\School\\Desktop\\ISPD\\ISDP_WEB\\wwwroot\\",
+      "ContentRoot": "C:\\Users\\School\\Desktop\\ISPD\\ISDP2025\\ISDP_WEB\\wwwroot\\",
       "BasePath": "_content/ISDP_WEB",
       "RelativePath": "css/open-iconic/font/fonts/open-iconic#[.{fingerprint}]?.svg",
       "AssetKind": "All",
@@ -185,10 +227,10 @@
       "OriginalItemSpec": "wwwroot\\css\\open-iconic\\font\\fonts\\open-iconic.svg"
     },
     {
-      "Identity": "C:\\Users\\School\\Desktop\\ISPD\\ISDP_WEB\\wwwroot\\css\\open-iconic\\font\\fonts\\open-iconic.ttf",
+      "Identity": "C:\\Users\\School\\Desktop\\ISPD\\ISDP2025\\ISDP_WEB\\wwwroot\\css\\open-iconic\\font\\fonts\\open-iconic.ttf",
       "SourceId": "ISDP_WEB",
       "SourceType": "Discovered",
-      "ContentRoot": "C:\\Users\\School\\Desktop\\ISPD\\ISDP_WEB\\wwwroot\\",
+      "ContentRoot": "C:\\Users\\School\\Desktop\\ISPD\\ISDP2025\\ISDP_WEB\\wwwroot\\",
       "BasePath": "_content/ISDP_WEB",
       "RelativePath": "css/open-iconic/font/fonts/open-iconic#[.{fingerprint}]?.ttf",
       "AssetKind": "All",
@@ -206,10 +248,10 @@
       "OriginalItemSpec": "wwwroot\\css\\open-iconic\\font\\fonts\\open-iconic.ttf"
     },
     {
-      "Identity": "C:\\Users\\School\\Desktop\\ISPD\\ISDP_WEB\\wwwroot\\css\\open-iconic\\font\\fonts\\open-iconic.woff",
+      "Identity": "C:\\Users\\School\\Desktop\\ISPD\\ISDP2025\\ISDP_WEB\\wwwroot\\css\\open-iconic\\font\\fonts\\open-iconic.woff",
       "SourceId": "ISDP_WEB",
       "SourceType": "Discovered",
-      "ContentRoot": "C:\\Users\\School\\Desktop\\ISPD\\ISDP_WEB\\wwwroot\\",
+      "ContentRoot": "C:\\Users\\School\\Desktop\\ISPD\\ISDP2025\\ISDP_WEB\\wwwroot\\",
       "BasePath": "_content/ISDP_WEB",
       "RelativePath": "css/open-iconic/font/fonts/open-iconic#[.{fingerprint}]?.woff",
       "AssetKind": "All",
@@ -227,10 +269,10 @@
       "OriginalItemSpec": "wwwroot\\css\\open-iconic\\font\\fonts\\open-iconic.woff"
     },
     {
-      "Identity": "C:\\Users\\School\\Desktop\\ISPD\\ISDP_WEB\\wwwroot\\css\\open-iconic\\FONT-LICENSE",
+      "Identity": "C:\\Users\\School\\Desktop\\ISPD\\ISDP2025\\ISDP_WEB\\wwwroot\\css\\open-iconic\\FONT-LICENSE",
       "SourceId": "ISDP_WEB",
       "SourceType": "Discovered",
-      "ContentRoot": "C:\\Users\\School\\Desktop\\ISPD\\ISDP_WEB\\wwwroot\\",
+      "ContentRoot": "C:\\Users\\School\\Desktop\\ISPD\\ISDP2025\\ISDP_WEB\\wwwroot\\",
       "BasePath": "_content/ISDP_WEB",
       "RelativePath": "css/open-iconic/FONT-LICENSE#[.{fingerprint}]?",
       "AssetKind": "All",
@@ -248,10 +290,10 @@
       "OriginalItemSpec": "wwwroot\\css\\open-iconic\\FONT-LICENSE"
     },
     {
-      "Identity": "C:\\Users\\School\\Desktop\\ISPD\\ISDP_WEB\\wwwroot\\css\\open-iconic\\ICON-LICENSE",
+      "Identity": "C:\\Users\\School\\Desktop\\ISPD\\ISDP2025\\ISDP_WEB\\wwwroot\\css\\open-iconic\\ICON-LICENSE",
       "SourceId": "ISDP_WEB",
       "SourceType": "Discovered",
-      "ContentRoot": "C:\\Users\\School\\Desktop\\ISPD\\ISDP_WEB\\wwwroot\\",
+      "ContentRoot": "C:\\Users\\School\\Desktop\\ISPD\\ISDP2025\\ISDP_WEB\\wwwroot\\",
       "BasePath": "_content/ISDP_WEB",
       "RelativePath": "css/open-iconic/ICON-LICENSE#[.{fingerprint}]?",
       "AssetKind": "All",
@@ -269,10 +311,10 @@
       "OriginalItemSpec": "wwwroot\\css\\open-iconic\\ICON-LICENSE"
     },
     {
-      "Identity": "C:\\Users\\School\\Desktop\\ISPD\\ISDP_WEB\\wwwroot\\css\\open-iconic\\README.md",
+      "Identity": "C:\\Users\\School\\Desktop\\ISPD\\ISDP2025\\ISDP_WEB\\wwwroot\\css\\open-iconic\\README.md",
       "SourceId": "ISDP_WEB",
       "SourceType": "Discovered",
-      "ContentRoot": "C:\\Users\\School\\Desktop\\ISPD\\ISDP_WEB\\wwwroot\\",
+      "ContentRoot": "C:\\Users\\School\\Desktop\\ISPD\\ISDP2025\\ISDP_WEB\\wwwroot\\",
       "BasePath": "_content/ISDP_WEB",
       "RelativePath": "css/open-iconic/README#[.{fingerprint}]?.md",
       "AssetKind": "All",
@@ -290,10 +332,10 @@
       "OriginalItemSpec": "wwwroot\\css\\open-iconic\\README.md"
     },
     {
-      "Identity": "C:\\Users\\School\\Desktop\\ISPD\\ISDP_WEB\\wwwroot\\css\\site.css",
+      "Identity": "C:\\Users\\School\\Desktop\\ISPD\\ISDP2025\\ISDP_WEB\\wwwroot\\css\\site.css",
       "SourceId": "ISDP_WEB",
       "SourceType": "Discovered",
-      "ContentRoot": "C:\\Users\\School\\Desktop\\ISPD\\ISDP_WEB\\wwwroot\\",
+      "ContentRoot": "C:\\Users\\School\\Desktop\\ISPD\\ISDP2025\\ISDP_WEB\\wwwroot\\",
       "BasePath": "_content/ISDP_WEB",
       "RelativePath": "css/site#[.{fingerprint}]?.css",
       "AssetKind": "All",
@@ -311,10 +353,10 @@
       "OriginalItemSpec": "wwwroot\\css\\site.css"
     },
     {
-      "Identity": "C:\\Users\\School\\Desktop\\ISPD\\ISDP_WEB\\wwwroot\\favicon.png",
+      "Identity": "C:\\Users\\School\\Desktop\\ISPD\\ISDP2025\\ISDP_WEB\\wwwroot\\favicon.png",
       "SourceId": "ISDP_WEB",
       "SourceType": "Discovered",
-      "ContentRoot": "C:\\Users\\School\\Desktop\\ISPD\\ISDP_WEB\\wwwroot\\",
+      "ContentRoot": "C:\\Users\\School\\Desktop\\ISPD\\ISDP2025\\ISDP_WEB\\wwwroot\\",
       "BasePath": "_content/ISDP_WEB",
       "RelativePath": "favicon#[.{fingerprint}]?.png",
       "AssetKind": "All",
@@ -334,8 +376,172 @@
   ],
   "Endpoints": [
     {
+      "Route": "_content/MudBlazor/MudBlazor.min.css",
+      "AssetFile": "C:\\Users\\School\\.nuget\\packages\\mudblazor\\8.3.0\\staticwebassets\\MudBlazor.min.css",
+      "Selectors": [],
+      "ResponseHeaders": [
+        {
+          "Name": "Accept-Ranges",
+          "Value": "bytes"
+        },
+        {
+          "Name": "Cache-Control",
+          "Value": "no-cache"
+        },
+        {
+          "Name": "Content-Length",
+          "Value": "595896"
+        },
+        {
+          "Name": "Content-Type",
+          "Value": "text/css"
+        },
+        {
+          "Name": "ETag",
+          "Value": "\"d1ee8m8CKXHLkW0DDwn00o/ghDNhscMVl/ei7IzThfU=\""
+        },
+        {
+          "Name": "Last-Modified",
+          "Value": "Sun, 23 Feb 2025 18:04:24 GMT"
+        }
+      ],
+      "EndpointProperties": [
+        {
+          "Name": "integrity",
+          "Value": "sha256-d1ee8m8CKXHLkW0DDwn00o/ghDNhscMVl/ei7IzThfU="
+        }
+      ]
+    },
+    {
+      "Route": "_content/MudBlazor/MudBlazor.min.hmu6kx9mgf.css",
+      "AssetFile": "C:\\Users\\School\\.nuget\\packages\\mudblazor\\8.3.0\\staticwebassets\\MudBlazor.min.css",
+      "Selectors": [],
+      "ResponseHeaders": [
+        {
+          "Name": "Accept-Ranges",
+          "Value": "bytes"
+        },
+        {
+          "Name": "Cache-Control",
+          "Value": "max-age=31536000, immutable"
+        },
+        {
+          "Name": "Content-Length",
+          "Value": "595896"
+        },
+        {
+          "Name": "Content-Type",
+          "Value": "text/css"
+        },
+        {
+          "Name": "ETag",
+          "Value": "\"d1ee8m8CKXHLkW0DDwn00o/ghDNhscMVl/ei7IzThfU=\""
+        },
+        {
+          "Name": "Last-Modified",
+          "Value": "Sun, 23 Feb 2025 18:04:24 GMT"
+        }
+      ],
+      "EndpointProperties": [
+        {
+          "Name": "fingerprint",
+          "Value": "hmu6kx9mgf"
+        },
+        {
+          "Name": "integrity",
+          "Value": "sha256-d1ee8m8CKXHLkW0DDwn00o/ghDNhscMVl/ei7IzThfU="
+        },
+        {
+          "Name": "label",
+          "Value": "_content/MudBlazor/MudBlazor.min.css"
+        }
+      ]
+    },
+    {
+      "Route": "_content/MudBlazor/MudBlazor.min.js",
+      "AssetFile": "C:\\Users\\School\\.nuget\\packages\\mudblazor\\8.3.0\\staticwebassets\\MudBlazor.min.js",
+      "Selectors": [],
+      "ResponseHeaders": [
+        {
+          "Name": "Accept-Ranges",
+          "Value": "bytes"
+        },
+        {
+          "Name": "Cache-Control",
+          "Value": "no-cache"
+        },
+        {
+          "Name": "Content-Length",
+          "Value": "55250"
+        },
+        {
+          "Name": "Content-Type",
+          "Value": "text/javascript"
+        },
+        {
+          "Name": "ETag",
+          "Value": "\"Y5zCtrV6/XngfIAwnKZESn//G3w6zwlrDewTKl6fojQ=\""
+        },
+        {
+          "Name": "Last-Modified",
+          "Value": "Sun, 23 Feb 2025 18:04:24 GMT"
+        }
+      ],
+      "EndpointProperties": [
+        {
+          "Name": "integrity",
+          "Value": "sha256-Y5zCtrV6/XngfIAwnKZESn//G3w6zwlrDewTKl6fojQ="
+        }
+      ]
+    },
+    {
+      "Route": "_content/MudBlazor/MudBlazor.min.tspksaymx7.js",
+      "AssetFile": "C:\\Users\\School\\.nuget\\packages\\mudblazor\\8.3.0\\staticwebassets\\MudBlazor.min.js",
+      "Selectors": [],
+      "ResponseHeaders": [
+        {
+          "Name": "Accept-Ranges",
+          "Value": "bytes"
+        },
+        {
+          "Name": "Cache-Control",
+          "Value": "max-age=31536000, immutable"
+        },
+        {
+          "Name": "Content-Length",
+          "Value": "55250"
+        },
+        {
+          "Name": "Content-Type",
+          "Value": "text/javascript"
+        },
+        {
+          "Name": "ETag",
+          "Value": "\"Y5zCtrV6/XngfIAwnKZESn//G3w6zwlrDewTKl6fojQ=\""
+        },
+        {
+          "Name": "Last-Modified",
+          "Value": "Sun, 23 Feb 2025 18:04:24 GMT"
+        }
+      ],
+      "EndpointProperties": [
+        {
+          "Name": "fingerprint",
+          "Value": "tspksaymx7"
+        },
+        {
+          "Name": "integrity",
+          "Value": "sha256-Y5zCtrV6/XngfIAwnKZESn//G3w6zwlrDewTKl6fojQ="
+        },
+        {
+          "Name": "label",
+          "Value": "_content/MudBlazor/MudBlazor.min.js"
+        }
+      ]
+    },
+    {
       "Route": "css/bootstrap/bootstrap.min.bpk8xqwxhs.css",
-      "AssetFile": "C:\\Users\\School\\Desktop\\ISPD\\ISDP_WEB\\wwwroot\\css\\bootstrap\\bootstrap.min.css",
+      "AssetFile": "C:\\Users\\School\\Desktop\\ISPD\\ISDP2025\\ISDP_WEB\\wwwroot\\css\\bootstrap\\bootstrap.min.css",
       "Selectors": [],
       "ResponseHeaders": [
         {
@@ -380,7 +586,7 @@
     },
     {
       "Route": "css/bootstrap/bootstrap.min.css",
-      "AssetFile": "C:\\Users\\School\\Desktop\\ISPD\\ISDP_WEB\\wwwroot\\css\\bootstrap\\bootstrap.min.css",
+      "AssetFile": "C:\\Users\\School\\Desktop\\ISPD\\ISDP2025\\ISDP_WEB\\wwwroot\\css\\bootstrap\\bootstrap.min.css",
       "Selectors": [],
       "ResponseHeaders": [
         {
@@ -417,7 +623,7 @@
     },
     {
       "Route": "css/bootstrap/bootstrap.min.css.8inm30yfxf.map",
-      "AssetFile": "C:\\Users\\School\\Desktop\\ISPD\\ISDP_WEB\\wwwroot\\css\\bootstrap\\bootstrap.min.css.map",
+      "AssetFile": "C:\\Users\\School\\Desktop\\ISPD\\ISDP2025\\ISDP_WEB\\wwwroot\\css\\bootstrap\\bootstrap.min.css.map",
       "Selectors": [],
       "ResponseHeaders": [
         {
@@ -462,7 +668,7 @@
     },
     {
       "Route": "css/bootstrap/bootstrap.min.css.map",
-      "AssetFile": "C:\\Users\\School\\Desktop\\ISPD\\ISDP_WEB\\wwwroot\\css\\bootstrap\\bootstrap.min.css.map",
+      "AssetFile": "C:\\Users\\School\\Desktop\\ISPD\\ISDP2025\\ISDP_WEB\\wwwroot\\css\\bootstrap\\bootstrap.min.css.map",
       "Selectors": [],
       "ResponseHeaders": [
         {
@@ -499,7 +705,7 @@
     },
     {
       "Route": "css/open-iconic/font/css/open-iconic-bootstrap.min.cmapd0fi15.css",
-      "AssetFile": "C:\\Users\\School\\Desktop\\ISPD\\ISDP_WEB\\wwwroot\\css\\open-iconic\\font\\css\\open-iconic-bootstrap.min.css",
+      "AssetFile": "C:\\Users\\School\\Desktop\\ISPD\\ISDP2025\\ISDP_WEB\\wwwroot\\css\\open-iconic\\font\\css\\open-iconic-bootstrap.min.css",
       "Selectors": [],
       "ResponseHeaders": [
         {
@@ -544,7 +750,7 @@
     },
     {
       "Route": "css/open-iconic/font/css/open-iconic-bootstrap.min.css",
-      "AssetFile": "C:\\Users\\School\\Desktop\\ISPD\\ISDP_WEB\\wwwroot\\css\\open-iconic\\font\\css\\open-iconic-bootstrap.min.css",
+      "AssetFile": "C:\\Users\\School\\Desktop\\ISPD\\ISDP2025\\ISDP_WEB\\wwwroot\\css\\open-iconic\\font\\css\\open-iconic-bootstrap.min.css",
       "Selectors": [],
       "ResponseHeaders": [
         {
@@ -581,7 +787,7 @@
     },
     {
       "Route": "css/open-iconic/font/fonts/open-iconic.0uw8dim9nl.eot",
-      "AssetFile": "C:\\Users\\School\\Desktop\\ISPD\\ISDP_WEB\\wwwroot\\css\\open-iconic\\font\\fonts\\open-iconic.eot",
+      "AssetFile": "C:\\Users\\School\\Desktop\\ISPD\\ISDP2025\\ISDP_WEB\\wwwroot\\css\\open-iconic\\font\\fonts\\open-iconic.eot",
       "Selectors": [],
       "ResponseHeaders": [
         {
@@ -626,7 +832,7 @@
     },
     {
       "Route": "css/open-iconic/font/fonts/open-iconic.eot",
-      "AssetFile": "C:\\Users\\School\\Desktop\\ISPD\\ISDP_WEB\\wwwroot\\css\\open-iconic\\font\\fonts\\open-iconic.eot",
+      "AssetFile": "C:\\Users\\School\\Desktop\\ISPD\\ISDP2025\\ISDP_WEB\\wwwroot\\css\\open-iconic\\font\\fonts\\open-iconic.eot",
       "Selectors": [],
       "ResponseHeaders": [
         {
@@ -663,7 +869,7 @@
     },
     {
       "Route": "css/open-iconic/font/fonts/open-iconic.h4d0pazwgy.woff",
-      "AssetFile": "C:\\Users\\School\\Desktop\\ISPD\\ISDP_WEB\\wwwroot\\css\\open-iconic\\font\\fonts\\open-iconic.woff",
+      "AssetFile": "C:\\Users\\School\\Desktop\\ISPD\\ISDP2025\\ISDP_WEB\\wwwroot\\css\\open-iconic\\font\\fonts\\open-iconic.woff",
       "Selectors": [],
       "ResponseHeaders": [
         {
@@ -708,7 +914,7 @@
     },
     {
       "Route": "css/open-iconic/font/fonts/open-iconic.ll5grcv8wv.ttf",
-      "AssetFile": "C:\\Users\\School\\Desktop\\ISPD\\ISDP_WEB\\wwwroot\\css\\open-iconic\\font\\fonts\\open-iconic.ttf",
+      "AssetFile": "C:\\Users\\School\\Desktop\\ISPD\\ISDP2025\\ISDP_WEB\\wwwroot\\css\\open-iconic\\font\\fonts\\open-iconic.ttf",
       "Selectors": [],
       "ResponseHeaders": [
         {
@@ -753,7 +959,7 @@
     },
     {
       "Route": "css/open-iconic/font/fonts/open-iconic.otf",
-      "AssetFile": "C:\\Users\\School\\Desktop\\ISPD\\ISDP_WEB\\wwwroot\\css\\open-iconic\\font\\fonts\\open-iconic.otf",
+      "AssetFile": "C:\\Users\\School\\Desktop\\ISPD\\ISDP2025\\ISDP_WEB\\wwwroot\\css\\open-iconic\\font\\fonts\\open-iconic.otf",
       "Selectors": [],
       "ResponseHeaders": [
         {
@@ -790,7 +996,7 @@
     },
     {
       "Route": "css/open-iconic/font/fonts/open-iconic.sjnzgf7e1h.svg",
-      "AssetFile": "C:\\Users\\School\\Desktop\\ISPD\\ISDP_WEB\\wwwroot\\css\\open-iconic\\font\\fonts\\open-iconic.svg",
+      "AssetFile": "C:\\Users\\School\\Desktop\\ISPD\\ISDP2025\\ISDP_WEB\\wwwroot\\css\\open-iconic\\font\\fonts\\open-iconic.svg",
       "Selectors": [],
       "ResponseHeaders": [
         {
@@ -835,7 +1041,7 @@
     },
     {
       "Route": "css/open-iconic/font/fonts/open-iconic.svg",
-      "AssetFile": "C:\\Users\\School\\Desktop\\ISPD\\ISDP_WEB\\wwwroot\\css\\open-iconic\\font\\fonts\\open-iconic.svg",
+      "AssetFile": "C:\\Users\\School\\Desktop\\ISPD\\ISDP2025\\ISDP_WEB\\wwwroot\\css\\open-iconic\\font\\fonts\\open-iconic.svg",
       "Selectors": [],
       "ResponseHeaders": [
         {
@@ -872,7 +1078,7 @@
     },
     {
       "Route": "css/open-iconic/font/fonts/open-iconic.ttf",
-      "AssetFile": "C:\\Users\\School\\Desktop\\ISPD\\ISDP_WEB\\wwwroot\\css\\open-iconic\\font\\fonts\\open-iconic.ttf",
+      "AssetFile": "C:\\Users\\School\\Desktop\\ISPD\\ISDP2025\\ISDP_WEB\\wwwroot\\css\\open-iconic\\font\\fonts\\open-iconic.ttf",
       "Selectors": [],
       "ResponseHeaders": [
         {
@@ -909,7 +1115,7 @@
     },
     {
       "Route": "css/open-iconic/font/fonts/open-iconic.wk8x8xm0ah.otf",
-      "AssetFile": "C:\\Users\\School\\Desktop\\ISPD\\ISDP_WEB\\wwwroot\\css\\open-iconic\\font\\fonts\\open-iconic.otf",
+      "AssetFile": "C:\\Users\\School\\Desktop\\ISPD\\ISDP2025\\ISDP_WEB\\wwwroot\\css\\open-iconic\\font\\fonts\\open-iconic.otf",
       "Selectors": [],
       "ResponseHeaders": [
         {
@@ -954,7 +1160,7 @@
     },
     {
       "Route": "css/open-iconic/font/fonts/open-iconic.woff",
-      "AssetFile": "C:\\Users\\School\\Desktop\\ISPD\\ISDP_WEB\\wwwroot\\css\\open-iconic\\font\\fonts\\open-iconic.woff",
+      "AssetFile": "C:\\Users\\School\\Desktop\\ISPD\\ISDP2025\\ISDP_WEB\\wwwroot\\css\\open-iconic\\font\\fonts\\open-iconic.woff",
       "Selectors": [],
       "ResponseHeaders": [
         {
@@ -991,7 +1197,7 @@
     },
     {
       "Route": "css/open-iconic/FONT-LICENSE",
-      "AssetFile": "C:\\Users\\School\\Desktop\\ISPD\\ISDP_WEB\\wwwroot\\css\\open-iconic\\FONT-LICENSE",
+      "AssetFile": "C:\\Users\\School\\Desktop\\ISPD\\ISDP2025\\ISDP_WEB\\wwwroot\\css\\open-iconic\\FONT-LICENSE",
       "Selectors": [],
       "ResponseHeaders": [
         {
@@ -1028,7 +1234,7 @@
     },
     {
       "Route": "css/open-iconic/FONT-LICENSE.48tmkg660f",
-      "AssetFile": "C:\\Users\\School\\Desktop\\ISPD\\ISDP_WEB\\wwwroot\\css\\open-iconic\\FONT-LICENSE",
+      "AssetFile": "C:\\Users\\School\\Desktop\\ISPD\\ISDP2025\\ISDP_WEB\\wwwroot\\css\\open-iconic\\FONT-LICENSE",
       "Selectors": [],
       "ResponseHeaders": [
         {
@@ -1073,7 +1279,7 @@
     },
     {
       "Route": "css/open-iconic/ICON-LICENSE",
-      "AssetFile": "C:\\Users\\School\\Desktop\\ISPD\\ISDP_WEB\\wwwroot\\css\\open-iconic\\ICON-LICENSE",
+      "AssetFile": "C:\\Users\\School\\Desktop\\ISPD\\ISDP2025\\ISDP_WEB\\wwwroot\\css\\open-iconic\\ICON-LICENSE",
       "Selectors": [],
       "ResponseHeaders": [
         {
@@ -1110,7 +1316,7 @@
     },
     {
       "Route": "css/open-iconic/ICON-LICENSE.4dwjve0o0b",
-      "AssetFile": "C:\\Users\\School\\Desktop\\ISPD\\ISDP_WEB\\wwwroot\\css\\open-iconic\\ICON-LICENSE",
+      "AssetFile": "C:\\Users\\School\\Desktop\\ISPD\\ISDP2025\\ISDP_WEB\\wwwroot\\css\\open-iconic\\ICON-LICENSE",
       "Selectors": [],
       "ResponseHeaders": [
         {
@@ -1155,7 +1361,7 @@
     },
     {
       "Route": "css/open-iconic/README.5bzwdl5l6x.md",
-      "AssetFile": "C:\\Users\\School\\Desktop\\ISPD\\ISDP_WEB\\wwwroot\\css\\open-iconic\\README.md",
+      "AssetFile": "C:\\Users\\School\\Desktop\\ISPD\\ISDP2025\\ISDP_WEB\\wwwroot\\css\\open-iconic\\README.md",
       "Selectors": [],
       "ResponseHeaders": [
         {
@@ -1200,7 +1406,7 @@
     },
     {
       "Route": "css/open-iconic/README.md",
-      "AssetFile": "C:\\Users\\School\\Desktop\\ISPD\\ISDP_WEB\\wwwroot\\css\\open-iconic\\README.md",
+      "AssetFile": "C:\\Users\\School\\Desktop\\ISPD\\ISDP2025\\ISDP_WEB\\wwwroot\\css\\open-iconic\\README.md",
       "Selectors": [],
       "ResponseHeaders": [
         {
@@ -1237,7 +1443,7 @@
     },
     {
       "Route": "css/site.css",
-      "AssetFile": "C:\\Users\\School\\Desktop\\ISPD\\ISDP_WEB\\wwwroot\\css\\site.css",
+      "AssetFile": "C:\\Users\\School\\Desktop\\ISPD\\ISDP2025\\ISDP_WEB\\wwwroot\\css\\site.css",
       "Selectors": [],
       "ResponseHeaders": [
         {
@@ -1274,7 +1480,7 @@
     },
     {
       "Route": "css/site.zh9s866nx2.css",
-      "AssetFile": "C:\\Users\\School\\Desktop\\ISPD\\ISDP_WEB\\wwwroot\\css\\site.css",
+      "AssetFile": "C:\\Users\\School\\Desktop\\ISPD\\ISDP2025\\ISDP_WEB\\wwwroot\\css\\site.css",
       "Selectors": [],
       "ResponseHeaders": [
         {
@@ -1319,7 +1525,7 @@
     },
     {
       "Route": "favicon.ifv42okdf2.png",
-      "AssetFile": "C:\\Users\\School\\Desktop\\ISPD\\ISDP_WEB\\wwwroot\\favicon.png",
+      "AssetFile": "C:\\Users\\School\\Desktop\\ISPD\\ISDP2025\\ISDP_WEB\\wwwroot\\favicon.png",
       "Selectors": [],
       "ResponseHeaders": [
         {
@@ -1364,7 +1570,7 @@
     },
     {
       "Route": "favicon.png",
-      "AssetFile": "C:\\Users\\School\\Desktop\\ISPD\\ISDP_WEB\\wwwroot\\favicon.png",
+      "AssetFile": "C:\\Users\\School\\Desktop\\ISPD\\ISDP2025\\ISDP_WEB\\wwwroot\\favicon.png",
       "Selectors": [],
       "ResponseHeaders": [
         {
@@ -1401,7 +1607,7 @@
     },
     {
       "Route": "ISDP_WEB.59vmcvkavc.bundle.scp.css",
-      "AssetFile": "C:\\Users\\School\\Desktop\\ISPD\\ISDP_WEB\\obj\\Debug\\net8.0\\scopedcss\\projectbundle\\ISDP_WEB.bundle.scp.css",
+      "AssetFile": "C:\\Users\\School\\Desktop\\ISPD\\ISDP2025\\ISDP_WEB\\obj\\Debug\\net8.0\\scopedcss\\projectbundle\\ISDP_WEB.bundle.scp.css",
       "Selectors": [],
       "ResponseHeaders": [
         {
@@ -1446,7 +1652,7 @@
     },
     {
       "Route": "ISDP_WEB.59vmcvkavc.styles.css",
-      "AssetFile": "C:\\Users\\School\\Desktop\\ISPD\\ISDP_WEB\\obj\\Debug\\net8.0\\scopedcss\\bundle\\ISDP_WEB.styles.css",
+      "AssetFile": "C:\\Users\\School\\Desktop\\ISPD\\ISDP2025\\ISDP_WEB\\obj\\Debug\\net8.0\\scopedcss\\bundle\\ISDP_WEB.styles.css",
       "Selectors": [],
       "ResponseHeaders": [
         {
@@ -1491,7 +1697,7 @@
     },
     {
       "Route": "ISDP_WEB.bundle.scp.css",
-      "AssetFile": "C:\\Users\\School\\Desktop\\ISPD\\ISDP_WEB\\obj\\Debug\\net8.0\\scopedcss\\projectbundle\\ISDP_WEB.bundle.scp.css",
+      "AssetFile": "C:\\Users\\School\\Desktop\\ISPD\\ISDP2025\\ISDP_WEB\\obj\\Debug\\net8.0\\scopedcss\\projectbundle\\ISDP_WEB.bundle.scp.css",
       "Selectors": [],
       "ResponseHeaders": [
         {
@@ -1528,7 +1734,7 @@
     },
     {
       "Route": "ISDP_WEB.styles.css",
-      "AssetFile": "C:\\Users\\School\\Desktop\\ISPD\\ISDP_WEB\\obj\\Debug\\net8.0\\scopedcss\\bundle\\ISDP_WEB.styles.css",
+      "AssetFile": "C:\\Users\\School\\Desktop\\ISPD\\ISDP2025\\ISDP_WEB\\obj\\Debug\\net8.0\\scopedcss\\bundle\\ISDP_WEB.styles.css",
       "Selectors": [],
       "ResponseHeaders": [
         {

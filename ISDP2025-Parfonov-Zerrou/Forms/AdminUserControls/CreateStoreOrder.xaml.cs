@@ -222,42 +222,71 @@ namespace ISDP2025_Parfonov_Zerrou.Forms.AdminUserControls
             int selectedSiteId = (int)cmbStores.SelectedValue;
             try
             {
-                var inventoryData = context.Inventories
-                .Include(i => i.Item)
-                .Where(i => i.SiteId == selectedSiteId && i.Item.Active == 1)
-                .ToList();
+                // First check if the order already has items
+                var existingOrderItems = context.Txnitems
+                    .Include(ti => ti.Item)
+                    .Where(ti => ti.TxnId == existingTxnId)
+                    .ToList();
 
-                foreach (var inventory in inventoryData)
+                if (existingOrderItems.Any())
                 {
-                    if (inventory.Quantity <= inventory.ReorderThreshold)
+                    // Order already has items, just load them
+                    foreach (var item in existingOrderItems)
                     {
-                        int needed = inventory.OptimumThreshold - inventory.Quantity;
-                        int cases = inventory.Item.CaseSize > 0 ? (int)Math.Ceiling((double)needed / inventory.Item.CaseSize) : needed;
-
                         orderItems.Add(new OrderLineItem
                         {
-                            ItemId = inventory.ItemId,
-                            Name = inventory.Item.Name,
-                            OrderQuantity = cases * inventory.Item.CaseSize,
-                            CaseSize = inventory.Item.CaseSize,
-                            Weight = inventory.Item.Weight
+                            ItemId = item.ItemId,
+                            Name = item.Item.Name,
+                            OrderQuantity = item.Quantity,
+                            CaseSize = item.Item.CaseSize,
+                            Weight = item.Item.Weight
                         });
                     }
                 }
-
-                foreach (var item in orderItems)
+                else
                 {
-                    var txnItem = new Txnitem
+                    // Order is new, needs pre-population based on thresholds
+                    var inventoryData = context.Inventories
+                        .Include(i => i.Item)
+                        .Where(i => i.SiteId == selectedSiteId && i.Item.Active == 1)
+                        .ToList();
+
+                    foreach (var inventory in inventoryData)
                     {
-                        TxnId = existingTxnId.Value,
-                        ItemId = item.ItemId,
-                        Quantity = item.OrderQuantity
-                    };
+                        if (inventory.Quantity <= inventory.ReorderThreshold)
+                        {
+                            int needed = inventory.OptimumThreshold - inventory.Quantity;
+                            int cases = inventory.Item.CaseSize > 0 ? (int)Math.Ceiling((double)needed / inventory.Item.CaseSize) : needed;
 
-                    context.Txnitems.Add(txnItem);
+                            orderItems.Add(new OrderLineItem
+                            {
+                                ItemId = inventory.ItemId,
+                                Name = inventory.Item.Name,
+                                OrderQuantity = cases * inventory.Item.CaseSize,
+                                CaseSize = inventory.Item.CaseSize,
+                                Weight = inventory.Item.Weight
+                            });
+                        }
+                    }
+
+                    // Only save new items if we're actually adding them
+                    if (orderItems.Any())
+                    {
+                        foreach (var item in orderItems)
+                        {
+                            var txnItem = new Txnitem
+                            {
+                                TxnId = existingTxnId.Value,
+                                ItemId = item.ItemId,
+                                Quantity = item.OrderQuantity
+                            };
+
+                            context.Txnitems.Add(txnItem);
+                        }
+
+                        context.SaveChanges();
+                    }
                 }
-
-                context.SaveChanges();
 
                 dgvOrders.ItemsSource = null;
                 dgvOrders.ItemsSource = orderItems;
@@ -685,6 +714,12 @@ namespace ISDP2025_Parfonov_Zerrou.Forms.AdminUserControls
                     .Where(t => t.TxnId == existingTxnId)
                     .ToList();
 
+                // Track what we're going to update
+                List<Txnitem> itemsToUpdate = new List<Txnitem>();
+                List<Txnitem> itemsToAdd = new List<Txnitem>();
+                List<Txnitem> itemsToRemove = new List<Txnitem>();
+
+                // Process all items in our current order
                 foreach (var item in orderItems)
                 {
                     // Check if this item already exists in the transaction
@@ -695,7 +730,7 @@ namespace ISDP2025_Parfonov_Zerrou.Forms.AdminUserControls
                     {
                         // Update existing item
                         existingItem.Quantity = item.OrderQuantity;
-                        context.Txnitems.Update(existingItem);
+                        itemsToUpdate.Add(existingItem);
                     }
                     else
                     {
@@ -706,26 +741,31 @@ namespace ISDP2025_Parfonov_Zerrou.Forms.AdminUserControls
                             ItemId = item.ItemId,
                             Quantity = item.OrderQuantity
                         };
-                        context.Txnitems.Add(txnItem);
+                        itemsToAdd.Add(txnItem);
                     }
                 }
 
-                // Remove items that are no longer in the order
-                var itemsToRemove = existingItems
+                // Find items that are no longer in the order
+                itemsToRemove = existingItems
                     .Where(e => !orderItems.Any(o => o.ItemId == e.ItemId))
                     .ToList();
 
-                foreach (var item in itemsToRemove)
+                // Now perform the actual database operations
+                context.Txnitems.AddRange(itemsToAdd);
+
+                foreach (var item in itemsToUpdate)
                 {
-                    context.Txnitems.Remove(item);
+                    context.Txnitems.Update(item);
                 }
 
+                context.Txnitems.RemoveRange(itemsToRemove);
+
+                // Save all changes in one go
                 context.SaveChanges();
             }
             catch (Exception ex)
             {
-
-                throw new Exception($"Error saving order: {ex.Message}");
+                throw new Exception($"Error saving order: {ex.Message}", ex);
             }
         }
 

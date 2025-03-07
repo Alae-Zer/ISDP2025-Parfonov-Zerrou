@@ -2518,23 +2518,23 @@
     ]
   },
   "packageFolders": {
-    "C:\\Users\\parfo\\.nuget\\packages\\": {},
+    "C:\\Users\\School\\.nuget\\packages\\": {},
     "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages": {}
   },
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "D:\\WINTER 2025\\ISDP\\CODE\\ISDP_WEB\\ISDP_WEB.csproj",
+      "projectUniqueName": "C:\\Users\\School\\Desktop\\ISPD\\ISDP2025\\ISDP_WEB\\ISDP_WEB.csproj",
       "projectName": "ISDP_WEB",
-      "projectPath": "D:\\WINTER 2025\\ISDP\\CODE\\ISDP_WEB\\ISDP_WEB.csproj",
-      "packagesPath": "C:\\Users\\parfo\\.nuget\\packages\\",
-      "outputPath": "D:\\WINTER 2025\\ISDP\\CODE\\ISDP_WEB\\obj\\",
+      "projectPath": "C:\\Users\\School\\Desktop\\ISPD\\ISDP2025\\ISDP_WEB\\ISDP_WEB.csproj",
+      "packagesPath": "C:\\Users\\School\\.nuget\\packages\\",
+      "outputPath": "C:\\Users\\School\\Desktop\\ISPD\\ISDP2025\\ISDP_WEB\\obj\\",
       "projectStyle": "PackageReference",
       "fallbackFolders": [
         "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
       ],
       "configFilePaths": [
-        "C:\\Users\\parfo\\AppData\\Roaming\\NuGet\\NuGet.Config",
+        "C:\\Users\\School\\AppData\\Roaming\\NuGet\\NuGet.Config",
         "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
         "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
       ],
@@ -2543,15 +2543,14 @@
       ],
       "sources": {
         "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
-        "C:\\Program Files\\dotnet\\library-packs": {},
         "https://api.nuget.org/v3/index.json": {}
       },
       "frameworks": {
         "net8.0": {
           "targetAlias": "net8.0",
           "projectReferences": {
-            "D:\\WINTER 2025\\ISDP\\CODE\\ISDP_Shared\\ISDP_Shared.csproj": {
-              "projectPath": "D:\\WINTER 2025\\ISDP\\CODE\\ISDP_Shared\\ISDP_Shared.csproj"
+            "C:\\Users\\School\\Desktop\\ISPD\\ISDP2025\\ISDP_Shared\\ISDP_Shared.csproj": {
+              "projectPath": "C:\\Users\\School\\Desktop\\ISPD\\ISDP2025\\ISDP_Shared\\ISDP_Shared.csproj"
             }
           }
         }
@@ -2566,7 +2565,7 @@
         "auditLevel": "low",
         "auditMode": "direct"
       },
-      "SdkAnalysisLevel": "9.0.100"
+      "SdkAnalysisLevel": "9.0.200"
     },
     "frameworks": {
       "net8.0": {
@@ -2616,8 +2615,16 @@
             "privateAssets": "all"
           }
         },
-        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\9.0.101/PortableRuntimeIdentifierGraph.json"
+        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\9.0.200/PortableRuntimeIdentifierGraph.json"
       }
     }
-  }
+  },
+  "logs": [
+    {
+      "code": "Undefined",
+      "level": "Warning",
+      "warningLevel": 1,
+      "message": "Problem reading the cache file C:\\Users\\School\\Desktop\\ISPD\\ISDP2025\\ISDP_WEB\\obj\\project.nuget.cache : Invalid property identifier character: <. Path 'version', line 3, position 0."
+    }
+  ]
 }

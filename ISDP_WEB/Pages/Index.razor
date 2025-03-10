@@ -1,3 +1,45 @@
 ﻿@page "/"
 
-<h1>Heaaaadasllo, worlasdasd!</h1>
+<MudContainer MaxWidth="MaxWidth.ExtraLarge" Class="pt-13 pb-20 mt-14 mb-20 " Style="overflow: hidden;">
+    <MudPaper Elevation="0" Class="py-6 px-4" Style="background-color: transparent;">
+        <MudGrid>
+            <MudItem xs="12" md="5" Class="d-flex flex-column justify-center py-0 pl-20">
+                <MudText Typo="Typo.h3" Class="font-weight-bold">Experience</MudText>
+                <MudText Typo="Typo.h3" Class="font-weight-bold">The best</MudText>
+                <MudText Typo="Typo.h3" Class="font-weight-bold mb-2">products.</MudText>
+                <MudText Typo="Typo.body1" Class="mb-4">The place to buy your Sporting Goods.</MudText>
+                <div class="d-flex gap-2 gap-md-4">
+                    <MudButton Href="/buy-products" Variant="Variant.Filled" StartIcon="@Icons.Material.Filled.ShoppingCart" Color="Color.Primary" Size="Size.Large" Class="rounded-lg px-4">
+                        BUY PRODUCTS
+                    </MudButton>
+                    <MudButton Href="/view-order" Variant="Variant.Outlined" Color="Color.Primary" Size="Size.Large" Class="rounded-lg px-4">
+                        VIEW ORDER
+                    </MudButton>
+                </div>
+            </MudItem>
+            <MudItem xs="12" md="7" Class="d-flex align-center justify-center" >
+                <MudPaper Elevation="0" Class="product-image-container overflow-hidden ml-10 mt-2 mb-4 rounded-lg" Style="width: 100%; ">
+                    <MudImage Src="images/store.jpg" Alt="Sports equipment" Class="rounded-lg" Style=" width: 100%; max-width:800px; object-fit: cover;" />
+                </MudPaper>
+            </MudItem>
+
+        </MudGrid>
+    </MudPaper>
+</MudContainer>
+
+<style>
+    .mud-link {
+        color: var(--mud-palette-text-secondary);
+        transition: color 0.2s ease-in-out;
+    }
+
+    .product-image-container {
+        transition: transform 0.3s ease-in-out;
+        background-color: transparent;
+        width: 100%;
+    }
+
+    .product-image-container:hover {
+        transform: translateY(-5px);
+    }
+</style>

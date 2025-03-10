@@ -7,11 +7,28 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Content Remove="wwwroot\images\bullseye.ico" />
+    <Content Remove="wwwroot\images\bullseye.png" />
+    <Content Remove="wwwroot\images\default.png" />
+    <Content Remove="wwwroot\images\th.jpg" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="wwwroot\images\default.png" />
+    <None Include="wwwroot\images\th.jpg" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="MudBlazor" Version="8.3.0" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\ISDP_Shared\ISDP_Shared.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Resource Include="wwwroot\images\bullseye.ico" />
+    <Resource Include="wwwroot\images\bullseye.png" />
   </ItemGroup>
 
 </Project>

@@ -21,6 +21,14 @@
     <None Remove="Images\bullseye - Copy.png" />
     <None Remove="Images\bullseye.png" />
   </ItemGroup>
+ 
+	
+	<ItemGroup>
+		<Content Include="..\ISDP_Shared\Images\*.*">
+			<Link>Images\%(Filename)%(Extension)</Link>
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</Content>
+	</ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="HandyControls" Version="3.5.3" />

@@ -6,19 +6,23 @@
     <ImplicitUsings>enable</ImplicitUsings>
   </PropertyGroup>
 
-  <ItemGroup>
-    <Content Remove="wwwroot\images\bullseye.ico" />
-    <Content Remove="wwwroot\images\bullseye.png" />
-    <Content Remove="wwwroot\images\default.png" />
-    <Content Remove="wwwroot\images\th.jpg" />
-  </ItemGroup>
+	<ItemGroup>
+		<Content Include="..\ISDP_Shared\Images\*.*">
+			<Link>wwwroot\shared-images\%(Filename)%(Extension)</Link>
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</Content>
+	</ItemGroup>
 
   <ItemGroup>
-    <None Include="wwwroot\images\default.png" />
-    <None Include="wwwroot\images\th.jpg" />
-  </ItemGroup>
-
-  <ItemGroup>
+    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="8.0.11" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="8.0.11">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="8.0.11">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
     <PackageReference Include="MudBlazor" Version="8.3.0" />
   </ItemGroup>
 

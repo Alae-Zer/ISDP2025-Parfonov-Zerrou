@@ -1,0 +1,295 @@
+﻿@page "/checkout"
+@using ISDP2025_Parfonov_Zerrou.Models
+@using ISDP_WEB.Pages.Services
+@using Microsoft.EntityFrameworkCore
+@using System.ComponentModel.DataAnnotations
+@inject BestContext Context
+@inject StateContainer StateContainer
+@inject ISnackbar Snackbar
+@inject NavigationManager NavigationManager
+
+<MudContainer MaxWidth="MaxWidth.Large" Class="pt-4 pb-20 pt-10 mt-20 mb-20">
+    <MudText Typo="Typo.h4" Class="mb-4">Checkout</MudText>
+
+    @if (!StateContainer.GetStoreCarts().Any())
+    {
+        <MudPaper Class="pa-4 mb-4">
+            <MudAlert Severity="Severity.Info" Class="mb-4">
+                Your cart is empty.
+            </MudAlert>
+            <MudButton Variant="Variant.Filled" Color="Color.Primary"
+                       Href="/buy-products" StartIcon="@Icons.Material.Filled.ShoppingBag">
+                Continue Shopping
+            </MudButton>
+        </MudPaper>
+    }
+    else
+    {
+        <MudGrid>
+            <!-- Customer Information Form -->
+            <MudItem xs="12" md="6">
+                <MudPaper Class="pa-4">
+                    <MudText Typo="Typo.h6" Class="mb-4">Customer Information</MudText>
+
+                    <MudTextField @bind-Value="customerName" Label="Full Name"
+                                  Required="true" RequiredError="Name is required"
+                                  Variant="Variant.Outlined" Class="mb-3" />
+
+                    <MudTextField @bind-Value="customerEmail" Label="Email"
+                                  Required="true" RequiredError="Email is required"
+                                  Validation="@(new EmailAddressAttribute() {ErrorMessage = "Invalid email format"})"
+                                  Variant="Variant.Outlined" Class="mb-3" />
+
+                    <MudTextField @bind-Value="customerPhone" Label="Phone Number"
+                                  Required="true" RequiredError="Phone number is required"
+                                  Validation="@(new PhoneAttribute() {ErrorMessage = "Invalid phone number format"})"
+                                  Variant="Variant.Outlined" Class="mb-4" />
+
+                    <MudAlert Severity="Severity.Info" Class="mb-4">
+                        Your order will be prepared for curbside pickup at the selected store.
+                    </MudAlert>
+
+                    <MudExpansionPanels>
+                        <MudExpansionPanel Text="View Terms and Conditions">
+                            <MudText Typo="Typo.body2">
+                                By placing this order, you agree to the Bullseye Sporting Goods terms and conditions.
+                                Orders cannot be cancelled once they have been submitted. You will receive an order confirmation
+                                with your order ID which you can use to track your order status.
+                            </MudText>
+                        </MudExpansionPanel>
+                    </MudExpansionPanels>
+                </MudPaper>
+            </MudItem>
+
+            <!-- Order Summary -->
+            <MudItem xs="12" md="6">
+                <MudPaper Class="pa-4">
+                    <MudText Typo="Typo.h6" Class="mb-4">Order Summary</MudText>
+
+                    @foreach (var storeCart in StateContainer.GetStoreCarts())
+                    {
+                        <MudCard Class="mb-4" Elevation="0">
+                            <MudCardHeader>
+                                <CardHeaderContent>
+                                    <MudText Typo="Typo.h6" Class="d-flex align-center">
+                                        <MudIcon Icon="@Icons.Material.Filled.Store" Class="mr-2" />
+                                        @storeCart.StoreName
+                                    </MudText>
+                                </CardHeaderContent>
+                            </MudCardHeader>
+                            <MudCardContent>
+                                @foreach (var item in storeCart.Items)
+                                {
+                                    <div class="d-flex align-center mb-2">
+                                        <MudAvatar Image="@item.ImageUrl" Class="mr-2" Size="Size.Small" />
+                                        <div class="flex-grow-1">
+                                            <MudText Typo="Typo.body2">@item.Name</MudText>
+                                            <MudText Typo="Typo.caption" Color="Color.Secondary">
+                                                $@item.Price.ToString("F2") x @item.Quantity
+                                            </MudText>
+                                        </div>
+                                        <MudText Typo="Typo.body2" Class="ml-2">
+                                            $@((item.Price * item.Quantity).ToString("F2"))
+                                        </MudText>
+                                    </div>
+                                }
+
+                                <MudDivider Class="my-2" />
+
+                                <div class="d-flex justify-space-between">
+                                    <MudText Typo="Typo.body1">Store Total:</MudText>
+                                    <MudText Typo="Typo.body1" Color="Color.Primary">$@storeCart.Total.ToString("F2")</MudText>
+                                </div>
+                            </MudCardContent>
+                        </MudCard>
+                    }
+
+                    <MudDivider Class="my-2" />
+
+                    <div class="d-flex justify-space-between mb-4">
+                        <MudText Typo="Typo.h6">Grand Total:</MudText>
+                        <MudText Typo="Typo.h6" Color="Color.Primary">$@CalculateGrandTotal().ToString("F2")</MudText>
+                    </div>
+
+                    <MudButton Variant="Variant.Filled" Color="Color.Primary" FullWidth="true"
+                               Size="Size.Large" OnClick="PlaceOrder"
+                               Disabled="@isProcessing"
+                               StartIcon="@Icons.Material.Filled.ShoppingCart">
+                        @if (isProcessing)
+                        {
+                            <MudProgressCircular Class="ms-n1" Size="Size.Small" Indeterminate="true" />
+                            <MudText Class="ms-2">Processing</MudText>
+                        }
+                        else
+                        {
+                            <MudText>Place Order</MudText>
+                        }
+                    </MudButton>
+
+                    <MudButton Variant="Variant.Text" Color="Color.Secondary" FullWidth="true"
+                               Class="mt-2" Href="/buy-products">
+                        Continue Shopping
+                    </MudButton>
+                </MudPaper>
+            </MudItem>
+        </MudGrid>
+    }
+</MudContainer>
+
+@if (showOrderSuccessDialog)
+{
+    <MudDialog Open="showOrderSuccessDialog" DisableBackdropClick="true">
+        <TitleContent>
+            <MudText Typo="Typo.h6">
+                <MudIcon Icon="@Icons.Material.Filled.CheckCircle" Color="Color.Success" Class="mr-2" />
+                Order Placed Successfully
+            </MudText>
+        </TitleContent>
+        <DialogContent>
+            <MudText Typo="Typo.body1" Class="mb-4">
+                Thank you for your order! Your order has been received and is being processed.
+            </MudText>
+
+            <MudPaper Class="pa-4 mb-4" Outlined="true">
+                <MudText Typo="Typo.body1">Order ID: <b>@lastOrderId</b></MudText>
+                <MudText Typo="Typo.body2">Please keep this ID to track your order status.</MudText>
+            </MudPaper>
+
+            <MudText Typo="Typo.body2">
+                You'll receive a notification when your order is ready for pickup at the store.
+            </MudText>
+        </DialogContent>
+        <DialogActions>
+            <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="CloseSuccessDialog">
+                Continue Shopping
+            </MudButton>
+            <MudButton Variant="Variant.Outlined" Color="Color.Primary" OnClick="ViewOrder">
+                View Order
+            </MudButton>
+        </DialogActions>
+    </MudDialog>
+}
+
+@code {
+    private string customerName = "";
+    private string customerEmail = "";
+    private string customerPhone = "";
+    private bool isProcessing = false;
+    private bool showOrderSuccessDialog = false;
+    private int lastOrderId;
+
+    private decimal CalculateGrandTotal()
+    {
+        return StateContainer.GetStoreCarts().Sum(cart => cart.Total);
+    }
+
+    private async Task PlaceOrder()
+    {
+        // Validate form
+        if (string.IsNullOrWhiteSpace(customerName) ||
+            string.IsNullOrWhiteSpace(customerEmail) ||
+            string.IsNullOrWhiteSpace(customerPhone))
+        {
+            Snackbar.Add("Please fill in all required fields", Severity.Warning);
+            return;
+        }
+
+        if (!new EmailAddressAttribute().IsValid(customerEmail))
+        {
+            Snackbar.Add("Please enter a valid email address", Severity.Warning);
+            return;
+        }
+
+        isProcessing = true;
+        StateHasChanged();
+
+        try
+        {
+            // Process orders for each store
+            foreach (var storeCart in StateContainer.GetStoreCarts())
+            {
+                // Create a new transaction for this order
+                var txn = new Txn
+                    {
+                        EmployeeId = 10000, // Online customer ID
+                        SiteIdto = storeCart.StoreId,
+                        SiteIdfrom = storeCart.StoreId, // Order is fulfilled from the same store
+                        TxnStatus = "NEW",
+                        ShipDate = DateTime.Now,
+                        TxnType = "Online",
+                        BarCode = GenerateBarcode(),
+                        CreatedDate = DateTime.Now,
+                        EmergencyDelivery = 0,
+                        Notes = $"Customer: {customerName}, Email: {customerEmail}, Phone: {customerPhone}"
+                    };
+
+                Context.Txns.Add(txn);
+                await Context.SaveChangesAsync();
+
+                // Save the last order ID for the success dialog
+                lastOrderId = txn.TxnId;
+
+                // Add all items to the transaction
+                foreach (var item in storeCart.Items)
+                {
+                    var txnItem = new Txnitem
+                        {
+                            TxnId = txn.TxnId,
+                            ItemId = item.ItemId,
+                            Quantity = item.Quantity
+                        };
+
+                    Context.Txnitems.Add(txnItem);
+                }
+
+                // Create audit record
+                var txnAudit = new Txnaudit
+                    {
+                        TxnId = txn.TxnId,
+                        EmployeeId = 10000, // Online customer ID
+                        TxnType = "Online",
+                        Status = "NEW",
+                        TxnDate = DateTime.Now,
+                        SiteId = storeCart.StoreId,
+                        Notes = $"Online order placed by {customerName}"
+                    };
+
+                Context.Txnaudits.Add(txnAudit);
+                await Context.SaveChangesAsync();
+            }
+
+            // Clear all carts after successful order
+            StateContainer.ClearAllCarts();
+
+            // Show success dialog
+            showOrderSuccessDialog = true;
+        }
+        catch (Exception ex)
+        {
+            Snackbar.Add($"Error placing order: {ex.Message}", Severity.Error);
+        }
+        finally
+        {
+            isProcessing = false;
+            StateHasChanged();
+        }
+    }
+
+    private string GenerateBarcode()
+    {
+        // Generate a unique barcode for the transaction
+        return $"ONLINE-{DateTime.Now:yyyyMMddHHmmss}-{Guid.NewGuid().ToString().Substring(0, 8)}";
+    }
+
+    private void CloseSuccessDialog()
+    {
+        showOrderSuccessDialog = false;
+        NavigationManager.NavigateTo("/buy-products");
+    }
+
+    private void ViewOrder()
+    {
+        showOrderSuccessDialog = false;
+        NavigationManager.NavigateTo($"/view-order/{lastOrderId}");
+    }
+}

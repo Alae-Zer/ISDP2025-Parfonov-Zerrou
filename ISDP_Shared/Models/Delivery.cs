@@ -1,8 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using Microsoft.EntityFrameworkCore;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using Microsoft.EntityFrameworkCore;
 
 namespace ISDP2025_Parfonov_Zerrou.Models;
 
@@ -28,6 +26,9 @@ public partial class Delivery
     [Column("notes")]
     [StringLength(255)]
     public string? Notes { get; set; }
+
+    [Column("signature", TypeName = "blob")]
+    public byte[]? Signature { get; set; }
 
     [InverseProperty("Delivery")]
     public virtual ICollection<Txnaudit> Txnaudits { get; set; } = new List<Txnaudit>();

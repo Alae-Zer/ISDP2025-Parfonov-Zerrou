@@ -48,5 +48,53 @@ namespace ISDP2025_Parfonov_Zerrou.Functionality
                 return false;
             }
         }
+
+
+        public static bool MoveExtended(int itemId, int quantity, int fromSiteId, int toSiteId, string toLocation)
+        {
+            try
+            {
+                using (var context = new BestContext())
+                {
+                    // Check source inventory
+                    var sourceInventory = context.Inventories
+                        .FirstOrDefault(i => i.ItemId == itemId && i.SiteId == fromSiteId);
+                    if (sourceInventory == null || sourceInventory.Quantity < quantity)
+                        return false;
+
+                    // Reduce source quantity
+                    sourceInventory.Quantity -= quantity;
+
+                    // Find any inventory for this item at the destination site
+                    var destInventory = context.Inventories
+                        .FirstOrDefault(i => i.ItemId == itemId && i.SiteId == toSiteId);
+
+                    if (destInventory == null)
+                    {
+                        // Create new record
+                        destInventory = new Inventory
+                        {
+                            ItemId = itemId,
+                            SiteId = toSiteId,
+                            ItemLocation = toLocation,
+                            Quantity = quantity,
+                            OptimumThreshold = 0
+                        };
+                        context.Inventories.Add(destInventory);
+                    }
+                    else
+                    {
+                        destInventory.Quantity += quantity;
+                    }
+
+                    context.SaveChanges();
+                    return true;
+                }
+            }
+            catch
+            {
+                return false;
+            }
+        }
     }
 }

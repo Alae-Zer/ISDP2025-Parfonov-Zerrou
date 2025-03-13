@@ -1,0 +1,272 @@
+﻿@page "/view-order"
+@page "/view-order/{OrderId:int}"
+@using ISDP2025_Parfonov_Zerrou.Models
+@using Microsoft.EntityFrameworkCore
+@inject BestContext Context
+@inject ISnackbar Snackbar
+
+<MudContainer MaxWidth="MaxWidth.Large" Class="pt-4 pb-8">
+    <MudText Typo="Typo.h4" Class="mb-4">Track Your Order</MudText>
+
+    <MudPaper Class="pa-4 mb-4">
+        <MudText Typo="Typo.body1" Class="mb-3">
+            Enter your order details to check the status of your order.
+        </MudText>
+
+        <MudGrid>
+            <MudItem xs="12" md="6">
+                <MudTextField @bind-Value="searchOrderId" Label="Order ID" 
+                             Variant="Variant.Outlined" Class="mb-3" />
+            </MudItem>
+            <MudItem xs="12" md="6">
+                <MudTextField @bind-Value="searchEmail" Label="Email Address" 
+                             Variant="Variant.Outlined" Class="mb-3" />
+            </MudItem>
+            <MudItem xs="12">
+                <MudButton Variant="Variant.Filled" Color="Color.Primary" 
+                          OnClick="SearchOrder" Class="mr-2"
+                          StartIcon="@Icons.Material.Filled.Search">
+                    Search
+                </MudButton>
+                <MudButton Variant="Variant.Outlined" Color="Color.Secondary" 
+                          OnClick="ClearSearch">
+                    Clear
+                </MudButton>
+            </MudItem>
+        </MudGrid>
+    </MudPaper>
+
+    @if (isLoading)
+    {
+        <div class="d-flex justify-center my-4">
+            <MudProgressCircular Color="Color.Primary" Indeterminate="true" />
+        </div>
+    }
+    else if (order != null)
+    {
+        <MudPaper Class="pa-4 mb-4">
+            <MudGrid>
+                <MudItem xs="12">
+                    <MudText Typo="Typo.h6" Class="mb-3">Order Details</MudText>
+                </MudItem>
+                
+                <MudItem xs="12" md="6">
+                    <MudList T="string">
+                        <MudListItem>
+                            <MudText Typo="Typo.body1">
+                                <strong>Order ID:</strong> @order.TxnId
+                            </MudText>
+                        </MudListItem>
+                        <MudListItem>
+                            <MudText Typo="Typo.body1">
+                                <strong>Date:</strong> @order.CreatedDate.ToString("MMM dd, yyyy hh:mm tt")
+                            </MudText>
+                        </MudListItem>
+                        <MudListItem>
+                            <MudText Typo="Typo.body1">
+                                <strong>Store:</strong> @(order.SiteIdtoNavigation?.SiteName ?? "Unknown")
+                            </MudText>
+                        </MudListItem>
+                    </MudList>
+                </MudItem>
+                
+                <MudItem xs="12" md="6">
+                    <MudList T="string">
+                        <MudListItem>
+                            <MudText Typo="Typo.body1">
+                                <strong>Status:</strong> 
+                                <MudChip Color="@GetStatusColor(order.TxnStatus)" Size="Size.Small">@order.TxnStatus</MudChip>
+                            </MudText>
+                        </MudListItem>
+                        <MudListItem>
+                            <MudText Typo="Typo.body1">
+                                <strong>Type:</strong> @order.TxnType
+                            </MudText>
+                        </MudListItem>
+                    </MudList>
+                </MudItem>
+                
+                <MudItem xs="12">
+                    <MudExpansionPanels>
+                        <MudExpansionPanel Text="Order Items" IsInitiallyExpanded="true">
+                            <MudTable Items="@orderItems" Hover="true" Breakpoint="Breakpoint.Sm" LoadingProgressColor="Color.Info">
+                                <HeaderContent>
+                                    <MudTh>Item</MudTh>
+                                    <MudTh>Quantity</MudTh>
+                                </HeaderContent>
+                                <RowTemplate>
+                                    <MudTd DataLabel="Item">@context.Item.Name</MudTd>
+                                    <MudTd DataLabel="Quantity">@context.Quantity</MudTd>
+                                </RowTemplate>
+                            </MudTable>
+                        </MudExpansionPanel>
+                    </MudExpansionPanels>
+                </MudItem>
+                
+                <MudItem xs="12">
+                    <MudExpansionPanels>
+                        <MudExpansionPanel Text="Order History">
+                            <MudTable Items="@orderAudit" Hover="true" Breakpoint="Breakpoint.Sm" LoadingProgressColor="Color.Info">
+                                <HeaderContent>
+                                    <MudTh>Date</MudTh>
+                                    <MudTh>Status</MudTh>
+                                    <MudTh>Notes</MudTh>
+                                </HeaderContent>
+                                <RowTemplate>
+                                    <MudTd DataLabel="Date">@context.CreatedDate.ToString("MMM dd, yyyy hh:mm tt")</MudTd>
+                                    <MudTd DataLabel="Status">
+                                        <MudChip T="string" Color="@GetStatusColor(context.Status)" Size="Size.Small">@context.Status</MudChip>
+                                    </MudTd>
+                                    <MudTd DataLabel="Notes">@context.Notes</MudTd>
+                                </RowTemplate>
+                            </MudTable>
+                        </MudExpansionPanel>
+                    </MudExpansionPanels>
+                </MudItem>
+            </MudGrid>
+        </MudPaper>
+        
+        <MudText Typo="Typo.body2" Class="my-4">
+            @GetStatusMessage(order.TxnStatus)
+        </MudText>
+    }
+    else if (showNoOrderFound)
+    {
+        <MudAlert Severity="Severity.Info" Class="my-4">
+            No order found with the provided information. Please check your order ID and email address.
+        </MudAlert>
+    }
+</MudContainer>
+
+@code {
+    [Parameter]
+    public int? OrderId { get; set; }
+
+    private string searchOrderId = "";
+    private string searchEmail = "";
+    private bool isLoading = false;
+    private bool showNoOrderFound = false;
+    
+    private Txn order;
+    private List<Txnitem> orderItems = new List<Txnitem>();
+    private List<Txnaudit> orderAudit = new List<Txnaudit>();
+
+    protected override async Task OnInitializedAsync()
+    {
+        if (OrderId.HasValue)
+        {
+            searchOrderId = OrderId.Value.ToString();
+            await SearchOrder();
+        }
+    }
+
+    private async Task SearchOrder()
+    {
+        showNoOrderFound = false;
+        isLoading = true;
+        StateHasChanged();
+        
+        try
+        {
+            int orderId;
+            if (!int.TryParse(searchOrderId, out orderId) && string.IsNullOrWhiteSpace(searchEmail))
+            {
+                Snackbar.Add("Please enter either an Order ID or Email address", Severity.Warning);
+                isLoading = false;
+                return;
+            }
+
+            if (int.TryParse(searchOrderId, out orderId))
+            {
+                // Search by Order ID
+                order = await Context.Txns
+                    .Include(t => t.SiteIdtoNavigation)
+                    .Where(t => t.TxnId == orderId && t.TxnType == "Online")
+                    .FirstOrDefaultAsync();
+            }
+            else if (!string.IsNullOrWhiteSpace(searchEmail))
+            {
+                // Search by Email
+                order = await Context.Txns
+                    .Include(t => t.SiteIdtoNavigation)
+                    .Where(t => t.Notes.Contains(searchEmail) && t.TxnType == "Online")
+                    .OrderByDescending(t => t.CreatedDate)
+                    .FirstOrDefaultAsync();
+            }
+
+            if (order != null)
+            {
+                // Load order items
+                orderItems = await Context.Txnitems
+                    .Include(ti => ti.Item)
+                    .Where(ti => ti.TxnId == order.TxnId)
+                    .ToListAsync();
+
+                // Load order audit
+                orderAudit = await Context.Txnaudits
+                    .Where(ta => ta.TxnId == order.TxnId)
+                    .OrderByDescending(ta => ta.CreatedDate)
+                    .ToListAsync();
+
+                searchOrderId = order.TxnId.ToString();
+            }
+            else
+            {
+                showNoOrderFound = true;
+            }
+        }
+        catch (Exception ex)
+        {
+            Snackbar.Add($"Error retrieving order: {ex.Message}", Severity.Error);
+        }
+        finally
+        {
+            isLoading = false;
+            StateHasChanged();
+        }
+    }
+
+    private void ClearSearch()
+    {
+        searchOrderId = "";
+        searchEmail = "";
+        order = null;
+        orderItems.Clear();
+        orderAudit.Clear();
+        showNoOrderFound = false;
+    }
+
+    private Color GetStatusColor(string status)
+    {
+        return status switch
+        {
+            "NEW" => Color.Info,
+            "SUBMITTED" => Color.Info,
+            "RECEIVED" => Color.Info,
+            "ASSEMBLING" => Color.Warning,
+            "ASSEMBLED" => Color.Success,
+            "READY" => Color.Success,
+            "COMPLETE" => Color.Success,
+            "CANCELLED" => Color.Error,
+            "REJECTED" => Color.Error,
+            _ => Color.Default
+        };
+    }
+
+    private string GetStatusMessage(string status)
+    {
+        return status switch
+        {
+            "NEW" => "Your order has been received and is waiting to be processed.",
+            "SUBMITTED" => "Your order has been submitted and is waiting to be processed.",
+            "RECEIVED" => "Your order has been received by the store and will be assembled soon.",
+            "ASSEMBLING" => "Your order is currently being assembled by our staff.",
+            "ASSEMBLED" => "Your order has been assembled and will be ready for pickup soon.",
+            "READY" => "Your order is ready for pickup! Please come to the store with your order ID.",
+            "COMPLETE" => "Your order has been completed. Thank you for shopping with us!",
+            "CANCELLED" => "Your order has been cancelled. Please contact customer service for assistance.",
+            "REJECTED" => "Your order has been rejected. Please contact customer service for assistance.",
+            _ => "Your order status is being updated. Please check back later."
+        };
+    }
+}

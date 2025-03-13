@@ -27,14 +27,13 @@ namespace ISDP2025_Parfonov_Zerrou.Forms.ForemanUserControls
 
         public ForemanInventoryControl()
         {
-            // Use forward slashes for the default path
+            //Load Defaults
             imagePath = Path.Combine(
-                AppDomain.CurrentDomain.BaseDirectory,
-                "Images",
-                "default.png"
-            ).Replace('\\', '/'); // Replace backslashes with forward slashes
-
+            AppDomain.CurrentDomain.BaseDirectory,
+            @"..\..\..\Images\default.png"
+        );
             fullPath = Path.GetFullPath(imagePath);
+
             InitializeComponent();
             context = new BestContext();
             LoadCategoriesToList();
@@ -50,9 +49,13 @@ namespace ISDP2025_Parfonov_Zerrou.Forms.ForemanUserControls
         //Returns Nothing
         private void BrowseImage()
         {
+            selectedImagePath = string.Empty;
+            string defaultFolder = System.IO.Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Images");
+
+            //Create an Instance wit folder and filters
             OpenFileDialog openFileDialog = new OpenFileDialog
             {
-                InitialDirectory = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Images"),
+                InitialDirectory = defaultFolder,
                 Filter = "Image files (*.png;*.jpeg;*.jpg)|*.png;*.jpeg;*.jpg|All files (*.*)|*.*"
             };
 
@@ -60,23 +63,18 @@ namespace ISDP2025_Parfonov_Zerrou.Forms.ForemanUserControls
             {
                 try
                 {
-                    // Get the filename only (no absolute path)
-                    string fileName = Path.GetFileName(openFileDialog.FileName);
-
-                    // Store the path with forward slashes: "images/your-image.png"
-                    selectedImagePath = $"images/{fileName}"; // Use forward slashes
-
-                    // Load the image directly from ISDP_Shared/Images (optional)
                     var image = new BitmapImage();
                     image.BeginInit();
-                    image.UriSource = new Uri(openFileDialog.FileName); // Original shared location
+                    image.UriSource = new Uri(openFileDialog.FileName);
                     image.CacheOption = BitmapCacheOption.OnLoad;
                     image.EndInit();
                     imgProduct.Source = image;
+
+                    selectedImagePath = openFileDialog.FileName;
                 }
                 catch (Exception ex)
                 {
-                    MessageBox.Show($"Error: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                    MessageBox.Show($"Error loading selected image: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
                     imgProduct.Source = defaultImage;
                     selectedImagePath = string.Empty;
                 }
@@ -257,21 +255,17 @@ namespace ISDP2025_Parfonov_Zerrou.Forms.ForemanUserControls
                     {
                         try
                         {
-                            string sanitizedPath = selectedItem.ImageLocation.Replace('\\', '/');
-                            string imageFullPath = Path.Combine(
-                                AppDomain.CurrentDomain.BaseDirectory,
-                                sanitizedPath
-                            );
-
                             var image = new BitmapImage();
                             image.BeginInit();
-                            image.UriSource = new Uri(imageFullPath);
+                            image.UriSource = new Uri(selectedItem.ImageLocation);
                             image.CacheOption = BitmapCacheOption.OnLoad;
                             image.EndInit();
+                            //Set Image in the Alloted Area
                             imgProduct.Source = image;
                         }
                         catch
                         {
+                            //Set Default Image if Wasn't able to download
                             imgProduct.Source = defaultImage;
                         }
                     }

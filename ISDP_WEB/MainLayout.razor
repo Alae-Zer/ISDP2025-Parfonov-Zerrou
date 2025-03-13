@@ -1,6 +1,4 @@
-﻿@using ISDP_WEB.Pages.Services
-@inherits LayoutComponentBase
-@inject StateContainer StateContainer
+﻿@inherits LayoutComponentBase
 
 <MudThemeProvider Theme="MyCustomTheme" @bind-IsDarkMode="@_isDarkMode" />
 <MudDialogProvider />
@@ -20,18 +18,13 @@
             <MudStack Row="true" Spacing="2">
                 <MudButton Href="/" Color="Color.Inherit">HOME</MudButton>
                 <MudButton Href="/buy-products" Color="Color.Inherit">BUY PRODUCTS</MudButton>
-                <MudButton Href="/checkout" Color="Color.Inherit">Checkout</MudButton>
+                <MudButton Href="/view-order" Color="Color.Inherit">VIEW ORDER</MudButton>
                 <MudButton Href="/acadia-login" Variant="Variant.Filled" Color="Color.Secondary" Class="ml-4">ACADIA LOGIN</MudButton>
             </MudStack>
         </div>
 
         <!-- Shopping Cart Icon -->
-        <MudIconButton Icon="@Icons.Material.Filled.ShoppingCart"
-                       Color="Color.Inherit"
-                       Class="mr-2"
-                       OnClick="@(() => StateContainer.ToggleCart())"
-                       Badge="@(StateContainer.TotalCartCount > 0 ? StateContainer.TotalCartCount.ToString() : null)"
-                       BadgeColor="Color.Secondary" />
+        <MudIconButton Icon="@Icons.Material.Filled.ShoppingCart" Color="Color.Inherit" Class="mr-2" />
 
         <!-- Dark Mode Toggle -->
         <MudToggleIconButton @bind-Toggled="@_isDarkMode"
@@ -114,125 +107,14 @@
         </MudGrid>
     </MudContainer>
 
-    <!-- The small tiny basket on the side of the screen -->
-   <MudDrawer @bind-Open="@StateContainer.IsCartOpen" Anchor="Anchor.End" Elevation="1" Variant="@DrawerVariant.Temporary" Width="360px">
-    <MudDrawerHeader>
-            <MudText Typo="Typo.h6" Class="pr-13 mr-20 pt-2">Shopping Cart</MudText>
-        <MudIconButton Icon="@Icons.Material.Filled.Close" Color="Color.Inherit"  OnClick="@(() => StateContainer.IsCartOpen = false)" />
-    </MudDrawerHeader>
-    <MudDrawerContainer>
-        @{
-            var storeCarts = StateContainer.GetStoreCarts();
-        }
-        
-        @if (!storeCarts.Any())
-        {
-            <MudText Typo="Typo.body1" Class="pa-4">Your cart is empty.</MudText>
-        }
-        else
-        {
-            <MudList T="String" Clickable="false" Class="pa-0">
-                @foreach (var storeCart in storeCarts)
-                {
-                    <MudListItem>
-                        <MudText Typo="Typo.subtitle1" Class="d-flex align-center">
-                            <MudIcon Icon="@Icons.Material.Filled.Store" Class="mr-2" />
-                            @storeCart.StoreName
-                        </MudText>
-                    </MudListItem>
-                    
-                    <MudDivider />
-                    
-                    @foreach (var item in storeCart.Items)
-                    {
-                        <MudListItem Class="pl-4">
-                            <div class="d-flex align-center">
-                                <MudAvatar Image="@item.ImageUrl" Class="mr-2" />
-                                <div class="flex-grow-1">
-                                    <MudText Typo="Typo.body1">@item.Name</MudText>
-                                    <MudText Typo="Typo.body2" Color="Color.Secondary">
-                                        $@item.Price.ToString("F2") x @item.Quantity
-                                    </MudText>
-                                </div>
-                                <div class="d-flex align-center">
-                                    <MudIconButton Icon="@Icons.Material.Filled.Remove" Size="Size.Small"
-                                                 @onclick="() => UpdateCartItemQuantity(storeCart.StoreId, item.ItemId, Math.Max(1, item.Quantity - 1))" />
-                                    <MudText Typo="Typo.body1" Class="mx-2">@item.Quantity</MudText>
-                                    <MudIconButton Icon="@Icons.Material.Filled.Add" Size="Size.Small"
-                                                 @onclick="() => UpdateCartItemQuantity(storeCart.StoreId, item.ItemId, Math.Min(item.StockQuantity, item.Quantity + 1))" />
-                                    <MudIconButton Icon="@Icons.Material.Filled.Delete" Size="Size.Small" Color="Color.Error"
-                                                 @onclick="() => RemoveFromCart(storeCart.StoreId, item.ItemId)" />
-                                </div>
-                            </div>
-                        </MudListItem>
-                        <MudDivider />
-                    }
-                    
-                    <MudListItem>
-                        <div class="d-flex justify-space-between">
-                            <MudText Typo="Typo.body1">Store Total:</MudText>
-                            <MudText Typo="Typo.body1" Color="Color.Primary">$@storeCart.Total.ToString("F2")</MudText>
-                        </div>
-                    </MudListItem>
-                    
-                    <MudDivider Class="my-2" />
-                }
-                
-                <div class="pa-4">
-                    <MudText Typo="Typo.h6" Class="d-flex justify-space-between mb-4">
-                        <span>Grand Total:</span>
-                        <span>$@CalculateGrandTotal().ToString("F2")</span>
-                    </MudText>
-                    
-                    <MudButton Variant="Variant.Filled" Color="Color.Primary" FullWidth="true"
-                             StartIcon="@Icons.Material.Filled.ShoppingCart"
-                             Href="/checkout"
-                                   OnClick="@(() => StateContainer.IsCartOpen = false)">
-                        Checkout
-                    </MudButton>
-                    
-                    <MudButton Variant="Variant.Text" Color="Color.Error" FullWidth="true"
-                             StartIcon="@Icons.Material.Filled.DeleteSweep"
-                             Class="mt-2"
-                             OnClick="@(() => StateContainer.ClearAllCarts())">
-                        Clear All Carts
-                    </MudButton>
-                </div>
-            </MudList>
-        }
-    </MudDrawerContainer>
-</MudDrawer>
-
     <MudScrollToTop>
         <MudFab Color="Color.Primary" Icon="@Icons.Material.Filled.KeyboardArrowUp" Title="Go to top" />
     </MudScrollToTop>
 </MudLayout>
 
 @code {
-    private bool isCartOpen = false;
     private bool _isDarkMode = true;
     private bool _drawerOpen = false;
-
-    private void ToggleCart()
-    {
-        isCartOpen = !isCartOpen;
-        StateHasChanged();
-    }
-
-    private void UpdateCartItemQuantity(int storeId, int itemId, int quantity)
-    {
-        StateContainer.UpdateCartItemQuantity(storeId, itemId, quantity);
-    }
-
-    private void RemoveFromCart(int storeId, int itemId)
-    {
-        StateContainer.RemoveFromCart(storeId, itemId);
-    }
-
-    private decimal CalculateGrandTotal()
-    {
-        return StateContainer.GetStoreCarts().Sum(cart => cart.Total);
-    }
 
     private void OpenDrawer()
     {
@@ -242,17 +124,6 @@
     private void CloseDrawer()
     {
         _drawerOpen = false;
-    }
-
-    protected override void OnInitialized()
-    {
-        StateContainer.OnChange += StateHasChanged;
-    }
-
-    // Make sure to dispose the subscription when component is disposed
-    public void Dispose()
-    {
-        StateContainer.OnChange -= StateHasChanged;
     }
 
     private MudTheme MyCustomTheme = new MudTheme()

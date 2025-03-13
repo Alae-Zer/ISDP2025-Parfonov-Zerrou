@@ -9,11 +9,12 @@
 <MudContainer MaxWidth="MaxWidth.ExtraLarge" Class="pt-4 pb-8">
     <MudText Typo="Typo.h4" Class="mb-4">Shop Products</MudText>
 
+    <!-- Store Selection -->
     <MudPaper Elevation="2" Class="pa-4 mb-4">
         <MudText Typo="Typo.h6" Class="mb-2">Select Store Location</MudText>
-        <MudSelect T="Site" Value="selectedStore" ValueChanged="StoreValueChanged" Label="Store" Variant="Variant.Outlined"
-        AnchorOrigin="Origin.BottomLeft" Class="mb-2" FullWidth="false"
-        AdornmentIcon="@Icons.Material.Filled.Store" AdornmentColor="Color.Primary">
+        <MudSelect T="Site" @bind-Value="selectedStore" Label="Store" Variant="Variant.Outlined" 
+                  AnchorOrigin="Origin.BottomCenter" Class="mb-2" FullWidth="false"
+                  AdornmentIcon="@Icons.Material.Filled.Store" AdornmentColor="Color.Primary">
             @if (stores != null)
             {
                 @foreach (var store in stores)
@@ -22,14 +23,23 @@
                 }
             }
         </MudSelect>
+        
+        @if (selectedStore != null)
+        {
+            <MudText Typo="Typo.body2" Color="Color.Secondary">
+                @selectedStore.Address, @selectedStore.City, @selectedStore.ProvinceId
+            </MudText>
+        }
     </MudPaper>
 
+    <!-- Loading State -->
     @if (isLoading)
     {
         <div class="d-flex justify-center my-4">
             <MudProgressCircular Color="Color.Primary" Indeterminate="true" />
         </div>
     }
+    <!-- No Store Selected State -->
     else if (selectedStore == null)
     {
         <MudAlert Severity="Severity.Info" Class="my-4">
@@ -38,17 +48,19 @@
     }
     else
     {
+        <!-- Search and Filters -->
         <MudGrid>
             <MudItem xs="12" md="6">
-                <MudTextField @bind-Value="searchTerm" Label="Search Products"
-                Variant="Variant.Outlined" Adornment="Adornment.Start"
-                AdornmentIcon="@Icons.Material.Filled.Search"
-                AdornmentColor="Color.Primary"
-                Immediate="true"
-                OnKeyUp="@SearchProducts" />
+                <MudTextField @bind-Value="searchTerm" Label="Search Products" 
+                             Variant="Variant.Outlined" Adornment="Adornment.Start" 
+                             AdornmentIcon="@Icons.Material.Filled.Search" 
+                             AdornmentColor="Color.Primary" 
+                             Immediate="true"
+                             OnKeyUp="@SearchProducts" />
             </MudItem>
             <MudItem xs="12" md="3">
-                <MudSelect T="string" Value="selectedCategory" ValueChanged="OnCategoryChanged" Label="Category" Variant="Variant.Outlined">
+            <MudSelect T="string" @bind-Value="selectedCategory" Label="Category" Variant="Variant.Outlined"
+                       OnSelectedItemChanged="@((string value) => SearchProducts())">
                     <MudSelectItem Value="@("All")">All Categories</MudSelectItem>
                     @foreach (var category in categories)
                     {
@@ -57,10 +69,11 @@
                 </MudSelect>
             </MudItem>
             <MudItem xs="12" md="3" Class="d-flex align-center">
-                <MudSwitch @bind-Value="inStockOnly" CheckedChanged="StockOnlyChanged" Color="Color.Primary" Label="In Stock Only" />
+                <MudSwitch @bind-value="inStockOnly" CheckedChanged="StockOnlyChanged" Color="Color.Primary" Label="In Stock Only" />
             </MudItem>
         </MudGrid>
 
+        <!-- No Results State -->
         @if (!filteredProducts.Any())
         {
             <MudAlert Severity="Severity.Info" Class="my-4">
@@ -69,8 +82,9 @@
         }
         else
         {
+            <!-- Products Grid -->
             <MudGrid Class="mt-4">
-                @foreach (var product in GetPaginatedData())
+                @foreach (var product in filteredProducts)
                 {
                     <MudItem xs="12" sm="6" md="4" lg="3">
                         <MudCard Elevation="2" Class="h-100 d-flex flex-column">
@@ -79,38 +93,95 @@
                                 <MudText Typo="Typo.h6" Class="mb-1">@product.Name</MudText>
                                 <MudText Typo="Typo.body2" Color="Color.Secondary">SKU: @product.Sku</MudText>
                                 <MudText Typo="Typo.body2" Class="mb-2">@product.Description</MudText>
-
+                                
                                 <MudDivider Class="my-2" />
-
+                                
                                 <div class="d-flex justify-space-between align-center">
                                     <MudText Typo="Typo.h6" Color="Color.Primary">$@product.RetailPrice.ToString("F2")</MudText>
                                     @if (product.StockQuantity > 0)
                                     {
-                                        <MudChip T="string" Color="Color.Success" Size="Size.Small">In Stock: @product.StockQuantity</MudChip>
+                                        <MudChip T="String" Color="Color.Success" Size="Size.Small">In Stock: @product.StockQuantity</MudChip>
                                     }
                                     else
                                     {
-                                        <MudChip T="string" Color="Color.Error" Size="Size.Small">Out of Stock</MudChip>
+                                        <MudChip T="String" Color="Color.Error" Size="Size.Small">Out of Stock</MudChip>
                                     }
                                 </div>
                             </MudCardContent>
                             <MudCardActions Class="d-flex justify-end">
-                                <MudButton Variant="Variant.Filled" Color="Color.Primary"
-                                StartIcon="@Icons.Material.Filled.AddShoppingCart"
-                                Disabled="@(product.StockQuantity <= 0)"
-                                @onclick="() => AddToCart(product)">Add to Cart</MudButton>
+                                <MudButton Variant="Variant.Text" Color="Color.Primary" 
+                                          @onclick="() => OpenProductDialog(product)">Details</MudButton>
+                                <MudButton Variant="Variant.Filled" Color="Color.Primary" 
+                                          StartIcon="@Icons.Material.Filled.AddShoppingCart"
+                                          Disabled="@(product.StockQuantity <= 0)"
+                                          @onclick="() => AddToCart(product)">Add to Cart</MudButton>
                             </MudCardActions>
                         </MudCard>
                     </MudItem>
                 }
             </MudGrid>
-
-            <!-- Pagination Controls -->
-            <div class="d-flex justify-center mt-4">
-                <MudPagination Count="@(GetPageCount())" SelectedChanged="PageChanged" Color="Color.Primary" />
-            </div>
         }
     }
+
+    <!-- Cart Button with Counter -->
+    <MudFab Color="Color.Primary" StartIcon="@Icons.Material.Filled.ShoppingCart" Label="@($"View Cart ({StateContainer.CartItems.Count})")" 
+           Class="mud-width-full mt-4" OnClick="@(() => cartOpen = true)" />
+
+    <!-- Shopping Cart Drawer -->
+    <MudDrawer @bind-Open="@cartOpen" Anchor="Anchor.End" Elevation="1" Variant="@DrawerVariant.Temporary" Width="350px">
+        <MudDrawerHeader>
+            <MudText Typo="Typo.h6">Shopping Cart</MudText>
+            <MudIconButton Icon="@Icons.Material.Filled.Close" Color="Color.Inherit" Edge="Edge.End" OnClick="@(() => cartOpen = false)" />
+        </MudDrawerHeader>
+        <MudDrawerContainer>
+            @if (!StateContainer.CartItems.Any())
+            {
+                <MudText Typo="Typo.body1" Class="pa-4">Your cart is empty.</MudText>
+            }
+            else
+            {
+                <MudList T="String" Clickable="false" Class="pa-0">
+                    @foreach (var item in StateContainer.CartItems)
+                    {
+                        <MudListItem>
+                            <div class="d-flex align-center">
+                                <MudAvatar Image="@item.ImageUrl" Class="mr-2" />
+                                <div class="flex-grow-1">
+                                    <MudText Typo="Typo.body1">@item.Name</MudText>
+                                    <MudText Typo="Typo.body2" Color="Color.Secondary">
+                                        $@item.Price.ToString("F2") x @item.Quantity
+                                    </MudText>
+                                </div>
+                                <div class="d-flex align-center">
+                                    <MudIconButton Icon="@Icons.Material.Filled.Remove" Size="Size.Small"
+                                                  @onclick="() => UpdateCartItemQuantity(item.ItemId, Math.Max(1, item.Quantity - 1))" />
+                                    <MudText Typo="Typo.body1" Class="mx-2">@item.Quantity</MudText>
+                                    <MudIconButton Icon="@Icons.Material.Filled.Add" Size="Size.Small"
+                                                  @onclick="() => UpdateCartItemQuantity(item.ItemId, Math.Min(item.StockQuantity, item.Quantity + 1))" />
+                                    <MudIconButton Icon="@Icons.Material.Filled.Delete" Size="Size.Small" Color="Color.Error"
+                                                  @onclick="() => RemoveFromCart(item.ItemId)" />
+                                </div>
+                            </div>
+                        </MudListItem>
+                        <MudDivider />
+                    }
+                </MudList>
+                
+                <div class="pa-4">
+                    <MudText Typo="Typo.h6" Class="d-flex justify-space-between mb-4">
+                        <span>Total:</span>
+                        <span>$@CalculateTotal().ToString("F2")</span>
+                    </MudText>
+                    
+                    <MudButton Variant="Variant.Filled" Color="Color.Primary" FullWidth="true"
+                              StartIcon="@Icons.Material.Filled.ShoppingCart"
+                              Href="/checkout">
+                        Checkout
+                    </MudButton>
+                </div>
+            }
+        </MudDrawerContainer>
+    </MudDrawer>
 </MudContainer>
 
 @code {
@@ -120,14 +191,18 @@
     private string selectedCategory = "All";
     private bool inStockOnly = false;
     private bool isLoading = true;
-
+    private bool cartOpen = false;
+    
+    // For product display
     private List<ProductViewModel> allProducts = new List<ProductViewModel>();
     private List<ProductViewModel> filteredProducts = new List<ProductViewModel>();
     private List<string> categories = new List<string>();
 
-    // Pagination variables
-    private int pageSize = 20;
-    private int currentPage = 1;
+    private void StockOnlyChanged(bool value)
+    {
+        inStockOnly = value;
+        SearchProducts();
+    }
 
     protected override async Task OnInitializedAsync()
     {
@@ -136,31 +211,11 @@
         isLoading = false;
     }
 
-    private async Task StoreValueChanged(Site value)
-    {
-        // Check if there are items in the current store's cart before switching
-        if (selectedStore != null && selectedStore.SiteId != value?.SiteId)
-        {
-            // No need to show a dialog, just inform the user their previous store items are saved
-            if (StateContainer.CartHasItemsForStore(selectedStore.SiteId))
-            {
-                Snackbar.Add($"Your items from {selectedStore.SiteName} are saved in your cart", Severity.Info);
-            }
-        }
-
-        selectedStore = value;
-        if (selectedStore != null)
-        {
-            // Reset to first page when store changes
-            currentPage = 1;
-            await LoadProducts();
-        }
-    }
-
     private async Task LoadStores()
     {
         try
         {
+            // Filter to only include active retail stores (not warehouses, etc.)
             int[] notStoreIds = { 1, 2, 3, 9999, 10000 };
             stores = await Context.Sites
                 .Where(s => s.Active == 1 && !notStoreIds.Contains(s.SiteId))
@@ -190,33 +245,15 @@
         }
     }
 
-    private void OnCategoryChanged(string category)
-    {
-        selectedCategory = category;
-        // Reset to first page when category changes
-        currentPage = 1;
-        SearchProducts();
-        StateHasChanged();
-    }
-
-    private void StockOnlyChanged(bool value)
-    {
-        inStockOnly = value;
-        // Reset to first page when stock filter changes
-        currentPage = 1;
-        SearchProducts();
-        StateHasChanged();
-    }
-
     private async Task LoadProducts()
     {
         if (selectedStore == null) return;
-
+        
         isLoading = true;
-        StateHasChanged();
-
+        
         try
         {
+            // Get inventory items for the selected store with their details
             var inventory = await Context.Inventories
                 .Include(i => i.Item)
                 .ThenInclude(item => item.CategoryNavigation)
@@ -224,97 +261,85 @@
                 .ToListAsync();
 
             allProducts = inventory.Select(i => new ProductViewModel
-                {
-                    ItemId = i.ItemId,
-                    Name = i.Item.Name,
-                    Description = i.Item.Description ?? "No description available",
-                    Category = i.Item.Category,
-                    Sku = i.Item.Sku,
-                    StockQuantity = i.Quantity,
-                    CaseSize = i.Item.CaseSize,
-                    RetailPrice = i.Item.RetailPrice,
-                    ImageLocation = i.Item.ImageLocation
-                }).ToList();
-
+            {
+                ItemId = i.ItemId,
+                Name = i.Item.Name,
+                Description = i.Item.Description ?? "No description available",
+                Category = i.Item.Category,
+                Sku = i.Item.Sku,
+                StockQuantity = i.Quantity,
+                CaseSize = i.Item.CaseSize,
+                RetailPrice = i.Item.RetailPrice,
+                ImageLocation = i.Item.ImageLocation
+            }).ToList();
+            
+            // Save the selected store in the state container
             StateContainer.SelectedStore = selectedStore;
-
+            
             ApplyFilters();
         }
         catch (Exception ex)
         {
             Console.WriteLine($"Error loading products: {ex.Message}");
             Snackbar.Add($"Error loading products: {ex.Message}", Severity.Error);
-            allProducts.Clear();
-            filteredProducts.Clear();
         }
         finally
         {
             isLoading = false;
-            StateHasChanged();
+        }
+    }
+
+    protected override async Task OnParametersSetAsync()
+    {
+        // When store is selected, load the products
+        if (selectedStore != null)
+        {
+            await LoadProducts();
         }
     }
 
     private void ApplyFilters()
     {
         var query = allProducts.AsQueryable();
-
+        
+        // Apply search filter
         if (!string.IsNullOrWhiteSpace(searchTerm))
         {
             string term = searchTerm.ToLower();
-            query = query.Where(p =>
-                p.Name.ToLower().Contains(term) ||
+            query = query.Where(p => 
+                p.Name.ToLower().Contains(term) || 
                 p.Description.ToLower().Contains(term) ||
                 p.Sku.ToLower().Contains(term));
         }
-
+        
+        // Apply category filter
         if (selectedCategory != "All")
         {
             query = query.Where(p => p.Category == selectedCategory);
         }
-
+        
+        // Apply in-stock filter
         if (inStockOnly)
         {
             query = query.Where(p => p.StockQuantity > 0);
         }
-
+        
         filteredProducts = query.ToList();
     }
 
     private void SearchProducts()
     {
-        // Reset to first page when search criteria changes
-        currentPage = 1;
         ApplyFilters();
-        StateHasChanged();
-    }
-
-    // Pagination methods
-    private List<ProductViewModel> GetPaginatedData()
-    {
-        return filteredProducts
-            .Skip((currentPage - 1) * pageSize)
-            .Take(pageSize)
-            .ToList();
-    }
-
-    private int GetPageCount()
-    {
-        return (int)Math.Ceiling(filteredProducts.Count / (double)pageSize);
-    }
-
-    private void PageChanged(int page)
-    {
-        currentPage = page;
-        StateHasChanged();
     }
 
     private string GetProductImage(ProductViewModel product)
     {
+        // Return the product image if available, otherwise a placeholder
         if (!string.IsNullOrEmpty(product.ImageLocation))
         {
             return product.ImageLocation;
         }
-        return "images/default.png";
+        return $"/images/products/placeholder.jpg";
     }
 
     private void OpenProductDialog(ProductViewModel product)
@@ -324,62 +349,39 @@
 
     private void AddToCart(ProductViewModel product)
     {
-        if (selectedStore == null)
-        {
-            Snackbar.Add("Please select a store first", Severity.Warning);
-            return;
-        }
-
         var cartItem = new CartItem
-            {
-                ItemId = product.ItemId,
-                Name = product.Name,
-                Description = product.Description,
-                Price = product.RetailPrice,
-                Quantity = 1,
-                ImageUrl = GetProductImage(product),
-                StockQuantity = product.StockQuantity
-            };
-
-        // Include store ID with the AddToCart call
-        StateContainer.AddToCart(cartItem, selectedStore.SiteId, selectedStore.SiteName);
-
-        Snackbar.Add($"{product.Name} added to cart from {selectedStore.SiteName}", Severity.Success, config =>
         {
-            config.VisibleStateDuration = 2000;
-            config.HideTransitionDuration = 200;
-            config.ShowTransitionDuration = 200;
-        });
+            ItemId = product.ItemId,
+            Name = product.Name,
+            Description = product.Description,
+            Price = product.RetailPrice,
+            Quantity = 1,
+            ImageUrl = GetProductImage(product),
+            StockQuantity = product.StockQuantity
+        };
+        
+        StateContainer.AddToCart(cartItem);
+        
+        Snackbar.Add($"{product.Name} added to cart", Severity.Success);
+        cartOpen = true;
     }
 
     private void UpdateCartItemQuantity(int itemId, int quantity)
     {
-        // Use store ID if available
-        if (selectedStore != null)
-        {
-            StateContainer.UpdateCartItemQuantity(selectedStore.SiteId, itemId, quantity);
-        }
+        StateContainer.UpdateCartItemQuantity(itemId, quantity);
     }
 
     private void RemoveFromCart(int itemId)
     {
-        // Use store ID if available
-        if (selectedStore != null)
-        {
-            StateContainer.RemoveFromCart(selectedStore.SiteId, itemId);
-        }
+        StateContainer.RemoveFromCart(itemId);
     }
 
     private decimal CalculateTotal()
     {
-        // Calculate total for current store only
-        if (selectedStore != null)
-        {
-            return StateContainer.GetStoreCartTotal(selectedStore.SiteId);
-        }
-        return 0;
+        return StateContainer.CartItems.Sum(item => item.Price * item.Quantity);
     }
 
+    // View Model for products
     public class ProductViewModel
     {
         public int ItemId { get; set; }
@@ -391,8 +393,5 @@
         public int CaseSize { get; set; }
         public decimal RetailPrice { get; set; }
         public string ImageLocation { get; set; }
-    } 
-    /// <summary>
-    ///FIx images on web side they dont load
-    /// </summary>
+    }
 }

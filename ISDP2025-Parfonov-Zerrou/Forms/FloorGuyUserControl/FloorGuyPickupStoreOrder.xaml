@@ -1,0 +1,185 @@
+﻿<UserControl x:Class="ISDP2025_Parfonov_Zerrou.Forms.FloorGuyUserControl.FloorGuyPickupStoreOrder"
+            xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+            xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+            xmlns:hc="https://handyorg.github.io/handycontrol"
+            xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+            xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+            mc:Ignorable="d">
+    <Grid Margin="10">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <!-- Header Section -->
+        <Grid Grid.Row="0">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="Auto"/>
+            </Grid.ColumnDefinitions>
+
+            <TextBlock Text="Driver Order Loading" 
+                     Style="{StaticResource TextBlockLarge}" 
+                     Margin="5"/>
+
+            <ComboBox Grid.Column="1" 
+                     x:Name="cboStores"
+                     Width="200"
+                     Margin="10,5"
+                     SelectionChanged="cboStores_SelectionChanged"
+                     HorizontalAlignment="Left"/>
+
+            <Button Grid.Column="2" 
+                   x:Name="btnRefresh" 
+                   Content="Refresh" 
+                   Style="{StaticResource ButtonInfo}"
+                   Click="btnRefresh_Click"
+                   Width="80"
+                   Margin="5"/>
+        </Grid>
+
+        <!-- Orders DataGrid -->
+        <GroupBox Grid.Row="1" Header="Assembled Orders" Margin="0,5">
+            <DataGrid x:Name="dgvOrders" 
+                    Height="150"
+                    AutoGenerateColumns="False"
+                    SelectionChanged="dgvOrders_SelectionChanged"
+                    CanUserAddRows="False"
+                    IsReadOnly="True"
+                    SelectionMode="Single">
+                <DataGrid.Columns>
+                    <DataGridTextColumn Header="ID" Binding="{Binding TxnId}" Width="60"/>
+                    <DataGridTextColumn Header="Store" Binding="{Binding StoreName}" Width="150"/>
+                    <DataGridTextColumn Header="Type" Binding="{Binding TxnType}" Width="100"/>
+                    <DataGridTextColumn Header="Ship Date" Binding="{Binding ShipDate, StringFormat={}{0:MM/dd/yyyy}}" Width="100"/>
+                    <DataGridTextColumn Header="Status" Binding="{Binding TxnStatus}" Width="100"/>
+                    <DataGridTextColumn Header="Notes" Binding="{Binding Notes}" Width="*"/>
+                </DataGrid.Columns>
+            </DataGrid>
+        </GroupBox>
+
+        <!-- Main Content Area -->
+        <Grid Grid.Row="2" Margin="0,5">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+
+            <!-- Order Items -->
+            <GroupBox Grid.Column="0" Header="Assembly Area Items">
+                <DockPanel>
+                    <TextBox x:Name="txtSearch"
+                            DockPanel.Dock="Top"
+                            TextChanged="SearchBox_TextChanged"
+                            Style="{StaticResource TextBoxExtend}"
+                            hc:InfoElement.Placeholder="Search items by ID or name..."
+                            Margin="0,5"/>
+
+                    <DataGrid x:Name="dgvOrderItems" 
+                             AutoGenerateColumns="False"
+                             SelectionChanged="dgvOrderItems_SelectionChanged"
+                             CanUserAddRows="False"
+                             IsReadOnly="True"
+                             SelectionMode="Single">
+                        <DataGrid.Columns>
+                            <DataGridTextColumn Header="ID" Binding="{Binding ItemId}" Width="60"/>
+                            <DataGridTextColumn Header="Name" Binding="{Binding Name}" Width="*"/>
+                            <DataGridTextColumn Header="Required" Binding="{Binding Quantity}" Width="70"/>
+                            <DataGridTextColumn Header="Case Size" Binding="{Binding CaseSize}" Width="70"/>
+                        </DataGrid.Columns>
+                        <DataGrid.RowStyle>
+                            <Style TargetType="DataGridRow">
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding InsufficientStock}" Value="True">
+                                        <Setter Property="Background" Value="LightPink"/>
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </DataGrid.RowStyle>
+                    </DataGrid>
+                </DockPanel>
+            </GroupBox>
+
+            <!-- Transfer Buttons -->
+            <StackPanel Grid.Column="1" 
+                       VerticalAlignment="Center" 
+                       Margin="10">
+                <Button x:Name="btnMoveToLoaded" 
+                       Content="→" 
+                       Style="{StaticResource ButtonPrimary}"
+                       Click="btnMoveToLoaded_Click"
+                       Width="40"
+                       Margin="5"/>
+                <Button x:Name="btnMoveBack" 
+                       Content="←" 
+                       Style="{StaticResource ButtonDanger}"
+                       Click="btnMoveBack_Click"
+                       Width="40"
+                       Margin="5"/>
+            </StackPanel>
+
+            <!-- Loaded Items -->
+            <GroupBox Grid.Column="2" Header="Items Selected for Loading">
+                <DockPanel>
+                    <Button x:Name="btnComplete"
+                           DockPanel.Dock="Bottom"
+                           Content="Complete Loading"
+                           Style="{StaticResource ButtonSuccess}"
+                           Click="btnComplete_Click"
+                           Width="150"
+                           Margin="5"
+                           IsEnabled="False"/>
+
+                    <DataGrid x:Name="dgvLoadedItems" 
+                             AutoGenerateColumns="False"
+                             SelectionChanged="dgvLoadedItems_SelectionChanged"
+                             CanUserAddRows="False"
+                             IsReadOnly="True"
+                             SelectionMode="Single">
+                        <DataGrid.Columns>
+                            <DataGridTextColumn Header="ID" Binding="{Binding ItemId}" Width="60"/>
+                            <DataGridTextColumn Header="Name" Binding="{Binding Name}" Width="*"/>
+                            <DataGridTextColumn Header="Selected" Binding="{Binding Quantity}" Width="80"/>
+                            <DataGridTextColumn Header="Case Size" Binding="{Binding CaseSize}" Width="80"/>
+                        </DataGrid.Columns>
+                    </DataGrid>
+                </DockPanel>
+            </GroupBox>
+        </Grid>
+
+        <!-- Signature Area - Initially Hidden -->
+        <GroupBox x:Name="signatureSection" Grid.Row="3" Header="Driver Signature" Margin="0,10,0,0" Visibility="Collapsed">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+
+                <Border BorderBrush="LightGray" BorderThickness="1" Margin="5">
+                    <InkCanvas x:Name="inkSignature" Height="100" Background="WhiteSmoke"/>
+                </Border>
+
+                <StackPanel Grid.Column="1" Margin="5" VerticalAlignment="Center">
+                    <Button x:Name="btnSign" 
+                            Content="Confirm Signature" 
+                            Style="{StaticResource ButtonPrimary}"
+                            Click="btnSign_Click"
+                            Width="120" 
+                            Margin="0,5"/>
+
+                    <Button x:Name="btnClearSignature" 
+                            Content="Reset Signature" 
+                            Style="{StaticResource ButtonWarning}"
+                            Click="btnClearSignature_Click"
+                            Width="120" 
+                            Margin="0,5"
+                            IsEnabled="False"/>
+                </StackPanel>
+            </Grid>
+        </GroupBox>
+    </Grid>
+</UserControl>

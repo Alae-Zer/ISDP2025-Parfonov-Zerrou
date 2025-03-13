@@ -176,10 +176,10 @@
 
 
                     <Button x:Name="btnSettings" Tag="Settings" Height="41" Margin="0,9" 
-                            Style="{StaticResource SidebarButtonStyle}">
+                        Style="{StaticResource SidebarButtonStyle}" Click="btnSettings_Click">
                         <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
-                            <Label Style="{StaticResource SidebarLabelStyle}" Content="&#xF013;" Padding="9,5,0,5"/>
-                            <TextBlock Text="Settings" VerticalAlignment="Center"/>
+                            <Label Style="{StaticResource SidebarLabelStyle}" Content="&#xF48B;" Padding="9,5,0,5"/>
+                            <TextBlock Text="Pickup Order" VerticalAlignment="Center"/>
                         </StackPanel>
                     </Button>
                 </StackPanel>
@@ -209,7 +209,7 @@
             <Grid Background="White" Margin="0">
                 <!-- Header -->
                 <DockPanel Background="#EAEAEA" Height="50" VerticalAlignment="Top">
-                    <TextBlock x:Name="txtUserLocation" Text="Current Location: [Location Name]" 
+                    <TextBlock x:Name="txtUserLocation" Text="Current Location: " 
                              Foreground="#333" FontSize="16" FontWeight="Bold" 
                              VerticalAlignment="Center" Margin="10,0,0,0" DockPanel.Dock="Left" />
 

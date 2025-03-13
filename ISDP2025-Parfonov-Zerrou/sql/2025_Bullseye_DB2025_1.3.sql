@@ -209,6 +209,7 @@ CREATE TABLE `delivery` (
   `distanceCost` decimal(10,2) NOT NULL,
   `vehicleType` varchar(20) NOT NULL,
   `notes` varchar(255) DEFAULT NULL,
+  `signature` blob DEFAULT NULL,
   FOREIGN KEY (`vehicleType`) REFERENCES `vehicle` (`vehicleType`)  
 );
 

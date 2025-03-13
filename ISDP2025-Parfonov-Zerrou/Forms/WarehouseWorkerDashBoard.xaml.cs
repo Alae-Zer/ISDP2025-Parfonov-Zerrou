@@ -25,6 +25,7 @@ namespace ISDP2025_Parfonov_Zerrou
             logoutManager = new LogoutManager(this, context);
             logoutManager.StartTimer();
             txtLoggedUser.Text = "Your Username is : " + employee.Username;
+            InitializeWindow();
         }
 
         private void InitializeWindow()
@@ -73,6 +74,11 @@ namespace ISDP2025_Parfonov_Zerrou
         private void btnPermissions_Click(object sender, RoutedEventArgs e)
         {
             MainContent.Content = new FloorGuyFulfil(employee);
+        }
+
+        private void btnSettings_Click(object sender, RoutedEventArgs e)
+        {
+            MainContent.Content = new FloorGuyPickupStoreOrder(employee);
         }
     }
 }

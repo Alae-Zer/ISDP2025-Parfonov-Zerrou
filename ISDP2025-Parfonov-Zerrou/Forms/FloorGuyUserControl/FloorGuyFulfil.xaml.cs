@@ -1,10 +1,10 @@
-﻿using System.Windows;
-using System.Windows.Controls;
-using HandyControl.Controls;
+﻿using HandyControl.Controls;
 using HandyControl.Data;
 using ISDP2025_Parfonov_Zerrou.Functionality;
 using ISDP2025_Parfonov_Zerrou.Models;
 using Microsoft.EntityFrameworkCore;
+using System.Windows;
+using System.Windows.Controls;
 
 //ISDP Project
 //Mohammed Alae-Zerrou, Serhii Parfonov
@@ -160,29 +160,35 @@ namespace ISDP2025_Parfonov_Zerrou.Forms.FloorGuyUserControl
                 var selectedOrder = dgvOrders.SelectedItem as OrderViewModel;
                 if (selectedOrder == null) return;
 
-                if (item.CurrentStock < item.Quantity)
-                {
-                    Growl.Warning(new GrowlInfo
-                    {
-                        Message = $"Insufficient stock for {item.Name}. Current stock: {item.CurrentStock}",
-                        ShowDateTime = false,
-                        WaitTime = 3,
-                    });
-                    return;
-                }
-
                 using (var context = new BestContext())
                 {
+                    // Check if destination inventory exists
                     var destInventory = context.Inventories
                         .FirstOrDefault(i => i.ItemId == item.ItemId && i.SiteId == 3);
 
                     if (destInventory == null)
                     {
+                        // Get source inventory to copy its ItemLocation
+                        var sourceInventory = context.Inventories
+                            .FirstOrDefault(i => i.ItemId == item.ItemId && i.SiteId == 2);
+
+                        if (sourceInventory == null)
+                        {
+                            Growl.Error(new GrowlInfo
+                            {
+                                Message = "Source inventory not found",
+                                ShowDateTime = false,
+                                WaitTime = 3
+                            });
+                            return;
+                        }
+
+                        // Create destination inventory record
                         destInventory = new Inventory
                         {
                             ItemId = item.ItemId,
                             SiteId = 3,
-                            ItemLocation = "Stock",
+                            ItemLocation = sourceInventory.ItemLocation, // Copy from source
                             Quantity = 0,
                             OptimumThreshold = 0
                         };
@@ -191,18 +197,18 @@ namespace ISDP2025_Parfonov_Zerrou.Forms.FloorGuyUserControl
                     }
                 }
 
+                // Now try to move inventory
                 if (MoveInventory.Move(item.ItemId, item.CaseSize, 2, 3))
                 {
+                    // Update UI
                     item.CurrentStock -= item.CaseSize;
                     item.Quantity -= item.CaseSize;
 
+                    // Add to assembled items
                     var assembledItem = assembledItems.FirstOrDefault(i => i.ItemId == item.ItemId);
                     if (assembledItem != null)
-                    {
                         assembledItem.Quantity += item.CaseSize;
-                    }
                     else
-                    {
                         assembledItems.Add(new OrderItemViewModel
                         {
                             ItemId = item.ItemId,
@@ -212,29 +218,25 @@ namespace ISDP2025_Parfonov_Zerrou.Forms.FloorGuyUserControl
                             CaseSize = item.CaseSize,
                             CurrentStock = item.CurrentStock
                         });
-                    }
 
-                    var originalItem = orderItems.FirstOrDefault(i => i.ItemId == item.ItemId);
-                    if (originalItem != null && originalItem.Quantity <= 0)
-                    {
-                        orderItems.Remove(originalItem);
-                    }
-
-                    Growl.Success(new GrowlInfo
-                    {
-                        Message = $"Moving {item.CaseSize} units of {item.Name} to assembly area",
-                        ShowDateTime = false,
-                        WaitTime = 2
-                    });
+                    if (item.Quantity <= 0)
+                        orderItems.Remove(item);
 
                     RefreshGrids();
                     CheckOrderCompletion();
+
+                    Growl.Success(new GrowlInfo
+                    {
+                        Message = $"Moved {item.CaseSize} units of {item.Name} to assembly",
+                        ShowDateTime = false,
+                        WaitTime = 2
+                    });
                 }
                 else
                 {
-                    Growl.Warning(new GrowlInfo
+                    Growl.Error(new GrowlInfo
                     {
-                        Message = $"Failed to move {item.Name} from warehouse to assembly area. Please check inventory levels.",
+                        Message = "Failed to move inventory",
                         ShowDateTime = false,
                         WaitTime = 3
                     });
@@ -242,7 +244,7 @@ namespace ISDP2025_Parfonov_Zerrou.Forms.FloorGuyUserControl
             }
             catch (Exception ex)
             {
-                HandyControl.Controls.MessageBox.Show($"Error moving item: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                HandyControl.Controls.MessageBox.Show($"Error: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
 
@@ -401,8 +403,19 @@ namespace ISDP2025_Parfonov_Zerrou.Forms.FloorGuyUserControl
                                 ShowDateTime = false,
                                 WaitTime = 3
                             });
+
+                            // Just refresh the orders data without resetting controls
                             LoadOpenOrders();
-                            InitializeControls(true);
+
+                            // Clear assembled items but don't reset the DataGridViews
+                            assembledItems.Clear();
+                            dgvAssembledItems.ItemsSource = null;
+                            dgvAssembledItems.ItemsSource = assembledItems;
+
+                            // Update button states based on current selection
+                            btnComplete.IsEnabled = false;
+                            btnMoveToAssembled.IsEnabled = false;
+                            btnMoveBack.IsEnabled = false;
                         }
                     }
                 }

@@ -194,23 +194,23 @@
                     </Button>
 
                     <!-- Permissions Button -->
-                    <Button x:Name="btnPermissions" Tag="PermissionsPage" Height="41" Margin="0,9" 
-                            Style="{StaticResource SidebarButtonStyle}">
+                    <Button x:Name="btnOnlineOrders" Tag="PermissionsPage" Height="41" Margin="0,9" 
+                            Style="{StaticResource SidebarButtonStyle}" Click="btnOnlineOrders_Click">
                         <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
-                            <Label Style="{StaticResource SidebarLabelStyle}" Content="&#xF4FF;" Padding="9,5,0,5" Margin="10,0,10,0" Width="34" />
-                            <TextBlock Text="Permissions" VerticalAlignment="Center" />
+                                    <Label Style="{StaticResource SidebarLabelStyle}" Content="&#xF0AC;" Padding="9,5,0,5" Margin="10,0,10,0" Width="34" />
+                            <TextBlock Text="Online Orders" VerticalAlignment="Center" />
                         </StackPanel>
                     </Button>
 
 
-                    <Button x:Name="btnSettings" Tag="Settings" Height="41" Margin="0,9" 
-                            Style="{StaticResource SidebarButtonStyle}" Click="btnSettings_Click">
-                        <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
-                            <Label Style="{StaticResource SidebarLabelStyle}" Content="&#xF013;" Padding="9,5,0,5"/>
-                            <TextBlock Text="Settings" VerticalAlignment="Center"/>
-                        </StackPanel>
-                    </Button>
-                    <Button x:Name="btnOrders" Tag="SuppliersPage" Height="41" Margin="0,9" 
+                            <Button x:Name="btnSettings" Tag="Settings" Height="41" Margin="0,9" 
+                                Style="{StaticResource SidebarButtonStyle}" Click="btnSettings_Click">
+                                <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                                    <Label Style="{StaticResource SidebarLabelStyle}" Content="&#xF09D;" Padding="9,5,0,5"/>
+                                    <TextBlock Text="Receive and Accept" VerticalAlignment="Center"/>
+                                </StackPanel>
+                            </Button>
+                            <Button x:Name="btnOrders" Tag="SuppliersPage" Height="41" Margin="0,9" 
                         Style="{StaticResource SidebarButtonStyle}" Click="btnOrders_Click">
                         <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
                             <Label Style="{StaticResource SidebarLabelStyle}" Content="&#xf07a;" Padding="7,5,2,5" />

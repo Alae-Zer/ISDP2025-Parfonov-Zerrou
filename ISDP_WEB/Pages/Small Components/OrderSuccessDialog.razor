@@ -1,0 +1,58 @@
+﻿@using MudBlazor
+
+<MudDialog>
+    <DialogContent>
+        <MudText Typo="Typo.h6" Class="d-flex align-center mb-2">
+            <MudIcon Icon="@Icons.Material.Filled.CheckCircle" Color="Color.Success" Class="mr-2" />
+            Order Placed Successfully
+        </MudText>
+        
+        <MudText Typo="Typo.body1" Class="mb-4">
+            @ContentText
+        </MudText>
+        
+        @if (OrderIds != null && OrderIds.Count > 0)
+        {
+            <MudPaper Class="pa-4 mb-4" Outlined="true">
+                @if (OrderIds.Count == 1)
+                {
+                    <MudText Typo="Typo.body1">Order ID: <b>@OrderIds[0]</b></MudText>
+                    <MudText Typo="Typo.body2">Please keep this ID to track your order status.</MudText>
+                }
+                else
+                {
+                    <MudText Typo="Typo.body1" Class="mb-2">Your Order IDs:</MudText>
+                    <MudList T="string" Dense="true" DisablePadding="true">
+                        @foreach (var orderId in OrderIds)
+                        {
+                            <MudListItem>
+                                <MudText Typo="Typo.body2">Order #@(OrderIds.IndexOf(orderId) + 1): <b>@orderId</b></MudText>
+                            </MudListItem>
+                        }
+                    </MudList>
+                    <MudText Typo="Typo.body2" Class="mt-2">Please keep these IDs to track your order statuses.</MudText>
+                }
+            </MudPaper>
+        }
+        
+        <MudText Typo="Typo.body2">
+            You'll receive a notification when your order is ready for pickup at the store.
+        </MudText>
+    </DialogContent>
+    <DialogActions>
+        <MudButton Color="Color.Secondary" OnClick="Cancel">Continue Shopping</MudButton>
+        <MudButton Color="@Color" OnClick="Submit">@ButtonText</MudButton>
+    </DialogActions>
+</MudDialog>
+
+@code {
+    [CascadingParameter] IMudDialogInstance MudDialog { get; set; }
+    
+    [Parameter] public string ContentText { get; set; }
+    [Parameter] public string ButtonText { get; set; }
+    [Parameter] public Color Color { get; set; }
+    [Parameter] public List<int> OrderIds { get; set; } = new List<int>();
+
+    void Submit() => MudDialog.Close(DialogResult.Ok(true));
+    void Cancel() => MudDialog.Close(DialogResult.Cancel());
+}

@@ -16,20 +16,20 @@
         <MudGrid>
             <MudItem xs="12" md="6">
                 <MudTextField @bind-Value="searchOrderId" Label="Order ID" 
-                             Variant="Variant.Outlined" Class="mb-3" />
+                Variant="Variant.Outlined" Class="mb-3" />
             </MudItem>
             <MudItem xs="12" md="6">
                 <MudTextField @bind-Value="searchEmail" Label="Email Address" 
-                             Variant="Variant.Outlined" Class="mb-3" />
+                Variant="Variant.Outlined" Class="mb-3" />
             </MudItem>
             <MudItem xs="12">
                 <MudButton Variant="Variant.Filled" Color="Color.Primary" 
-                          OnClick="SearchOrder" Class="mr-2"
-                          StartIcon="@Icons.Material.Filled.Search">
+                OnClick="SearchOrder" Class="mr-2"
+                StartIcon="@Icons.Material.Filled.Search">
                     Search
                 </MudButton>
                 <MudButton Variant="Variant.Outlined" Color="Color.Secondary" 
-                          OnClick="ClearSearch">
+                OnClick="ClearSearch">
                     Clear
                 </MudButton>
             </MudItem>
@@ -49,7 +49,7 @@
                 <MudItem xs="12">
                     <MudText Typo="Typo.h6" Class="mb-3">Order Details</MudText>
                 </MudItem>
-                
+
                 <MudItem xs="12" md="6">
                     <MudList T="string">
                         <MudListItem>
@@ -59,12 +59,15 @@
                         </MudListItem>
                         <MudListItem>
                             <MudText Typo="Typo.body1">
-                                <strong>Date:</strong> @order.CreatedDate.ToString("MMM dd, yyyy hh:mm tt")
+                                <strong>Delivery Date:</strong> @order.ShipDate.ToString("MMM dd, yyyy hh:mm tt")
                             </MudText>
                         </MudListItem>
                         <MudListItem>
                             <MudText Typo="Typo.body1">
-                                <strong>Store:</strong> @(order.SiteIdtoNavigation?.SiteName ?? "Unknown")
+                                <strong>Order Made by:</strong> <br> @foreach (var status in @order.Notes.Split(","))
+                                {
+                                    <MudText class="pt-1">@status</MudText>
+                                }
                             </MudText>
                         </MudListItem>
                     </MudList>
@@ -74,17 +77,18 @@
                     <MudList T="string">
                         <MudListItem>
                             <MudText Typo="Typo.body1">
-                                <strong>Status:</strong> 
-                                <MudChip Color="@GetStatusColor(order.TxnStatus)" Size="Size.Small">@order.TxnStatus</MudChip>
+                                <strong>Store:</strong> @(order.SiteIdtoNavigation?.SiteName)
                             </MudText>
                         </MudListItem>
                         <MudListItem>
                             <MudText Typo="Typo.body1">
-                                <strong>Type:</strong> @order.TxnType
+                                <strong>Status:</strong>
+                                <MudChip Color="@GetStatusColor(order.TxnStatus)" Size="Size.Small">@order.TxnStatus</MudChip>
                             </MudText>
                         </MudListItem>
                     </MudList>
                 </MudItem>
+
                 
                 <MudItem xs="12">
                     <MudExpansionPanels>
@@ -102,37 +106,36 @@
                         </MudExpansionPanel>
                     </MudExpansionPanels>
                 </MudItem>
-                
+
+                <MudItem xs="12" Class="mt-4">
+                    <MudText Typo="Typo.h6">Order Progress</MudText>
+                    <MudTimeline TimelineOrientation="TimelineOrientation.Horizontal" Class="mb-8">
+                        @foreach (var status in GetOrderStatuses(order.TxnStatus))
+                        {
+                            <MudTimelineItem Color="@(status.IsCompleted ? Color.Success : Color.Default)"
+                                             Elevation="1">
+                                <ItemContent>
+                                    <MudText Typo="Typo.h6">@status.Name</MudText>
+                                    <MudText Typo="Typo.body2">@status.Description</MudText>
+                                </ItemContent>
+                            </MudTimelineItem>
+                        }
+                    </MudTimeline>
+                </MudItem>
+
                 <MudItem xs="12">
-                    <MudExpansionPanels>
-                        <MudExpansionPanel Text="Order History">
-                            <MudTable Items="@orderAudit" Hover="true" Breakpoint="Breakpoint.Sm" LoadingProgressColor="Color.Info">
-                                <HeaderContent>
-                                    <MudTh>Date</MudTh>
-                                    <MudTh>Status</MudTh>
-                                    <MudTh>Notes</MudTh>
-                                </HeaderContent>
-                                <RowTemplate>
-                                    <MudTd DataLabel="Date">@context.CreatedDate.ToString("MMM dd, yyyy hh:mm tt")</MudTd>
-                                    <MudTd DataLabel="Status">
-                                        <MudChip T="string" Color="@GetStatusColor(context.Status)" Size="Size.Small">@context.Status</MudChip>
-                                    </MudTd>
-                                    <MudTd DataLabel="Notes">@context.Notes</MudTd>
-                                </RowTemplate>
-                            </MudTable>
-                        </MudExpansionPanel>
-                    </MudExpansionPanels>
+                    <MudPaper Class="pa-3 mt-3" Elevation="0">
+                        <MudText Typo="Typo.h6" Align="Align.Right">
+                            Total Items: @orderItems.Sum(i => i.Quantity)
+                        </MudText>
+                    </MudPaper>
                 </MudItem>
             </MudGrid>
         </MudPaper>
-        
-        <MudText Typo="Typo.body2" Class="my-4">
-            @GetStatusMessage(order.TxnStatus)
-        </MudText>
     }
     else if (showNoOrderFound)
     {
-        <MudAlert Severity="Severity.Info" Class="my-4">
+        <MudAlert Severity="Severity.Warning" Class="my-4">
             No order found with the provided information. Please check your order ID and email address.
         </MudAlert>
     }
@@ -150,6 +153,27 @@
     private Txn order;
     private List<Txnitem> orderItems = new List<Txnitem>();
     private List<Txnaudit> orderAudit = new List<Txnaudit>();
+
+    private List<OrderStatus> GetOrderStatuses(string currentStatus)
+    {
+        var statuses = new List<OrderStatus>
+    {
+        new OrderStatus { Name = "Order Placed", Description = "Your order has been received by our system.", IsCompleted = true },
+        new OrderStatus { Name = "Processing", Description = "Store staff are reviewing your order.", IsCompleted = currentStatus != "NEW" },
+        new OrderStatus { Name = "Assembling", Description = "Your items are being gathered and prepared.", IsCompleted = currentStatus == "ASSEMBLING" || currentStatus == "ASSEMBLED" || currentStatus == "READY" || currentStatus == "COMPLETE" },
+        new OrderStatus { Name = "Ready for Pickup", Description = "Your order is ready to be picked up from the store.", IsCompleted = currentStatus == "READY" || currentStatus == "COMPLETE" },
+        new OrderStatus { Name = "Completed", Description = "Your order has been picked up and completed.", IsCompleted = currentStatus == "COMPLETE" }
+    };
+
+        return statuses;
+    }
+
+    public class OrderStatus
+    {
+        public string Name { get; set; }
+        public string Description { get; set; }
+        public bool IsCompleted { get; set; }
+    }
 
     protected override async Task OnInitializedAsync()
     {

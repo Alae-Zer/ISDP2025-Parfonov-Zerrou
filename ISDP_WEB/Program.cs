@@ -1,12 +1,19 @@
 using ISDP_WEB.Pages.Services;
 using ISDP2025_Parfonov_Zerrou.Models;
 using Microsoft.EntityFrameworkCore;
+using MudBlazor;
 using MudBlazor.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddRazorPages();
 builder.Services.AddServerSideBlazor();
 builder.Services.AddMudServices();
+
+builder.Services.AddMudServices(config =>
+{
+    config.SnackbarConfiguration.PositionClass = Defaults.Classes.Position.TopRight;
+    // Other configuration as needed
+});
 
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection") ??
     "server=localhost;database=bullseyedb2025;user=admin;password=admin";

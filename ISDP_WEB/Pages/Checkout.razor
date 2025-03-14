@@ -1,12 +1,14 @@
 ﻿@page "/checkout"
 @using ISDP2025_Parfonov_Zerrou.Models
 @using ISDP_WEB.Pages.Services
+@using ISDP_WEB.Pages.Small_Components
 @using Microsoft.EntityFrameworkCore
 @using System.ComponentModel.DataAnnotations
 @inject BestContext Context
 @inject StateContainer StateContainer
 @inject ISnackbar Snackbar
 @inject NavigationManager NavigationManager
+@inject IDialogService DialogService
 
 <MudContainer MaxWidth="MaxWidth.Large" Class="pt-4 pb-8">
     <MudText Typo="Typo.h4" Class="mb-4">Checkout</MudText>
@@ -96,8 +98,16 @@
                                 <MudDivider Class="my-2" />
 
                                 <div class="d-flex justify-space-between">
-                                    <MudText Typo="Typo.body1">Store Total:</MudText>
+                                    <MudText Typo="Typo.body1">Store Subtotal:</MudText>
                                     <MudText Typo="Typo.body1" Color="Color.Primary">$@storeCart.Total.ToString("F2")</MudText>
+                                </div>
+                                <div class="d-flex justify-space-between">
+                                    <MudText Typo="Typo.body1">Tax (15%):</MudText>
+                                    <MudText Typo="Typo.body1" Color="Color.Primary">$@(CalculateTax(storeCart.Total).ToString("F2"))</MudText>
+                                </div>
+                                <div class="d-flex justify-space-between">
+                                    <MudText Typo="Typo.h6">Store Total:</MudText>
+                                    <MudText Typo="Typo.h6" Color="Color.Primary">$@(CalculateStoreTotal(storeCart.Total).ToString("F2"))</MudText>
                                 </div>
                             </MudCardContent>
                         </MudCard>
@@ -105,6 +115,14 @@
 
                     <MudDivider Class="my-2" />
 
+                    <div class="d-flex justify-space-between">
+                        <MudText Typo="Typo.body1">Subtotal:</MudText>
+                        <MudText Typo="Typo.body1">$@CalculateSubtotal().ToString("F2")</MudText>
+                    </div>
+                    <div class="d-flex justify-space-between">
+                        <MudText Typo="Typo.body1">Tax (15%):</MudText>
+                        <MudText Typo="Typo.body1">$@CalculateTotalTax().ToString("F2")</MudText>
+                    </div>
                     <div class="d-flex justify-space-between mb-4">
                         <MudText Typo="Typo.h6">Grand Total:</MudText>
                         <MudText Typo="Typo.h6" Color="Color.Primary">$@CalculateGrandTotal().ToString("F2")</MudText>
@@ -135,51 +153,44 @@
     }
 </MudContainer>
 
-@if (showOrderSuccessDialog)
-{
-    <MudDialog Open="showOrderSuccessDialog" DisableBackdropClick="true">
-        <TitleContent>
-            <MudText Typo="Typo.h6">
-                <MudIcon Icon="@Icons.Material.Filled.CheckCircle" Color="Color.Success" Class="mr-2" />
-                Order Placed Successfully
-            </MudText>
-        </TitleContent>
-        <DialogContent>
-            <MudText Typo="Typo.body1" Class="mb-4">
-                Thank you for your order! Your order has been received and is being processed.
-            </MudText>
-
-            <MudPaper Class="pa-4 mb-4" Outlined="true">
-                <MudText Typo="Typo.body1">Order ID: <b>@lastOrderId</b></MudText>
-                <MudText Typo="Typo.body2">Please keep this ID to track your order status.</MudText>
-            </MudPaper>
-
-            <MudText Typo="Typo.body2">
-                You'll receive a notification when your order is ready for pickup at the store.
-            </MudText>
-        </DialogContent>
-        <DialogActions>
-            <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="CloseSuccessDialog">
-                Continue Shopping
-            </MudButton>
-            <MudButton Variant="Variant.Outlined" Color="Color.Primary" OnClick="ViewOrder">
-                View Order
-            </MudButton>
-        </DialogActions>
-    </MudDialog>
-}
-
 @code {
     private string customerName = "";
     private string customerEmail = "";
     private string customerPhone = "";
     private bool isProcessing = false;
-    private bool showOrderSuccessDialog = false;
-    private int lastOrderId;
+    private List<int> orderIds = new List<int>(); // To track all order IDs
 
-    private decimal CalculateGrandTotal()
+    // Tax rate constant
+    private const decimal TAX_RATE = 0.15m;  // 15%
+
+    // Calculate subtotal (before tax)
+    private decimal CalculateSubtotal()
     {
         return StateContainer.GetStoreCarts().Sum(cart => cart.Total);
+    }
+
+    // Calculate tax for a single amount
+    private decimal CalculateTax(decimal amount)
+    {
+        return amount * TAX_RATE;
+    }
+
+    // Calculate total tax for all carts
+    private decimal CalculateTotalTax()
+    {
+        return CalculateTax(CalculateSubtotal());
+    }
+
+    // Calculate total for a single store (with tax)
+    private decimal CalculateStoreTotal(decimal storeSubtotal)
+    {
+        return storeSubtotal + CalculateTax(storeSubtotal);
+    }
+
+    // Calculate grand total (with tax)
+    private decimal CalculateGrandTotal()
+    {
+        return CalculateSubtotal() + CalculateTotalTax();
     }
 
     private async Task PlaceOrder()
@@ -204,9 +215,17 @@
 
         try
         {
+            // Clear the order IDs list before processing new orders
+            orderIds.Clear();
+
             // Process orders for each store
             foreach (var storeCart in StateContainer.GetStoreCarts())
             {
+                // Calculate tax and total for this store
+                decimal storeSubtotal = storeCart.Total;
+                decimal storeTax = CalculateTax(storeSubtotal);
+                decimal storeTotal = storeSubtotal + storeTax;
+
                 // Create a new transaction for this order
                 var txn = new Txn
                     {
@@ -219,14 +238,14 @@
                         BarCode = GenerateBarcode(),
                         CreatedDate = DateTime.Now,
                         EmergencyDelivery = 0,
-                        Notes = $"Customer: {customerName}, Email: {customerEmail}, Phone: {customerPhone}"
+                        Notes = $"Customer: {customerName}, Email: {customerEmail}, Phone: {customerPhone}, Subtotal: ${storeSubtotal:F2}, Tax: ${storeTax:F2}, Total: ${storeTotal:F2}"
                     };
 
                 Context.Txns.Add(txn);
                 await Context.SaveChangesAsync();
 
-                // Save the last order ID for the success dialog
-                lastOrderId = txn.TxnId;
+                // Add this order ID to our list
+                orderIds.Add(txn.TxnId);
 
                 // Add all items to the transaction
                 foreach (var item in storeCart.Items)
@@ -250,7 +269,7 @@
                         Status = "NEW",
                         TxnDate = DateTime.Now,
                         SiteId = storeCart.StoreId,
-                        Notes = $"Online order placed by {customerName}"
+                        Notes = $"Online order placed by {customerName}. Subtotal: ${storeSubtotal:F2}, Tax: ${storeTax:F2}, Total: ${storeTotal:F2}"
                     };
 
                 Context.Txnaudits.Add(txnAudit);
@@ -260,15 +279,57 @@
             // Clear all carts after successful order
             StateContainer.ClearAllCarts();
 
+            // Prepare order info for the dialog
+            string orderInfoText;
+            if (orderIds.Count == 1)
+            {
+                orderInfoText = $"Thank you for your order! Your order ID is: {orderIds[0]}.";
+            }
+            else
+            {
+                // Multiple orders were created
+                orderInfoText = "Thank you for your orders! Your order IDs are:\n";
+                int index = 1;
+                foreach (var orderId in orderIds)
+                {
+                    var order = await Context.Txns
+                        .Include(t => t.SiteIdtoNavigation)
+                        .FirstOrDefaultAsync(t => t.TxnId == orderId);
+
+                    orderInfoText += $"Order #{index}: {orderId} - {order?.SiteIdtoNavigation?.SiteName ?? "Unknown Store"}\n";
+                    index++;
+                }
+            }
+
             // Show success dialog
-            showOrderSuccessDialog = true;
+            var parameters = new DialogParameters();
+            parameters.Add("ContentText", orderInfoText);
+            parameters.Add("ButtonText", "View Orders");
+            parameters.Add("Color", Color.Primary);
+            parameters.Add("OrderIds", orderIds);
+
+            var options = new DialogOptions()
+                {
+                    CloseButton = true,
+                    MaxWidth = MaxWidth.Medium
+                };
+
+            var dialog = await DialogService.ShowAsync<OrderSuccessDialog>("Order Placed Successfully", parameters, options);
+            var result = await dialog.Result;
+
+            if (result.Data is bool viewOrder && viewOrder)
+            {
+                // If multiple orders, go to first one
+                NavigationManager.NavigateTo($"/view-order/{orderIds[0]}");
+            }
+            else
+            {
+                NavigationManager.NavigateTo("/buy-products");
+            }
         }
         catch (Exception ex)
         {
             Snackbar.Add($"Error placing order: {ex.Message}", Severity.Error);
-        }
-        finally
-        {
             isProcessing = false;
             StateHasChanged();
         }
@@ -278,17 +339,5 @@
     {
         // Generate a unique barcode for the transaction
         return $"ONLINE-{DateTime.Now:yyyyMMddHHmmss}-{Guid.NewGuid().ToString().Substring(0, 8)}";
-    }
-
-    private void CloseSuccessDialog()
-    {
-        showOrderSuccessDialog = false;
-        NavigationManager.NavigateTo("/buy-products");
-    }
-
-    private void ViewOrder()
-    {
-        showOrderSuccessDialog = false;
-        NavigationManager.NavigateTo($"/view-order/{lastOrderId}");
     }
 }

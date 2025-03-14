@@ -43,7 +43,6 @@ namespace ISDP2025_Parfonov_Zerrou.Forms.StoreManagerUserControls
             dgvDeliveredItems.ItemsSource = null;
             dgvStoreItems.ItemsSource = null;
 
-            // Hide signature section initially
             signatureSection.Visibility = Visibility.Collapsed;
             isSignatureProvided = false;
             inkSignature.Strokes.Clear();
@@ -55,7 +54,6 @@ namespace ISDP2025_Parfonov_Zerrou.Forms.StoreManagerUserControls
 
         private void InitializeSignatureCanvas()
         {
-            // Initialize the InkCanvas for signatures
             inkSignature.DefaultDrawingAttributes = new DrawingAttributes
             {
                 Color = Colors.Blue,
@@ -71,7 +69,6 @@ namespace ISDP2025_Parfonov_Zerrou.Forms.StoreManagerUserControls
             {
                 using (var context = new BestContext())
                 {
-                    // Include both IN TRANSIT and DELIVERED status
                     pendingOrders = context.Txns
                             .Include(t => t.SiteIdtoNavigation)
                             .Where(t => (t.TxnStatus == "IN TRANSIT" || t.TxnStatus == "DELIVERED") &&
@@ -305,7 +302,6 @@ namespace ISDP2025_Parfonov_Zerrou.Forms.StoreManagerUserControls
 
         private void CheckOrderCompletion()
         {
-            // Enable Complete button only when items are accepted AND signature is provided
             btnComplete.IsEnabled = acceptedItems.Count > 0 && isSignatureProvided;
         }
 
@@ -341,7 +337,6 @@ namespace ISDP2025_Parfonov_Zerrou.Forms.StoreManagerUserControls
             var selectedOrder = dgvOrders.SelectedItem as OrderViewModel;
             if (selectedOrder != null)
             {
-                // Enable if item is selected, regardless of order status
                 btnMoveToAccepted.IsEnabled = dgvDeliveredItems.SelectedItem != null;
             }
             else
@@ -355,7 +350,6 @@ namespace ISDP2025_Parfonov_Zerrou.Forms.StoreManagerUserControls
             var selectedOrder = dgvOrders.SelectedItem as OrderViewModel;
             if (selectedOrder != null)
             {
-                // Enable if item is selected, regardless of order status
                 btnMoveBack.IsEnabled = dgvStoreItems.SelectedItem != null;
             }
             else
@@ -428,7 +422,6 @@ namespace ISDP2025_Parfonov_Zerrou.Forms.StoreManagerUserControls
 
         private void UpdateSignatureSectionAfterRemove()
         {
-            // Only clear signature if all items are moved from dgvDeliveredItems
             if (acceptedItems.Count == 0 || deliveredItems.Count == 0)
             {
                 signatureSection.Visibility = Visibility.Collapsed;
@@ -656,8 +649,6 @@ namespace ISDP2025_Parfonov_Zerrou.Forms.StoreManagerUserControls
             isSignatureProvided = false;
             btnSign.IsEnabled = true;
             btnClearSignature.IsEnabled = false;
-
-            // Update completion status
             btnComplete.IsEnabled = false;
         }
 

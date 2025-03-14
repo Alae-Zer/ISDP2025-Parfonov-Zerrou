@@ -131,20 +131,30 @@
 
                 <!-- Footer -->
                 <StackPanel DockPanel.Dock="Bottom" Margin="10">
-                    <TextBlock x:Name="txtLoggedUser" Text="Logged in as: [Current User]" Foreground="White" FontSize="14" 
-  HorizontalAlignment="Center" Margin="0,0,0,5" />
-                    <TextBlock x:Name="txtUserRole" Text="Your Permission is:&#x0a;        Admin" Foreground="White" FontSize="14" 
-  HorizontalAlignment="Center" Margin="0,0,0,10" />
-                    <Button x:Name="btnLogout" Style="{StaticResource SidebarButtonStyle}" Height="41" Click="btnLogout_Click">
+                    <TextBlock x:Name="txtLoggedUser" 
+               Text="Logged in as:" 
+               Foreground="White" 
+               FontSize="14" 
+               HorizontalAlignment="Center" 
+               Margin="0,0,0,5" />
+                    <TextBlock x:Name="txtUserRole" 
+               Foreground="White" 
+               FontSize="14" 
+               HorizontalAlignment="Center" 
+               Margin="0,0,0,10" />
+                    <Button x:Name="btnLogout" 
+            Style="{StaticResource SidebarButtonStyle}" 
+            Height="41" 
+            Click="btnLogout_Click">
                         <StackPanel Orientation="Horizontal">
                             <Label Style="{StaticResource SidebarLabelStyle}" Content="&#xF2F5;" />
                             <TextBlock Text="Logout" VerticalAlignment="Center" />
                         </StackPanel>
                     </Button>
                 </StackPanel>
-                
-                    
-                
+
+
+
                 <!-- Navigation -->
                 <Grid>
                 <ScrollViewer VerticalScrollBarVisibility="Auto" Height="434" ScrollChanged="ScrollViewer_ScrollChanged">
@@ -167,8 +177,16 @@
                              <TextBlock Text="Fulfil Order" VerticalAlignment="Center" />
                         </StackPanel>
                     </Button>
+                            <!-- Fulfil Button -->
+                    <Button x:Name="btnFulfilOnline" Tag="Online Order" Height="41" Margin="0,9" 
+                                Style="{StaticResource SidebarButtonStyle}" Click="btnFulfilOnline_Click">
+                                <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                                    <Label Style="{StaticResource SidebarLabelStyle}" Content="&#xF0AC;" Padding="9,5,0,5" Margin="10,0,10,0" Width="34" />
+                                    <TextBlock Text="Online Order" VerticalAlignment="Center" />
+                                </StackPanel>
+                            </Button>
 
-                    <!-- Locations Button -->
+                            <!-- Locations Button -->
                     <Button x:Name="btnLocations" Tag="LocationsPage" Height="41" Margin="0,9" 
                             Style="{StaticResource SidebarButtonStyle}" Click="btnLocations_Click">
                         <StackPanel Orientation="Horizontal" VerticalAlignment="Center">

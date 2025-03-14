@@ -14,21 +14,70 @@ namespace ISDP2025_Parfonov_Zerrou.Forms.StoreManagerUserControls
 {
     public partial class StroreManagerAcceptAndFulfilOnlineOrder : UserControl
     {
-        private Employee currentUser;
-        private List<OnlineOrderViewModel> allOrders;
-        private List<OrderItemViewModel> orderItems;
-        private List<OrderItemViewModel> preparedItems;
-        private bool isSignatureProvided = false;
+        Employee currentUser;
+        List<OnlineOrderViewModel> allOrders;
+        List<OrderItemViewModel> orderItems;
+        List<OrderItemViewModel> preparedItems;
+        bool isSignatureProvided = false;
+        Site selectedSite;
+        string userPermission;
+        BestContext context;
         string[] statuses = { "All", "NEW", "SUBMITTED", "ASSEMBLING", "ASSEMBLED", "COMPLETE" };
 
-        public StroreManagerAcceptAndFulfilOnlineOrder(Employee employee)
+        public StroreManagerAcceptAndFulfilOnlineOrder(Employee employee, string permission)
         {
             InitializeComponent();
             currentUser = employee;
+            userPermission = permission;
             preparedItems = new List<OrderItemViewModel>();
+            context = new BestContext();
+
+            selectedSite = new Site { SiteId = employee.SiteId };
+
             InitializeControls();
             PopulateStatusComboBox();
+
+            if (permission == "Admin")
+            {
+                siteSelectionPanel.Visibility = Visibility.Visible;
+                LoadSites();
+            }
+
             InitializeSignatureControls();
+        }
+
+        private void LoadSites()
+        {
+            try
+            {
+                var excludedSites = new[] { 1, 2, 3, 9999, 10000 };
+
+                var sites = context.Sites
+                    .Where(s => s.Active == 1 && !excludedSites.Contains(s.SiteId))
+                    .OrderBy(s => s.SiteName)
+                    .ToList();
+
+                var allLocationsOption = new Site
+                {
+                    SiteId = 0,
+                    SiteName = "All Locations"
+                };
+
+                var sitesList = new List<Site> { allLocationsOption };
+                sitesList.AddRange(sites);
+
+                cboSite.ItemsSource = sitesList;
+                cboSite.DisplayMemberPath = "SiteName";
+                cboSite.SelectedValuePath = "SiteId";
+
+                cboSite.SelectedItem = allLocationsOption;
+                selectedSite = allLocationsOption;
+            }
+            catch (Exception ex)
+            {
+                HandyControl.Controls.MessageBox.Show($"Error loading sites: {ex.Message}",
+                    "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
         }
 
         private void PopulateStatusComboBox()
@@ -88,55 +137,6 @@ namespace ISDP2025_Parfonov_Zerrou.Forms.StoreManagerUserControls
             btnComplete.Content = "Complete Order";
             signaturePanel.Visibility = Visibility.Visible;
             btnComplete.IsEnabled = false;
-        }
-
-        private void ProcessNewToSubmittedTransition(Txn txn)
-        {
-            txn.TxnStatus = "SUBMITTED";
-            AuditTransactions.LogActivity(currentUser, txn.TxnId, txn.TxnType, "SUBMITTED", txn.SiteIdto, null, "Online order submitted for processing.");
-        }
-
-        private void ProcessSubmittedToAssemblingTransition(Txn txn)
-        {
-            txn.TxnStatus = "ASSEMBLING";
-            AuditTransactions.LogActivity(currentUser, txn.TxnId, txn.TxnType, "ASSEMBLING", txn.SiteIdto, null, "Online order assembly started.");
-        }
-
-        private bool ProcessAssemblingToAssembledTransition(Txn txn)
-        {
-            if (orderItems.Count > 0)
-            {
-                HandyControl.Controls.MessageBox.Show("All items must be assembled before marking the order as assembled.", "Items Required", MessageBoxButton.OK, MessageBoxImage.Warning);
-                return false;
-            }
-
-            txn.TxnStatus = "ASSEMBLED";
-            AuditTransactions.LogActivity(currentUser, txn.TxnId, txn.TxnType, "ASSEMBLED", txn.SiteIdto, null, "Online order assembly completed.");
-            return true;
-        }
-
-        private bool ProcessAssembledToCompleteTransition(Txn txn, int txnId, BestContext context)
-        {
-            if (!isSignatureProvided || inkSignature.Strokes.Count == 0)
-            {
-                HandyControl.Controls.MessageBox.Show("Customer signature is required to complete the order.", "Signature Required", MessageBoxButton.OK, MessageBoxImage.Warning);
-                return false;
-            }
-
-            SaveSignature(txnId);
-            txn.TxnStatus = "COMPLETE";
-
-            foreach (var item in preparedItems)
-            {
-                var inventory = context.Inventories.FirstOrDefault(i => i.ItemId == item.ItemId && i.SiteId == currentUser.SiteId);
-                if (inventory != null)
-                {
-                    inventory.Quantity -= item.Quantity;
-                }
-            }
-
-            AuditTransactions.LogActivity(currentUser, txn.TxnId, txn.TxnType, "COMPLETE", txn.SiteIdto, null, "Online order completed with customer signature.");
-            return true;
         }
 
         private void MoveItemToAssembled(OrderItemViewModel selectedItem)
@@ -226,33 +226,51 @@ namespace ISDP2025_Parfonov_Zerrou.Forms.StoreManagerUserControls
         {
             try
             {
-                using (var context = new BestContext())
+                var query = context.Txns
+                    .Include(t => t.SiteIdtoNavigation)
+                    .Where(t => t.TxnType == "Online")
+                    .OrderByDescending(t => t.CreatedDate)
+                    .AsQueryable();
+
+                if (userPermission == "Admin")
                 {
-                    var query = context.Txns
-                        .Include(t => t.SiteIdtoNavigation)
-                        .Where(t => t.TxnType == "Online" && t.SiteIdto == currentUser.SiteId)
-                        .OrderByDescending(t => t.CreatedDate)
-                        .AsQueryable();
-
-                    if (cboStatus.SelectedItem != null && cboStatus.SelectedIndex > 0)
+                    if (selectedSite != null && selectedSite.SiteId != 0)
                     {
-                        string selectedStatus = cboStatus.SelectedItem.ToString();
-                        query = query.Where(t => t.TxnStatus == selectedStatus);
+                        query = query.Where(t => t.SiteIdto == selectedSite.SiteId);
                     }
+                }
+                else
+                {
+                    query = query.Where(t => t.SiteIdto == currentUser.SiteId);
+                }
 
-                    allOrders = query.Select(o => new OnlineOrderViewModel
+                if (cboStatus.SelectedItem != null && cboStatus.SelectedIndex > 0)
+                {
+                    string selectedStatus = cboStatus.SelectedItem.ToString();
+                    query = query.Where(t => t.TxnStatus == selectedStatus);
+                }
+
+                var orders = query.ToList();
+
+                allOrders = new List<OnlineOrderViewModel>();
+
+                foreach (var o in orders)
+                {
+                    allOrders.Add(new OnlineOrderViewModel
                     {
                         TxnId = o.TxnId,
                         CustomerName = o.Notes ?? "Unknown",
                         OrderDate = o.CreatedDate,
                         PickupTime = o.ShipDate,
                         TxnStatus = o.TxnStatus,
-                        Notes = o.Notes ?? ""
-                    }).ToList();
-
-                    dgvOrders.ItemsSource = allOrders;
-                    txtSearch.IsEnabled = true;
+                        Notes = o.Notes ?? "",
+                        SiteName = o.SiteIdtoNavigation?.SiteName ?? "Unknown Site",
+                        SiteId = o.SiteIdto
+                    });
                 }
+
+                dgvOrders.ItemsSource = allOrders;
+                txtSearch.IsEnabled = true;
             }
             catch (Exception ex)
             {
@@ -265,47 +283,55 @@ namespace ISDP2025_Parfonov_Zerrou.Forms.StoreManagerUserControls
         {
             try
             {
-                using (var context = new BestContext())
+                var txn = context.Txns.FirstOrDefault(t => t.TxnId == txnId);
+                if (txn == null) return;
+
+                // Get inventory site ID
+                int inventorySiteId;
+                if (userPermission == "Admin" && selectedSite.SiteId != 0)
                 {
-                    var txn = context.Txns.FirstOrDefault(t => t.TxnId == txnId);
-                    if (txn == null) return;
+                    inventorySiteId = selectedSite.SiteId;
+                }
+                else
+                {
+                    inventorySiteId = txn.SiteIdto;
+                }
 
-                    var allItems = from ti in context.Txnitems
-                                   join i in context.Items on ti.ItemId equals i.ItemId
-                                   join inv in context.Inventories
-                                   on new { ti.ItemId, SiteId = currentUser.SiteId }
-                                   equals new { inv.ItemId, inv.SiteId }
-                                   where ti.TxnId == txnId
-                                   select new OrderItemViewModel
-                                   {
-                                       ItemId = ti.ItemId,
-                                       Name = i.Name,
-                                       Barcode = i.Sku,
-                                       Quantity = ti.Quantity,
-                                       CurrentStock = inv.Quantity,
-                                       CaseSize = i.CaseSize
-                                   };
+                var allItems = from ti in context.Txnitems
+                               join i in context.Items on ti.ItemId equals i.ItemId
+                               join inv in context.Inventories
+                               on new { ti.ItemId, SiteId = inventorySiteId }
+                               equals new { inv.ItemId, inv.SiteId }
+                               where ti.TxnId == txnId
+                               select new OrderItemViewModel
+                               {
+                                   ItemId = ti.ItemId,
+                                   Name = i.Name,
+                                   Barcode = i.Sku,
+                                   Quantity = ti.Quantity,
+                                   CurrentStock = inv.Quantity,
+                                   CaseSize = i.CaseSize
+                               };
 
-                    orderItems = allItems.ToList();
-                    preparedItems = new List<OrderItemViewModel>();
+                orderItems = allItems.ToList();
+                preparedItems = new List<OrderItemViewModel>();
 
-                    ResetSignature();
+                ResetSignature();
 
-                    switch (txn.TxnStatus)
-                    {
-                        case "NEW":
-                        case "SUBMITTED":
-                            SetupForNewOrSubmittedStatus();
-                            break;
+                switch (txn.TxnStatus)
+                {
+                    case "NEW":
+                    case "SUBMITTED":
+                        SetupForNewOrSubmittedStatus();
+                        break;
 
-                        case "ASSEMBLING":
-                            SetupForAssemblingStatus();
-                            break;
+                    case "ASSEMBLING":
+                        SetupForAssemblingStatus();
+                        break;
 
-                        case "ASSEMBLED":
-                            SetupForAssembledStatus();
-                            break;
-                    }
+                    case "ASSEMBLED":
+                        SetupForAssembledStatus();
+                        break;
                 }
             }
             catch (Exception ex)
@@ -368,6 +394,12 @@ namespace ISDP2025_Parfonov_Zerrou.Forms.StoreManagerUserControls
         private void btnRefresh_Click(object sender, RoutedEventArgs e)
         {
             InitializeControls();
+
+            if (userPermission == "Admin")
+            {
+                LoadSites();
+            }
+
             LoadOnlineOrders();
         }
 
@@ -375,6 +407,15 @@ namespace ISDP2025_Parfonov_Zerrou.Forms.StoreManagerUserControls
         {
             if (allOrders != null || cboStatus.SelectedIndex >= 0)
             {
+                LoadOnlineOrders();
+            }
+        }
+
+        private void cboSite_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if (cboSite.SelectedItem is Site site)
+            {
+                selectedSite = site;
                 LoadOnlineOrders();
             }
         }
@@ -451,47 +492,103 @@ namespace ISDP2025_Parfonov_Zerrou.Forms.StoreManagerUserControls
             {
                 if (dgvOrders.SelectedItem is OnlineOrderViewModel selectedOrder)
                 {
-                    using (var context = new BestContext())
+                    var txn = context.Txns.Find(selectedOrder.TxnId);
+                    if (txn != null)
                     {
-                        var txn = context.Txns.Find(selectedOrder.TxnId);
-                        if (txn != null)
+                        bool successful = false;
+
+                        if (txn.TxnStatus == "NEW")
                         {
-                            bool successful = false;
-
-                            switch (txn.TxnStatus)
+                            txn.TxnStatus = "SUBMITTED";
+                            AuditTransactions.LogActivity(currentUser, txn.TxnId, txn.TxnType, "SUBMITTED", txn.SiteIdto, null, "Online order submitted for processing.");
+                            successful = true;
+                        }
+                        else if (txn.TxnStatus == "SUBMITTED")
+                        {
+                            txn.TxnStatus = "ASSEMBLING";
+                            AuditTransactions.LogActivity(currentUser, txn.TxnId, txn.TxnType, "ASSEMBLING", txn.SiteIdto, null, "Online order assembly started.");
+                            successful = true;
+                        }
+                        else if (txn.TxnStatus == "ASSEMBLING")
+                        {
+                            if (orderItems.Count > 0)
                             {
-                                case "NEW":
-                                    ProcessNewToSubmittedTransition(txn);
-                                    successful = true;
-                                    break;
-
-                                case "SUBMITTED":
-                                    ProcessSubmittedToAssemblingTransition(txn);
-                                    successful = true;
-                                    break;
-
-                                case "ASSEMBLING":
-                                    successful = ProcessAssemblingToAssembledTransition(txn);
-                                    break;
-
-                                case "ASSEMBLED":
-                                    successful = ProcessAssembledToCompleteTransition(txn, selectedOrder.TxnId, context);
-                                    break;
+                                HandyControl.Controls.MessageBox.Show("All items must be assembled before marking the order as assembled.", "Items Required", MessageBoxButton.OK, MessageBoxImage.Warning);
                             }
-
-                            if (successful)
+                            else
                             {
-                                context.SaveChanges();
+                                txn.TxnStatus = "ASSEMBLED";
+                                AuditTransactions.LogActivity(currentUser, txn.TxnId, txn.TxnType, "ASSEMBLED", txn.SiteIdto, null, "Online order assembly completed.");
+                                successful = true;
+                            }
+                        }
+                        else if (txn.TxnStatus == "ASSEMBLED")
+                        {
+                            if (!isSignatureProvided || inkSignature.Strokes.Count == 0)
+                            {
+                                HandyControl.Controls.MessageBox.Show("Customer signature is required to complete the order.", "Signature Required", MessageBoxButton.OK, MessageBoxImage.Warning);
+                            }
+                            else
+                            {
+                                SaveSignature(selectedOrder.TxnId);
+                                txn.TxnStatus = "COMPLETE";
 
-                                Growl.Success(new GrowlInfo
+                                int inventorySiteId;
+                                if (userPermission == "Admin" && selectedSite.SiteId != 0)
                                 {
-                                    Message = $"Order status updated to {txn.TxnStatus}.",
-                                    ShowDateTime = false,
-                                    WaitTime = 2
-                                });
+                                    inventorySiteId = selectedSite.SiteId;
+                                }
+                                else
+                                {
+                                    inventorySiteId = txn.SiteIdto;
+                                }
 
-                                ResetToOriginalState();
+                                foreach (var item in preparedItems)
+                                {
+                                    var inventory = context.Inventories.FirstOrDefault(i => i.ItemId == item.ItemId && i.SiteId == inventorySiteId);
+                                    if (inventory != null)
+                                    {
+                                        inventory.Quantity -= item.Quantity;
+                                    }
+                                }
+
+                                string logMessage = "Online order completed with customer signature.";
+                                if (userPermission == "Admin" && selectedSite.SiteId != 0 && selectedSite.SiteId != txn.SiteIdto)
+                                {
+                                    logMessage += $" Fulfilled from site: {selectedSite.SiteName} (Site ID: {selectedSite.SiteId})";
+                                }
+
+                                try
+                                {
+                                    AuditTransactions.LogActivity(currentUser, txn.TxnId, txn.TxnType, "COMPLETE", txn.SiteIdto, null, logMessage);
+                                }
+                                catch (Exception ex)
+                                {
+                                    HandyControl.Controls.MessageBox.Show($"Error creating audit record: {ex.Message}", "Audit Error", MessageBoxButton.OK, MessageBoxImage.Warning);
+                                }
+
+                                successful = true;
                             }
+                        }
+
+                        if (successful)
+                        {
+                            context.SaveChanges();
+
+                            string successMessage = $"Order status updated to {txn.TxnStatus}.";
+                            if (userPermission == "Admin" && selectedSite.SiteId != 0 && selectedSite.SiteId != txn.SiteIdto && txn.TxnStatus == "COMPLETE")
+                            {
+                                successMessage += $" Fulfilled from {selectedSite.SiteName}.";
+                            }
+
+                            Growl.Success(new GrowlInfo
+                            {
+                                Message = successMessage,
+                                ShowDateTime = false,
+                                WaitTime = 2
+                            });
+
+                            ResetToOriginalState();
                         }
                     }
                 }
@@ -534,6 +631,8 @@ namespace ISDP2025_Parfonov_Zerrou.Forms.StoreManagerUserControls
         public DateTime PickupTime { get; set; }
         public string TxnStatus { get; set; }
         public string Notes { get; set; }
+        public string SiteName { get; set; }
+        public int SiteId { get; set; }
     }
 
     public class OrderItemViewModel

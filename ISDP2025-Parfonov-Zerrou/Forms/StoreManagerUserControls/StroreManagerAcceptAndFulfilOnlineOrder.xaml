@@ -18,6 +18,7 @@
                 <ColumnDefinition Width="Auto"/>
                 <ColumnDefinition Width="*"/>
                 <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="Auto"/>
             </Grid.ColumnDefinitions>
 
             <TextBlock Text="Online Order Management" 
@@ -31,7 +32,21 @@
                    SelectionChanged="cboStatus_SelectionChanged"
                    HorizontalAlignment="Left"/>
 
-            <Button Grid.Column="2" 
+            <!-- Site Selection Panel - will be visible only for Admin -->
+            <StackPanel Grid.Column="2" 
+                      Orientation="Horizontal"
+                      x:Name="siteSelectionPanel"
+                      Visibility="Collapsed">
+                <TextBlock Text="Fulfill For:" 
+                         VerticalAlignment="Center"
+                         Margin="10,5,5,5"/>
+                <ComboBox x:Name="cboSite"
+                         Width="200"
+                         Margin="5,5"
+                         SelectionChanged="cboSite_SelectionChanged"/>
+            </StackPanel>
+
+            <Button Grid.Column="3" 
                  x:Name="btnRefresh" 
                  Content="Refresh" 
                  Style="{StaticResource ButtonInfo}"

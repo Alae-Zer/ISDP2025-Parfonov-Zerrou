@@ -101,7 +101,7 @@ namespace ISDP2025_Parfonov_Zerrou
 
         private void btnOnlineOrders_Click(object sender, RoutedEventArgs e)
         {
-            MainContent.Content = new StroreManagerAcceptAndFulfilOnlineOrder(employee);
+            MainContent.Content = new StroreManagerAcceptAndFulfilOnlineOrder(employee, " ");
         }
     }
 }

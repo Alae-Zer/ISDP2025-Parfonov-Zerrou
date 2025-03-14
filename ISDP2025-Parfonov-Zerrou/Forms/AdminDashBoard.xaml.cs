@@ -1,6 +1,7 @@
 ﻿using ISDP2025_Parfonov_Zerrou.Forms.AdminUserControls;
 using ISDP2025_Parfonov_Zerrou.Forms.FloorGuyUserControl;
 using ISDP2025_Parfonov_Zerrou.Forms.ForemanUserControls;
+using ISDP2025_Parfonov_Zerrou.Forms.StoreManagerUserControls;
 using ISDP2025_Parfonov_Zerrou.Forms.UserControls;
 using ISDP2025_Parfonov_Zerrou.Functionality;
 using ISDP2025_Parfonov_Zerrou.Models;
@@ -19,10 +20,12 @@ namespace ISDP2025_Parfonov_Zerrou
         BestContext context = new BestContext();
         Employee employee;
         private LogoutManager logoutManager;
+        string userPermission = "Admin";
 
         public AdminDashBoard()
         {
             InitializeComponent();
+            txtUserRole.Text = "Your permission is: " + userPermission;
             employee = context.Employees.Where(e => e.Username == "admin").FirstOrDefault();
         }
 
@@ -142,6 +145,11 @@ namespace ISDP2025_Parfonov_Zerrou
         private void btnFulfil_Click(object sender, RoutedEventArgs e)
         {
             MainContent.Content = new FloorGuyFulfil(employee);
+        }
+
+        private void btnFulfilOnline_Click(object sender, RoutedEventArgs e)
+        {
+            MainContent.Content = new StroreManagerAcceptAndFulfilOnlineOrder(employee, userPermission);
         }
     }
 }

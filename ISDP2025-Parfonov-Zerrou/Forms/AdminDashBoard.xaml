@@ -177,6 +177,16 @@
                              <TextBlock Text="Fulfil Order" VerticalAlignment="Center" />
                         </StackPanel>
                     </Button>
+
+                    <!-- Modify Button -->
+                    <Button x:Name="btnModify" Tag="Fulfil Order" Height="41" Margin="0,9" 
+                            Style="{StaticResource SidebarButtonStyle}" Click="btnModify_Click">
+                        <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                                    <Label Style="{StaticResource SidebarLabelStyle}" Content="&#xf044;" Padding="9,5,0,5" Margin="10,0,10,0" Width="34" />
+                                    <TextBlock Text="Modify Record" VerticalAlignment="Center" />
+                        </StackPanel>
+                    </Button>
+                    
                             <!-- Fulfil Button -->
                     <Button x:Name="btnFulfilOnline" Tag="Online Order" Height="41" Margin="0,9" 
                                 Style="{StaticResource SidebarButtonStyle}" Click="btnFulfilOnline_Click">

@@ -40,4 +40,8 @@
     <Resource Include="wwwroot\images\bullseye.png" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Pages\Acadia\" />
+  </ItemGroup>
+
 </Project>

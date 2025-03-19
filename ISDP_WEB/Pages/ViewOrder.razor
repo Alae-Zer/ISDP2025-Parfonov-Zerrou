@@ -5,7 +5,7 @@
 @inject BestContext Context
 @inject ISnackbar Snackbar
 
-<MudContainer MaxWidth="MaxWidth.Large" Class="pt-4 pb-8">
+<MudContainer MaxWidth="MaxWidth.Large" Class="pt-8 pb-8">
     <MudText Typo="Typo.h4" Class="mb-4">Track Your Order</MudText>
 
     <MudPaper Class="pa-4 mb-4">
@@ -72,7 +72,7 @@
                         </MudListItem>
                     </MudList>
                 </MudItem>
-                
+
                 <MudItem xs="12" md="6">
                     <MudList T="string">
                         <MudListItem>
@@ -89,7 +89,7 @@
                     </MudList>
                 </MudItem>
 
-                
+
                 <MudItem xs="12">
                     <MudExpansionPanels>
                         <MudExpansionPanel Text="Order Items" IsInitiallyExpanded="true">
@@ -113,7 +113,7 @@
                         @foreach (var status in GetOrderStatuses(order.TxnStatus))
                         {
                             <MudTimelineItem Color="@(status.IsCompleted ? Color.Success : Color.Default)"
-                                             Elevation="1">
+                            Elevation="1">
                                 <ItemContent>
                                     <MudText Typo="Typo.h6">@status.Name</MudText>
                                     <MudText Typo="Typo.body2">@status.Description</MudText>
@@ -132,6 +132,33 @@
                 </MudItem>
             </MudGrid>
         </MudPaper>
+    }else if (orders != null && orders.Any())
+    {
+        <!-- Display list of orders -->
+        <MudPaper Class="pa-4 mb-4">
+            <MudText Typo="Typo.h6" Class="mb-3">Your Orders</MudText>
+            <MudTable Items="@orders" Hover="true" Breakpoint="Breakpoint.Sm">
+                <HeaderContent>
+                    <MudTh>Order ID</MudTh>
+                    <MudTh>Date</MudTh>
+                    <MudTh>Status</MudTh>
+                    <MudTh>Action</MudTh>
+                </HeaderContent>
+                <RowTemplate>
+                    <MudTd>@context.TxnId</MudTd>
+                    <MudTd>@context.CreatedDate.ToString("MMM dd, yyyy")</MudTd>
+                    <MudTd>
+                        <MudChip T="string" Color="@GetStatusColor(context.TxnStatus)" Size="Size.Small">@context.TxnStatus</MudChip>
+                    </MudTd>
+                    <MudTd>
+                        <MudButton Variant="Variant.Text" Color="Color.Primary" 
+                        OnClick="@(() => LoadOrderDetails(context.TxnId))">
+                            View
+                        </MudButton>
+                    </MudTd>
+                </RowTemplate>
+            </MudTable>
+        </MudPaper>
     }
     else if (showNoOrderFound)
     {
@@ -149,10 +176,14 @@
     private string searchEmail = "";
     private bool isLoading = false;
     private bool showNoOrderFound = false;
-    
+
     private Txn order;
+    private List<Txn> orders = new List<Txn>();
     private List<Txnitem> orderItems = new List<Txnitem>();
     private List<Txnaudit> orderAudit = new List<Txnaudit>();
+
+    private List<List<Txnitem>> ordersItems = new List<List<Txnitem>>();
+    private List<List<Txnaudit>> ordersAudit = new List<List<Txnaudit>>();
 
     private List<OrderStatus> GetOrderStatuses(string currentStatus)
     {
@@ -188,60 +219,79 @@
     {
         showNoOrderFound = false;
         isLoading = true;
+        order = null; // Clear single order
+        orders = null; // Clear orders list
         StateHasChanged();
-        
+
         try
         {
-            int orderId;
-            if (!int.TryParse(searchOrderId, out orderId) && string.IsNullOrWhiteSpace(searchEmail))
-            {
-                Snackbar.Add("Please enter either an Order ID or Email address", Severity.Warning);
-                isLoading = false;
-                return;
-            }
-
-            if (int.TryParse(searchOrderId, out orderId))
+            if (int.TryParse(searchOrderId, out int orderId))
             {
                 // Search by Order ID
                 order = await Context.Txns
                     .Include(t => t.SiteIdtoNavigation)
-                    .Where(t => t.TxnId == orderId && t.TxnType == "Online")
-                    .FirstOrDefaultAsync();
+                    .FirstOrDefaultAsync(t => t.TxnId == orderId && t.TxnType == "Online");
+                
+                if (order != null)
+                    await LoadOrderDetails(order.TxnId);
             }
             else if (!string.IsNullOrWhiteSpace(searchEmail))
             {
                 // Search by Email
-                order = await Context.Txns
+                orders = await Context.Txns
                     .Include(t => t.SiteIdtoNavigation)
                     .Where(t => t.Notes.Contains(searchEmail) && t.TxnType == "Online")
                     .OrderByDescending(t => t.CreatedDate)
-                    .FirstOrDefaultAsync();
-            }
-
-            if (order != null)
-            {
-                // Load order items
-                orderItems = await Context.Txnitems
-                    .Include(ti => ti.Item)
-                    .Where(ti => ti.TxnId == order.TxnId)
                     .ToListAsync();
 
-                // Load order audit
-                orderAudit = await Context.Txnaudits
-                    .Where(ta => ta.TxnId == order.TxnId)
-                    .OrderByDescending(ta => ta.CreatedDate)
-                    .ToListAsync();
-
-                searchOrderId = order.TxnId.ToString();
+                if (!orders.Any())
+                    showNoOrderFound = true;
             }
             else
             {
-                showNoOrderFound = true;
+                Snackbar.Add("Please enter an Order ID or Email address", Severity.Warning);
             }
         }
         catch (Exception ex)
         {
             Snackbar.Add($"Error retrieving order: {ex.Message}", Severity.Error);
+        }
+        finally
+        {
+            isLoading = false;
+            StateHasChanged();
+        }
+    }
+
+    private async Task LoadOrderDetails(int orderId)
+    {
+        isLoading = true;
+        StateHasChanged();
+
+        try
+        {
+            order = await Context.Txns
+                .Include(t => t.SiteIdtoNavigation)
+                .FirstOrDefaultAsync(t => t.TxnId == orderId);
+
+            if (order != null)
+            {
+                orderItems = await Context.Txnitems
+                    .Include(ti => ti.Item)
+                    .Where(ti => ti.TxnId == orderId)
+                    .ToListAsync();
+
+                orderAudit = await Context.Txnaudits
+                    .Where(ta => ta.TxnId == orderId)
+                    .OrderByDescending(ta => ta.CreatedDate)
+                    .ToListAsync();
+
+                orders = null; // Clear the list to show details
+            }
+        }
+        catch (Exception ex)
+        {
+            Snackbar.Add($"Error loading order details: {ex.Message}", Severity.Error);
         }
         finally
         {

@@ -1,43 +1,25 @@
 ﻿@using ISDP_WEB.Pages.Services
-
 @inherits LayoutComponentBase
-
 @inject StateContainer StateContainer
-
-
-
 <MudThemeProvider Theme="MyCustomTheme" @bind-IsDarkMode="@_isDarkMode" />
-
 <MudDialogProvider />
-
 <MudSnackbarProvider />
-
 <MudPopoverProvider />
 
-
-
 <MudLayout>
-
     <MudAppBar Elevation="0" Color="Color.Primary">
-
         <MudStack Row="true" AlignItems="AlignItems.Center" Spacing="0">
-
             <MudImage Src="images/bullseye.png" Class="ml-3" Alt="Bullseye Logo" Height="45" />
 
             <MudText Typo="Typo.h5">Bullseye<sup style="color: var(--mud-palette-tertiary); font-size: 20px;">&#8226</sup></MudText>
-
         </MudStack>
 
         <MudSpacer />
 
-
-
         <!-- Desktop Navigation (hidden on xs and sm screens) -->
 
         <div class="d-none d-md-flex">
-
             <MudStack Row="true" Spacing="2">
-
                 <MudButton Href="/" Color="Color.Inherit">HOME</MudButton>
 
                 <MudButton Href="/buy-products" Color="Color.Inherit">BUY PRODUCTS</MudButton>
@@ -47,9 +29,7 @@
                 <MudButton Href="/view-order" Color="Color.Inherit" Class="ml-4">View Order</MudButton>
 
                 <MudButton Href="/acadia-login" Variant="Variant.Filled" Color="Color.Secondary" Class="ml-4">ACADIA LOGIN</MudButton>
-
             </MudStack>
-
         </div>
 
 
@@ -57,32 +37,27 @@
         <!-- Shopping Cart Icon -->
 
         <MudIconButton Icon="@Icons.Material.Filled.ShoppingCart"
-                       Color="Color.Inherit"
-                       Class="mr-2"
-                       OnClick="@(() => StateContainer.ToggleCart())"
-                       Badge="@(StateContainer.CartItems.Count > 0 ? StateContainer.CartItems.Count.ToString() : null)"
-                       BadgeColor="Color.Secondary" />
-
-
+        Color="Color.Inherit"
+        Class="mr-2"
+        OnClick="@(() => StateContainer.ToggleCart())"
+        Badge="@(StateContainer.CartItems.Count > 0 ? StateContainer.CartItems.Count.ToString() : null)"
+        BadgeColor="Color.Secondary" />
 
         <!-- Dark Mode Toggle -->
 
         <MudToggleIconButton @bind-Toggled="@_isDarkMode"
-                             Icon="@Icons.Material.TwoTone.DarkMode"
-                             ToggledIcon="@Icons.Material.TwoTone.LightMode"
-                             Color="Color.Inherit"
-                             Class="mr-2" />
-
-
+        Icon="@Icons.Material.TwoTone.DarkMode"
+        ToggledIcon="@Icons.Material.TwoTone.LightMode"
+        Color="Color.Inherit"
+        Class="mr-2" />
 
         <!-- Hamburger Menu (only visible on xs and sm screens) -->
 
         <MudIconButton Icon="@Icons.Material.Filled.Menu"
-                       Color="Color.Inherit"
-                       Edge="Edge.End"
-                       OnClick="@((e) => OpenDrawer())"
-                       Class="d-md-none" />
-
+        Color="Color.Inherit"
+        Edge="Edge.End"
+        OnClick="@((e) => OpenDrawer())"
+        Class="d-md-none" />
     </MudAppBar>
 
 
@@ -90,17 +65,13 @@
     <!-- Drawer for Mobile Navigation -->
 
     <MudDrawer @bind-Open="@_drawerOpen" Elevation="1" Variant="@DrawerVariant.Temporary" Anchor="Anchor.End">
-
         <MudDrawerHeader>
+            <MudText Typo="Typo.h6" Class="pt-2 mr-12">Navigation</MudText>
 
-            <MudText Typo="Typo.h6">Navigation</MudText>
-
-            <MudIconButton Icon="@Icons.Material.Filled.Close" Color="Color.Inherit" Edge="Edge.End" OnClick="@((e) => CloseDrawer())" />
-
+            <MudIconButton Icon="@Icons.Material.Filled.Close" Class="ml-16" Color="Color.Inherit" Edge="Edge.End" OnClick="@((e) => CloseDrawer())" />
         </MudDrawerHeader>
 
         <MudNavMenu>
-
             <MudNavLink Href="/" Match="NavLinkMatch.All" Icon="@Icons.Material.Filled.Home">Home</MudNavLink>
 
             <MudNavLink Href="/buy-products" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.ShoppingBag">Buy Products</MudNavLink>
@@ -110,499 +81,289 @@
             <MudDivider Class="my-2" />
 
             <MudNavLink Href="/acadia-login" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.Login">Acadia Login</MudNavLink>
-
         </MudNavMenu>
-
     </MudDrawer>
 
 
+    <MudMainContent Style="display: flex; flex-direction: column; min-height:100vh;">
+        <div style="flex: 1;">
+            @Body
+        </div>
 
-    <MudMainContent>
 
-        @Body
 
+        <MudContainer MaxWidth="MaxWidth.ExtraLarge" Class="mt-15 py-4">
+
+            <MudGrid>
+                <MudItem xs="6" sm="3">
+                    <MudText Typo="Typo.subtitle2" Class="mb-1 font-weight-bold">Product</MudText>
+
+                    <div class="d-flex flex-column gap-1">
+                        <MudLink Href="/" Underline="Underline.None" Typo="Typo.body2">Home</MudLink>
+
+                        <MudLink Href="/buy-products" Underline="Underline.None" Typo="Typo.body2">Buy Products</MudLink>
+
+                        <MudLink Href="/view-order" Underline="Underline.None" Typo="Typo.body2">View Order</MudLink>
+                    </div>
+                </MudItem>
+
+                <MudItem xs="6" sm="3">
+                    <MudText Typo="Typo.subtitle2" Class="mb-1 font-weight-bold">Customer Support</MudText>
+
+                    <div class="d-flex flex-column gap-1">
+                        <MudLink Href="/contact" Underline="Underline.None" Typo="Typo.body2">Contact</MudLink>
+
+                        <MudLink Href="#" Underline="Underline.None" Typo="Typo.body2">Payments</MudLink>
+                    </div>
+                </MudItem>
+
+                <MudItem xs="6" sm="3">
+                    <MudText Typo="Typo.subtitle2" Class="mb-1 font-weight-bold">Corporate</MudText>
+
+                    <div class="d-flex flex-column gap-1">
+                        <MudLink Href="#" Underline="Underline.None" Typo="Typo.body2">About Us</MudLink>
+
+                        <MudLink Href="#" Underline="Underline.None" Typo="Typo.body2">Business</MudLink>
+                    </div>
+                </MudItem>
+
+                <MudItem xs="6" sm="3">
+                    <MudText Typo="Typo.subtitle2" Class="mb-1 font-weight-bold">Resources</MudText>
+
+                    <div class="d-flex flex-column gap-1">
+                        <MudLink Href="#" Underline="Underline.None" Typo="Typo.body2">What's new</MudLink>
+
+                        <MudLink Href="#" Underline="Underline.None" Typo="Typo.body2">Blog</MudLink>
+
+                        <MudLink Href="#" Underline="Underline.None" Typo="Typo.body2">Help Center</MudLink>
+                    </div>
+                </MudItem>
+            </MudGrid>
+
+            <MudDivider Class="my-2" />
+
+            <MudGrid>
+                <MudItem xs="12" sm="6">
+                    <MudText Typo="Typo.caption" Color="Color.Secondary">© 2025 Bullseye</MudText>
+                </MudItem>
+
+                <MudItem xs="12" sm="6" Class="d-flex justify-end gap-4">
+                    <MudLink Href="#" Underline="Underline.None" Typo="Typo.caption">Terms of Service</MudLink>
+
+                    <MudLink Href="#" Underline="Underline.None" Typo="Typo.caption">Cookie Policy</MudLink>
+                </MudItem>
+            </MudGrid>
+        </MudContainer>
     </MudMainContent>
 
-
-
-    <MudContainer MaxWidth="MaxWidth.ExtraLarge" Class="mt-4 mb-2">
-
-        <MudGrid>
-
-            <MudItem xs="6" sm="3">
-
-                <MudText Typo="Typo.subtitle2" Class="mb-1 font-weight-bold">Product</MudText>
-
-                <div class="d-flex flex-column gap-1">
-
-                    <MudLink Href="/" Underline="Underline.None" Typo="Typo.body2">Home</MudLink>
-
-                    <MudLink Href="/buy-products" Underline="Underline.None" Typo="Typo.body2">Buy Products</MudLink>
-
-                    <MudLink Href="/view-order" Underline="Underline.None" Typo="Typo.body2">View Order</MudLink>
-
-                </div>
-
-            </MudItem>
-
-            <MudItem xs="6" sm="3">
-
-                <MudText Typo="Typo.subtitle2" Class="mb-1 font-weight-bold">Customer Support</MudText>
-
-                <div class="d-flex flex-column gap-1">
-
-                    <MudLink Href="/contact" Underline="Underline.None" Typo="Typo.body2">Contact</MudLink>
-
-                    <MudLink Href="#" Underline="Underline.None" Typo="Typo.body2">Payments</MudLink>
-
-                </div>
-
-            </MudItem>
-
-            <MudItem xs="6" sm="3">
-
-                <MudText Typo="Typo.subtitle2" Class="mb-1 font-weight-bold">Corporate</MudText>
-
-                <div class="d-flex flex-column gap-1">
-
-                    <MudLink Href="#" Underline="Underline.None" Typo="Typo.body2">About Us</MudLink>
-
-                    <MudLink Href="#" Underline="Underline.None" Typo="Typo.body2">Business</MudLink>
-
-                </div>
-
-            </MudItem>
-
-            <MudItem xs="6" sm="3">
-
-                <MudText Typo="Typo.subtitle2" Class="mb-1 font-weight-bold">Resources</MudText>
-
-                <div class="d-flex flex-column gap-1">
-
-                    <MudLink Href="#" Underline="Underline.None" Typo="Typo.body2">What's new</MudLink>
-
-                    <MudLink Href="#" Underline="Underline.None" Typo="Typo.body2">Blog</MudLink>
-
-                    <MudLink Href="#" Underline="Underline.None" Typo="Typo.body2">Help Center</MudLink>
-
-                </div>
-
-            </MudItem>
-
-        </MudGrid>
-
-
-
-        <MudDivider Class="my-2" />
-
-
-
-        <MudGrid>
-
-            <MudItem xs="12" sm="6">
-
-                <MudText Typo="Typo.caption" Color="Color.Secondary">© 2025 Bullseye</MudText>
-
-            </MudItem>
-
-            <MudItem xs="12" sm="6" Class="d-flex justify-end gap-4">
-
-                <MudLink Href="#" Underline="Underline.None" Typo="Typo.caption">Terms of Service</MudLink>
-
-                <MudLink Href="#" Underline="Underline.None" Typo="Typo.caption">Cookie Policy</MudLink>
-
-            </MudItem>
-
-        </MudGrid>
-
-    </MudContainer>
-
-
-
     <MudDrawer @bind-Open="@StateContainer.IsCartOpen" Anchor="Anchor.End" Elevation="1" Variant="@DrawerVariant.Temporary" Width="350px">
-
         <MudDrawerHeader>
+            <MudText Typo="Typo.h6" Class="pt-2 mr-12">Shopping Cart</MudText>
 
-            <MudText Typo="Typo.h6">Shopping Cart</MudText>
-
-            <MudIconButton Icon="@Icons.Material.Filled.Close" Color="Color.Inherit" Edge="Edge.End" OnClick="@(() => StateContainer.IsCartOpen = false)" />
-
+            <MudIconButton Icon="@Icons.Material.Filled.Close" Class="ml-20" Color="Color.Inherit" Edge="Edge.End" OnClick="@(() => StateContainer.IsCartOpen = false)" />
         </MudDrawerHeader>
 
         <MudDrawerContainer>
-
             @{
-
                 var storeCarts = StateContainer.GetStoreCarts();
-
             }
-
-
 
             @if (!storeCarts.Any())
-
             {
-
                 <MudText Typo="Typo.body1" Class="pa-4">Your cart is empty.</MudText>
-
             }
-
-            else
-
-            {
-
+            else{
                 <MudList T="String" Clickable="false" Class="pa-0">
-
                     @foreach (var storeCart in storeCarts)
-
                     {
-
                         <MudListItem>
-
                             <MudText Typo="Typo.subtitle1" Class="d-flex align-center">
-
                                 <MudIcon Icon="@Icons.Material.Filled.Store" Class="mr-2" />
-
                                 @storeCart.StoreName
-
                             </MudText>
-
                         </MudListItem>
-
-
 
                         <MudDivider />
 
-
-
-                        @foreach (var item in storeCart.Items)
-
-                        {
+                        @foreach (var item in storeCart.Items){
 
                             <MudListItem Class="pl-4">
-
                                 <div class="d-flex align-center">
-
                                     <MudAvatar Image="@item.ImageUrl" Class="mr-2" />
 
                                     <div class="flex-grow-1">
-
                                         <MudText Typo="Typo.body1">@item.Name</MudText>
 
                                         <MudText Typo="Typo.body2" Color="Color.Secondary">
-
                                             $@item.Price.ToString("F2") x @item.Quantity
-
                                         </MudText>
-
                                     </div>
 
                                     <div class="d-flex align-center">
-
                                         <MudIconButton Icon="@Icons.Material.Filled.Remove" Size="Size.Small"
-                                                       @onclick="() => UpdateCartItemQuantity(storeCart.StoreId, item.ItemId, Math.Max(1, item.Quantity - 1))" />
+                                        @onclick="() => UpdateCartItemQuantity(storeCart.StoreId, item.ItemId, Math.Max(1, item.Quantity - 1))" />
 
                                         <MudText Typo="Typo.body1" Class="mx-2">@item.Quantity</MudText>
 
                                         <MudIconButton Icon="@Icons.Material.Filled.Add" Size="Size.Small"
-                                                       @onclick="() => UpdateCartItemQuantity(storeCart.StoreId, item.ItemId, Math.Min(item.StockQuantity, item.Quantity + 1))" />
+                                        @onclick="() => UpdateCartItemQuantity(storeCart.StoreId, item.ItemId, Math.Min(item.StockQuantity, item.Quantity + 1))" />
 
                                         <MudIconButton Icon="@Icons.Material.Filled.Delete" Size="Size.Small" Color="Color.Error"
-                                                       @onclick="() => RemoveFromCart(storeCart.StoreId, item.ItemId)" />
-
+                                        @onclick="() => RemoveFromCart(storeCart.StoreId, item.ItemId)" />
                                     </div>
-
                                 </div>
-
                             </MudListItem>
 
                             <MudDivider />
-
                         }
 
-
-
                         <MudListItem>
-
                             <div class="d-flex justify-space-between">
-
                                 <MudText Typo="Typo.body1">Store Total:</MudText>
 
                                 <MudText Typo="Typo.body1" Color="Color.Primary">$@storeCart.Total.ToString("F2")</MudText>
-
                             </div>
-
                         </MudListItem>
 
-
-
                         <MudDivider Class="my-2" />
-
                     }
 
-
-
                     <div class="pa-4">
-
                         <MudText Typo="Typo.h6" Class="d-flex justify-space-between mb-4">
-
                             <span>Grand Total:</span>
 
                             <span>$@CalculateGrandTotal().ToString("F2")</span>
-
                         </MudText>
 
-
-
                         <MudButton Variant="Variant.Filled" Color="Color.Primary" FullWidth="true"
-                                   StartIcon="@Icons.Material.Filled.ShoppingCart"
-                                   Href="/checkout">
-
+                        StartIcon="@Icons.Material.Filled.ShoppingCart"
+                                   Href="/checkout" OnClick="@(() => StateContainer.IsCartOpen = false)">
                             Checkout
-
                         </MudButton>
-
-
 
                         <MudButton Variant="Variant.Text" Color="Color.Error" FullWidth="true"
-                                   StartIcon="@Icons.Material.Filled.DeleteSweep"
-                                   Class="mt-2"
-                                   OnClick="@(() => StateContainer.ClearAllCarts())">
-
+                        StartIcon="@Icons.Material.Filled.DeleteSweep"
+                        Class="mt-2"
+                        OnClick="@(() => StateContainer.ClearAllCarts())">
                             Clear All Carts
-
                         </MudButton>
-
                     </div>
-
                 </MudList>
-
             }
 
         </MudDrawerContainer>
-
     </MudDrawer>
 
 
-
-    <MudScrollToTop>
-
-        <MudFab Color="Color.Primary" Icon="@Icons.Material.Filled.KeyboardArrowUp" Title="Go to top" />
-
+    <MudScrollToTop Class=" mb-9 mr-5">
+        <MudFab Color="Color.Secondary" StartIcon="@Icons.Material.Filled.ArrowUpward" Title="Go to top" Size="Size.Medium" />
     </MudScrollToTop>
-
 </MudLayout>
-
 
 
 @code {
 
     private bool _isDarkMode = true;
-
     private bool _drawerOpen = false;
 
-
-
     private void UpdateCartItemQuantity(int storeId, int itemId, int quantity)
-
     {
-
         StateContainer.UpdateCartItemQuantity(storeId, itemId, quantity);
-
     }
-
-
 
     private void RemoveFromCart(int storeId, int itemId)
-
     {
-
         StateContainer.RemoveFromCart(storeId, itemId);
-
     }
-
-
 
     private decimal CalculateGrandTotal()
-
     {
-
         return StateContainer.GetStoreCarts().Sum(cart => cart.Total);
-
     }
-
-
 
     private void OpenDrawer()
-
     {
-
         _drawerOpen = true;
-
     }
-
-
 
     private void CloseDrawer()
-
     {
-
         _drawerOpen = false;
-
     }
-
-
 
     protected override void OnInitialized()
-
     {
-
         StateContainer.OnChange += StateHasChanged;
-
     }
-
-
-
-    // Make sure to dispose the subscription when component is disposed
 
     public void Dispose()
-
     {
-
         StateContainer.OnChange -= StateHasChanged;
-
     }
 
-
-
     private MudTheme MyCustomTheme = new MudTheme()
-
         {
-
             PaletteDark = new PaletteDark()
-
             {
-
                 Primary = "#3BADEB",           // Picton Blue as primary
-
                 Secondary = "#F55252",         // Bittersweet as secondary
-
                 Tertiary = "#FE1C1C",          // Red as tertiary
-
                 Background = "#101010",        // Night as background
-
                 Surface = "#2B2A2A",           // Jet as surface
-
                 DrawerBackground = "#101010",  // Night
-
                 DrawerText = "#E6E1E0",        // Platinum
-
                 AppbarBackground = "#101010",  // Night
-
                 AppbarText = "#E6E1E0",        // Platinum
-
                 TextPrimary = "#E6E1E0",       // Platinum
-
                 TextSecondary = "#B0ABAB",     // Silver
-
                 ActionDefault = "#B0ABAB",     // Silver
-
                 ActionDisabled = "#666666",
-
                 ActionDisabledBackground = "#333333",
-
                 Error = "#FE1C1C",             // Red
-
                 Success = "#4CAF50",           // Standard green
-
                 Warning = "#FF9800",           // Standard amber
-
                 Info = "#3BADEB",              // Picton Blue
-
                 Dark = "#101010",              // Night
-
                 Divider = "#2B2A2A",           // Jet
-
                 DividerLight = "#222222",
-
                 TableLines = "#2B2A2A",        // Jet
-
                 LinesDefault = "#2B2A2A",      // Jet
-
                 LinesInputs = "#B0ABAB"        // Silver
-
             },
-
-
 
             PaletteLight = new PaletteLight()
-
             {
-
                 Primary = "#3BADEB",           // Picton Blue as primary
-
                 Secondary = "#F55252",         // Bittersweet as secondary
-
                 Tertiary = "#FE1C1C",          // Red as tertiary
-
                 Background = "#FFFFFF",
-
                 Surface = "#E6E1E0",           // Platinum
-
                 DrawerBackground = "#FFFFFF",
-
                 DrawerText = "#2B2A2A",        // Jet
-
                 AppbarBackground = "#3BADEB",  // Picton Blue
-
                 AppbarText = "#FFFFFF",
-
                 TextPrimary = "#2B2A2A",       // Jet
-
                 TextSecondary = "#B0ABAB",     // Silver
-
                 ActionDefault = "#2B2A2A",     // Jet
-
                 ActionDisabled = "#B0ABAB",    // Silver
-
                 ActionDisabledBackground = "#E6E1E0", // Platinum
-
                 Error = "#FE1C1C",             // Red
-
                 Success = "#4CAF50",           // Standard green
-
                 Warning = "#FF9800",           // Standard amber
-
                 Info = "#3BADEB",              // Picton Blue
-
                 Dark = "#101010",              // Night
-
                 Divider = "#B0ABAB",           // Silver
-
                 DividerLight = "#E6E1E0",      // Platinum
-
                 TableLines = "#B0ABAB",        // Silver
-
                 LinesDefault = "#B0ABAB",      // Silver
-
                 LinesInputs = "#B0ABAB"        // Silver
-
             },
 
-
-
             LayoutProperties = new LayoutProperties()
-
             {
-
                 DefaultBorderRadius = "8px",
-
                 DrawerWidthLeft = "260px",
-
                 DrawerWidthRight = "300px"
-
             }
-
         };
-
 }

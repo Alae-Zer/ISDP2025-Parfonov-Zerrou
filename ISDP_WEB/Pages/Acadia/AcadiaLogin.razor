@@ -1,0 +1,90 @@
+﻿@page "/acadia-login"
+@using ISDP2025_Parfonov_Zerrou.Models
+@using System.ComponentModel.DataAnnotations
+@inject NavigationManager NavigationManager
+@inject ISnackbar Snackbar
+
+<PageTitle>Acadia Login - Bullseye</PageTitle>
+
+<MudContainer Class="d-flex justify-center align-center" Style="height: calc(100vh - 300px);">
+    <MudPaper Elevation="3" Class="pa-8" Style="max-width: 400px; width: 100%;">
+        <MudStack Spacing="4">
+            <div class="d-flex justify-center mb-4">
+                <MudImage Src="images/bullseye.png" Alt="Bullseye Logo" Height="60" />
+            </div>
+            
+            <MudText Typo="Typo.h5" Align="Align.Center">Acadia Delivery Login</MudText>
+            <MudText Typo="Typo.body2" Align="Align.Center" Color="Color.Secondary">
+                Enter your credentials to access the delivery portal
+            </MudText>
+            
+            <MudTextField @bind-Value="loginModel.Username" 
+                         Label="Username" 
+                         Variant="Variant.Outlined" 
+                         FullWidth="true"
+                         Required="true" 
+                         RequiredError="Username is required"
+                         Immediate="true"/>
+                         
+            <MudTextField @bind-Value="loginModel.Password" 
+                         Label="Password" 
+                         Variant="Variant.Outlined" 
+                         InputType="InputType.Password"
+                         FullWidth="true" 
+                         Required="true" 
+                         RequiredError="Password is required"
+                         Immediate="true"/>
+            
+            <MudButton Variant="Variant.Filled" 
+                      Color="Color.Primary" 
+                      FullWidth="true" 
+                      Size="Size.Large"
+                      OnClick="AttemptLogin"
+                      Disabled="@(!IsFormValid())">
+                Login
+            </MudButton>
+        </MudStack>
+    </MudPaper>
+</MudContainer>
+
+@code {
+    private LoginModel loginModel = new LoginModel();
+    
+    private class LoginModel
+    {
+        [Required]
+        public string Username { get; set; } = string.Empty;
+        
+        [Required]
+        public string Password { get; set; } = string.Empty;
+    }
+    
+    private bool IsFormValid()
+    {
+        return !string.IsNullOrWhiteSpace(loginModel.Username) && 
+               !string.IsNullOrWhiteSpace(loginModel.Password);
+    }
+    
+    private void AttemptLogin()
+    {
+        // Check for valid credentials (admin or acadia)
+        if ((loginModel.Username.ToLower() == "admin" && loginModel.Password == "admin") ||
+            (loginModel.Username.ToLower() == "acadia" && loginModel.Password == "acadia"))
+        {
+            // Store user information and redirect to appropriate dashboard
+            if (loginModel.Username.ToLower() == "admin")
+            {
+                NavigationManager.NavigateTo("/admin/deliveries");
+            }
+            else
+            {
+                NavigationManager.NavigateTo("/acadia/deliveries");
+            }
+        }
+        else
+        {
+            // Show error message for invalid credentials
+            Snackbar.Add("Invalid username or password", Severity.Error);
+        }
+    }
+}

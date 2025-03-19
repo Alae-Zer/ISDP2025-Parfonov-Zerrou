@@ -54,18 +54,12 @@
                 </MudItem>
                 
                 <MudItem xs="12" sm="6" md="3">
-                    <MudTextField Label="Total Distance (km)"
-                                  @bind-Value="totalDistance"
-                                  ReadOnly="true"
-                                  Immediate="true" />
-                </MudItem>
-                <MudItem xs="12" sm="6" md="3">
-                    <MudTextField Label="Distance Cost"
-                                  @bind-Value="distanceCost"
-                                  ReadOnly="true"
-                                  Adornment="Adornment.Start"
-                                  AdornmentText="$"
-                                  Format="F2" />
+                    <MudNumericField @bind-Value="distanceCost" 
+                                   Label="Distance Cost" 
+                                   Adornment="Adornment.Start" 
+                                   AdornmentText="$"
+                                   Format="F2"
+                                   Min="0" />
                 </MudItem>
                 
                 <MudItem xs="12">
@@ -96,17 +90,17 @@
                 </MudItem>
                 
                 <MudItem xs="12" sm="6" md="3">
-                    <MudSelect T="string"
-                               Label="Vehicle Type"
-                               @bind-Value="selectedVehicleType"
-                               Required="true"
-                               RequiredError="Vehicle type is required">
-                        @foreach (var vehicle in DeliveryCostCalculator.VehicleCosts)
-                        {
-                            <MudSelectItem Value="@vehicle.Type">@vehicle.Type Truck (up to @vehicle.MaxWeight.ToString("N0") kg)</MudSelectItem>
-                        }
-                    </MudSelect>
-                </MudItem>
+    <MudSelect T="string" 
+              Label="Vehicle Type" 
+              @bind-Value="selectedVehicleType" 
+              Required="true" 
+              RequiredError="Vehicle type is required">
+        @foreach (var vehicle in DeliveryCostCalculator.VehicleCosts)
+        {
+            <MudSelectItem Value="@vehicle.Type">@vehicle.Type Truck (up to @vehicle.MaxWeight.ToString("N0") kg)</MudSelectItem>
+        }
+    </MudSelect>
+</MudItem>
                 
                 <MudItem xs="12" sm="12" md="4">
                     <MudTextField @bind-Value="searchText" 
@@ -286,7 +280,6 @@
     private DateTime? deliveryDate = DateTime.Today;
     private TimeSpan? deliveryTime = new TimeSpan(9, 0, 0); // 9:00 AM default
     private string selectedVehicleType = "Medium";
-    private string recommendedVehicleType = "Medium";
     private decimal distanceCost = 0;
     private string notes = "";
     
@@ -297,21 +290,6 @@
     // Selected entity
     private Txn selectedOrder;
     private List<Txnitem> selectedOrderItems = new();
-
-    private decimal totalDistance;
-    private VehicleCost currentVehicleCost;
-
-    private void CalculateCosts()
-    {
-        totalDistance = selectedOrders
-            .Sum(o => o.SiteIdtoNavigation?.DistanceFromWh ?? 0);
-
-        currentVehicleCost = DeliveryCostCalculator.VehicleCosts
-            .FirstOrDefault(v => v.Type == selectedVehicleType)
-            ?? new VehicleCost();
-
-        distanceCost = totalDistance * currentVehicleCost.CostPerKm;
-    }
     
     protected override async Task OnInitializedAsync()
     {
@@ -424,7 +402,7 @@
         // Clear selected orders that are no longer in filtered list
         selectedOrders = new HashSet<Txn>(selectedOrders.Where(o => filteredOrders.Contains(o)));
         
-        CalculateCosts();
+        // Update recommended vehicle
         UpdateRecommendedVehicle();
     }
     
@@ -442,18 +420,29 @@
     {
         if (selectedOrdersTotalWeight <= 0)
             return "Select orders to get a recommendation";
-
-        return $"Recommended: {recommendedVehicleType} Truck (up to {DeliveryCostCalculator.VehicleCosts.First(v => v.Type == recommendedVehicleType).MaxWeight:N0} kg)";
+            
+        if (selectedOrdersTotalWeight <= 1000)
+            return "Recommended: Van (up to 1,000 kg)";
+        else if (selectedOrdersTotalWeight <= 5000)
+            return "Recommended: Small Truck (up to 5,000 kg)";
+        else if (selectedOrdersTotalWeight <= 10000)
+            return "Recommended: Medium Truck (up to 10,000 kg)";
+        else
+            return "Recommended: Heavy Truck (up to 25,000 kg)";
     }
     
     private void UpdateRecommendedVehicle()
     {
-        var recommended = DeliveryCostCalculator.VehicleCosts
-            .OrderBy(v => v.MaxWeight)
-            .FirstOrDefault(v => v.MaxWeight >= selectedOrdersTotalWeight)
-            ?? DeliveryCostCalculator.VehicleCosts.Last();
-
-        recommendedVehicleType = recommended.Type;
+        if (selectedOrdersTotalWeight <= 0)
+            selectedVehicleType = "Medium"; // Default
+        else if (selectedOrdersTotalWeight <= 1000)
+            selectedVehicleType = "Van";
+        else if (selectedOrdersTotalWeight <= 5000)
+            selectedVehicleType = "Small";
+        else if (selectedOrdersTotalWeight <= 10000)
+            selectedVehicleType = "Medium";
+        else
+            selectedVehicleType = "Heavy";
     }
     
     private Color GetWeightColor()
@@ -508,14 +497,14 @@
         
         // If weight exceeds capacity, show a warning dialog
         // If weight exceeds capacity, show a warning dialog
-        if (selectedOrdersTotalWeight > currentVehicleCost.MaxWeight)
+        if (selectedOrdersTotalWeight > maxWeight)
         {
             var parameters = new DialogParameters
-            {
-                { "ContentText", $"The total weight ({selectedOrdersTotalWeight:0.00} kg) exceeds the {currentVehicleCost.Type} Truck's capacity ({currentVehicleCost.MaxWeight:N0} kg). Do you want to continue anyway?" },
-                { "ButtonText", "Continue" },
-                { "Color", Color.Warning }
-            };
+    {
+        { "ContentText", $"The total weight ({selectedOrdersTotalWeight:0.00} kg) exceeds the capacity of the selected vehicle ({maxWeight} kg). Do you want to continue anyway?" },
+        { "ButtonText", "Continue" },
+        { "Color", Color.Warning }
+    };
             var options = new DialogOptions() { CloseButton = true, MaxWidth = MaxWidth.ExtraSmall };
 
             var dialog = await DialogService.Show<Confirm>("Weight Warning", parameters, options).Result;

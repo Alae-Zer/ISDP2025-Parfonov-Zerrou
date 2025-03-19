@@ -2,7 +2,6 @@
 @using ISDP2025_Parfonov_Zerrou.Models
 @using ISDP2025_Parfonov_Zerrou.Functionality
 @using Microsoft.EntityFrameworkCore
-@using static ISDP_WEB.Pages.Acadia.CreateDelivery
 @inject NavigationManager NavigationManager
 @inject ISnackbar Snackbar
 
@@ -88,7 +87,7 @@
                         <MudTd DataLabel="Vehicle Type">@context.VehicleType</MudTd>
                         <MudTd DataLabel="Orders">@GetOrdersCount(context.DeliveryId)</MudTd>
                         <MudTd DataLabel="Total Weight">@GetTotalWeight(context.DeliveryId).ToString("0.00") kg</MudTd>
-                        <MudTd DataLabel="Distance Cost">$@(context.DistanceCost.ToString("0.00")) (@GetDistanceCostBreakdown(context))</MudTd>
+                        <MudTd DataLabel="Distance Cost">$@context.DistanceCost.ToString("0.00")</MudTd>
                         <MudTd>
                             <MudButtonGroup Size="Size.Small" Variant="Variant.Text">
                                 <MudIconButton Icon="@Icons.Material.Filled.Visibility"
@@ -530,14 +529,5 @@
         {
             Snackbar.Add($"Error assigning order: {ex.Message}", Severity.Error);
         }
-    }
-    private string GetDistanceCostBreakdown(Delivery delivery)
-    {
-        var vehicleCost = DeliveryCostCalculator.VehicleCosts
-            .FirstOrDefault(v => v.Type == delivery.VehicleType);
-
-        if (vehicleCost == null) return "N/A";
-
-        return $"{delivery.DistanceCost / vehicleCost.CostPerKm}km × ${vehicleCost.CostPerKm}/km";
     }
 }

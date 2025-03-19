@@ -68,18 +68,12 @@
     private void AttemptLogin()
     {
         // Check for valid credentials (admin or acadia)
-        if ((loginModel.Username.ToLower() == "admin" && loginModel.Password == "admin") ||
+        if ((loginModel.Username.ToLower() == "admin" && loginModel.Password == "P@ssw0rd-") ||
             (loginModel.Username.ToLower() == "acadia" && loginModel.Password == "acadia"))
         {
-            // Store user information and redirect to appropriate dashboard
-            if (loginModel.Username.ToLower() == "admin")
-            {
-                NavigationManager.NavigateTo("/admin/deliveries");
-            }
-            else
-            {
-                NavigationManager.NavigateTo("/acadia/deliveries");
-            }
+            
+            NavigationManager.NavigateTo("/acadia/deliveries");
+            
         }
         else
         {

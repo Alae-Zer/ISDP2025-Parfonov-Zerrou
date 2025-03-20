@@ -1,0 +1,584 @@
+﻿@page "/acadia/edit-delivery/{DeliveryId:int}"
+@using ISDP2025_Parfonov_Zerrou.Models
+@using ISDP2025_Parfonov_Zerrou.Functionality
+@using ISDP_WEB.Pages.Small_Components
+@using Microsoft.EntityFrameworkCore
+@inject BestContext Context
+@inject NavigationManager NavigationManager
+@inject ISnackbar Snackbar
+@inject IDialogService DialogService
+
+<PageTitle>Edit Delivery - Bullseye</PageTitle>
+
+<MudContainer MaxWidth="MaxWidth.ExtraLarge" Class="mt-4">
+    <MudCard>
+        <MudCardHeader>
+            <MudText Typo="Typo.h4">Edit Delivery #@DeliveryId</MudText>
+        </MudCardHeader>
+        
+        <MudCardContent>
+            @if (isLoading)
+            {
+                <MudProgressCircular Color="Color.Primary" Indeterminate="true" />
+            }
+            else if (delivery == null)
+            {
+                <MudAlert Severity="Severity.Error">Delivery not found</MudAlert>
+            }
+            else
+            {
+                <!-- Delivery Form -->
+                <MudGrid>
+                    <MudItem xs="12" sm="6" md="3">
+                        <MudDatePicker Label="Delivery Date" 
+                                      @bind-Date="deliveryDate" 
+                                      Required="true" 
+                                      RequiredError="Delivery date is required" />
+                    </MudItem>
+                    
+                    <MudItem xs="12" sm="6" md="3">
+                        <MudTimePicker Label="Delivery Time" 
+                                      @bind-Time="deliveryTime" 
+                                      Required="true"
+                                      RequiredError="Delivery time is required" />
+                    </MudItem>
+                    
+                    <MudItem xs="12" sm="6" md="3">
+                        <MudSelect T="string" 
+                                  Label="Vehicle Type" 
+                                  @bind-Value="selectedVehicleType" 
+                                  Required="true" 
+                                  RequiredError="Vehicle type is required">
+                            <MudSelectItem Value="@("Van")">Van (max 1,000 kg)</MudSelectItem>
+                            <MudSelectItem Value="@("Small")">Small Truck (max 5,000 kg)</MudSelectItem>
+                            <MudSelectItem Value="@("Medium")">Medium Truck (max 10,000 kg)</MudSelectItem>
+                            <MudSelectItem Value="@("Heavy")">Heavy Truck (max 25,000 kg)</MudSelectItem>
+                        </MudSelect>
+                    </MudItem>
+                    
+                    <MudItem xs="12" sm="6" md="3">
+                        <MudNumericField @bind-Value="distanceCost" 
+                                       Label="Distance Cost" 
+                                       Adornment="Adornment.Start" 
+                                       AdornmentText="$"
+                                       Format="F2"
+                                       Min="0" />
+                    </MudItem>
+                    
+                    <MudItem xs="12">
+                        <MudTextField @bind-Value="notes" 
+                                     Label="Notes" 
+                                     Lines="2" />
+                    </MudItem>
+                </MudGrid>
+                
+                <MudDivider Class="my-4" />
+                
+                <!-- Current Orders Table -->
+                <MudText Typo="Typo.h6" Class="mb-2">Current Orders in Delivery</MudText>
+                
+                <MudPaper Class="pa-4 mb-4">
+                    <MudStack Row="true" AlignItems="AlignItems.Center">
+                        <MudText>
+                            <strong>Selected Orders:</strong> @currentOrders.Count | 
+                            <strong>Total Weight:</strong> @currentOrdersTotalWeight.ToString("0.00") kg
+                        </MudText>
+                        
+                        <MudChip T="string" Color="GetWeightColor()" Size="Size.Medium">
+                            @GetRecommendedVehicle()
+                        </MudChip>
+                    </MudStack>
+                </MudPaper>
+                
+                <MudTable Items="@currentOrders" 
+                         Hover="true" 
+                         Striped="true"
+                         T="Txn">
+                    <HeaderContent>
+                        <MudTh>Order #</MudTh>
+                        <MudTh>Type</MudTh>
+                        <MudTh>Store</MudTh>
+                        <MudTh>Status</MudTh>
+                        <MudTh>Weight</MudTh>
+                        <MudTh>Actions</MudTh>
+                    </HeaderContent>
+                    <RowTemplate>
+                        <MudTd DataLabel="Order #">@context.TxnId</MudTd>
+                        <MudTd DataLabel="Type">@context.TxnType</MudTd>
+                        <MudTd DataLabel="Store">@context.SiteIdtoNavigation?.SiteName</MudTd>
+                        <MudTd DataLabel="Status">
+                            <MudChip T="string" Size="Size.Small" Color="@GetStatusColor(context.TxnStatus)">@context.TxnStatus</MudChip>
+                        </MudTd>
+                        <MudTd DataLabel="Weight">@CalculateOrderWeight(context).ToString("0.00") kg</MudTd>
+                        <MudTd>
+                            <MudIconButton Icon="@Icons.Material.Filled.Delete" 
+                                         Color="Color.Error"
+                                         OnClick="@(() => RemoveOrderFromDelivery(context))" 
+                                         Title="Remove from Delivery" />
+                        </MudTd>
+                    </RowTemplate>
+                </MudTable>
+                
+                <MudDivider Class="my-4" />
+                
+                <!-- Available Orders Section -->
+                <MudExpansionPanels>
+                    <MudExpansionPanel Text="Add Orders to Delivery">
+                        <MudGrid Class="mb-2">
+                            <MudItem xs="12" sm="6" md="4">
+                                <MudSelect T="string" 
+                                          Label="Filter by Order Type" 
+                                          @bind-Value="orderTypeFilter"
+                                          FullWidth="true"
+                                          Immediate="true"
+                                          OnSelectedValueChanged="ApplyFilters">
+                                    <MudSelectItem Value="@("All")">All</MudSelectItem>
+                                    <MudSelectItem Value="@("Store Order")">Store Order</MudSelectItem>
+                                    <MudSelectItem Value="@("Emergency Order")">Emergency Order</MudSelectItem>
+                                    <MudSelectItem Value="@("Back Order")">Back Order</MudSelectItem>
+                                </MudSelect>
+                            </MudItem>
+                            
+                            <MudItem xs="12" sm="12" md="8">
+                                <MudTextField @bind-Value="searchText" 
+                                             Label="Search" 
+                                             Adornment="Adornment.Start" 
+                                             AdornmentIcon="@Icons.Material.Filled.Search"
+                                             FullWidth="true"
+                                             Immediate="true"
+                                             DebounceInterval="300"
+                                             OnDebounceIntervalElapsed="ApplyFilters" />
+                            </MudItem>
+                        </MudGrid>
+                        
+                        <MudTable Items="@filteredAvailableOrders" 
+                                 MultiSelection="true"
+                                 @bind-SelectedItems="selectedOrders"
+                                 Hover="true" 
+                                 Striped="true"
+                                 T="Txn">
+                            <HeaderContent>
+                                <MudTh>Order #</MudTh>
+                                <MudTh>Type</MudTh>
+                                <MudTh>Ship Date</MudTh>
+                                <MudTh>Store</MudTh>
+                                <MudTh>Status</MudTh>
+                                <MudTh>Weight</MudTh>
+                            </HeaderContent>
+                            <RowTemplate>
+                                <MudTd DataLabel="Order #">@context.TxnId</MudTd>
+                                <MudTd DataLabel="Type">@context.TxnType</MudTd>
+                                <MudTd DataLabel="Ship Date">@context.ShipDate.ToString("yyyy-MM-dd")</MudTd>
+                                <MudTd DataLabel="Store">@context.SiteIdtoNavigation?.SiteName</MudTd>
+                                <MudTd DataLabel="Status">
+                                    <MudChip T="string" Size="Size.Small" Color="@GetStatusColor(context.TxnStatus)">@context.TxnStatus</MudChip>
+                                </MudTd>
+                                <MudTd DataLabel="Weight">@CalculateOrderWeight(context).ToString("0.00") kg</MudTd>
+                            </RowTemplate>
+                        </MudTable>
+                        
+                        <div class="d-flex justify-end mt-4">
+                            <MudButton Variant="Variant.Filled" 
+                                      Color="Color.Primary"
+                                      OnClick="AddSelectedOrdersToDelivery"
+                                      Disabled="!selectedOrders.Any()">
+                                Add Selected Orders
+                            </MudButton>
+                        </div>
+                    </MudExpansionPanel>
+                </MudExpansionPanels>
+            }
+        </MudCardContent>
+        
+        <MudCardActions>
+            <MudButton Variant="Variant.Text" 
+                      Color="Color.Secondary"
+                      OnClick="@(() => NavigationManager.NavigateTo($"/acadia/delivery/{DeliveryId}"))">
+                Cancel
+            </MudButton>
+            
+            <MudSpacer />
+            
+            <MudButton Variant="Variant.Filled" 
+                      Color="Color.Primary"
+                      OnClick="SaveDelivery"
+                      Disabled="isLoading || delivery == null">
+                Save Changes
+            </MudButton>
+        </MudCardActions>
+    </MudCard>
+</MudContainer>
+
+@code {
+    [Parameter]
+    public int DeliveryId { get; set; }
+    
+    private bool isLoading = true;
+    private Delivery delivery;
+    
+    // Delivery form fields
+    private DateTime? deliveryDate;
+    private TimeSpan? deliveryTime;
+    private string selectedVehicleType;
+    private decimal distanceCost;
+    private string notes;
+    
+    // Current orders in this delivery
+    private List<Txn> currentOrders = new List<Txn>();
+    
+    // Available orders to add
+    private List<Txn> availableOrders = new List<Txn>();
+    private List<Txn> filteredAvailableOrders = new List<Txn>();
+    private HashSet<Txn> selectedOrders = new HashSet<Txn>();
+    
+    // Filter variables
+    private string orderTypeFilter = "All";
+    private string searchText = "";
+    
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadDeliveryData();
+    }
+    
+    private async Task LoadDeliveryData()
+    {
+        isLoading = true;
+        StateHasChanged();
+        
+        try
+        {
+            using (var context = new BestContext())
+            {
+                // Load delivery
+                delivery = await context.Deliveries
+                    .FirstOrDefaultAsync(d => d.DeliveryId == DeliveryId);
+                    
+                if (delivery != null)
+                {
+                    // Set form fields
+                    deliveryDate = delivery.DeliveryDate.Date;
+                    deliveryTime = delivery.DeliveryDate.TimeOfDay;
+                    selectedVehicleType = delivery.VehicleType;
+                    distanceCost = delivery.DistanceCost;
+                    notes = delivery.Notes;
+                    
+                    // Load current orders
+                    currentOrders = await context.Txns
+                        .Include(t => t.SiteIdtoNavigation)
+                        .Include(t => t.Txnitems)
+                            .ThenInclude(ti => ti.Item)
+                        .Where(t => t.DeliveryId == DeliveryId)
+                        .ToListAsync();
+                    
+                    // Load available orders
+                    availableOrders = await context.Txns
+                        .Include(t => t.SiteIdtoNavigation)
+                        .Include(t => t.Txnitems)
+                            .ThenInclude(ti => ti.Item)
+                        .Where(t => t.TxnStatus == "ASSEMBLED" && 
+                                   t.DeliveryId == null &&
+                                   (t.TxnType == "Store Order" || 
+                                    t.TxnType == "Emergency Order" || 
+                                    t.TxnType == "Back Order"))
+                        .ToListAsync();
+                        
+                    // Apply initial filters
+                    ApplyFilters();
+                }
+            }
+        }
+        catch (Exception ex)
+        {
+            Snackbar.Add($"Error loading delivery: {ex.Message}", Severity.Error);
+        }
+        finally
+        {
+            isLoading = false;
+            StateHasChanged();
+        }
+    }
+    
+    private void ApplyFilters()
+    {
+        filteredAvailableOrders = availableOrders;
+        
+        // Apply order type filter
+        if (orderTypeFilter != "All")
+        {
+            filteredAvailableOrders = filteredAvailableOrders
+                .Where(o => o.TxnType == orderTypeFilter)
+                .ToList();
+        }
+        
+        // Apply search text
+        if (!string.IsNullOrWhiteSpace(searchText))
+        {
+            filteredAvailableOrders = filteredAvailableOrders
+                .Where(o => 
+                    o.TxnId.ToString().Contains(searchText) ||
+                    o.SiteIdtoNavigation.SiteName.Contains(searchText, StringComparison.OrdinalIgnoreCase) ||
+                    o.TxnType.Contains(searchText, StringComparison.OrdinalIgnoreCase)
+                )
+                .ToList();
+        }
+        
+        // Clear selected orders that are no longer in filtered list
+        selectedOrders = new HashSet<Txn>(selectedOrders.Where(o => filteredAvailableOrders.Contains(o)));
+    }
+    
+    private decimal CalculateOrderWeight(Txn order)
+    {
+        if (order == null)
+            return 0;
+            
+        if (order.Txnitems == null || !order.Txnitems.Any())
+        {
+            // If Txnitems is not loaded, try to load from database
+            try
+            {
+                using (var context = new BestContext())
+                {
+                    var items = context.Txnitems
+                        .Include(i => i.Item)
+                        .Where(i => i.TxnId == order.TxnId)
+                        .ToList();
+                        
+                    return items.Sum(i => i.Item?.Weight * i.Quantity ?? 0);
+                }
+            }
+            catch
+            {
+                return 0;
+            }
+        }
+        
+        return order.Txnitems.Sum(i => i.Item?.Weight * i.Quantity ?? 0);
+    }
+    
+    private decimal currentOrdersTotalWeight => currentOrders.Sum(o => CalculateOrderWeight(o));
+    
+    private string GetRecommendedVehicle()
+    {
+        if (currentOrdersTotalWeight <= 0)
+            return "Select orders to get a recommendation";
+            
+        if (currentOrdersTotalWeight <= 1000)
+            return "Recommended: Van (up to 1,000 kg)";
+        else if (currentOrdersTotalWeight <= 5000)
+            return "Recommended: Small Truck (up to 5,000 kg)";
+        else if (currentOrdersTotalWeight <= 10000)
+            return "Recommended: Medium Truck (up to 10,000 kg)";
+        else
+            return "Recommended: Heavy Truck (up to 25,000 kg)";
+    }
+    
+    private Color GetWeightColor()
+    {
+        if (currentOrdersTotalWeight <= 0)
+            return Color.Default;
+        else if (currentOrdersTotalWeight <= 1000)
+            return Color.Success;
+        else if (currentOrdersTotalWeight <= 5000)
+            return Color.Info;
+        else if (currentOrdersTotalWeight <= 10000)
+            return Color.Warning;
+        else
+            return Color.Error;
+    }
+    
+    private Color GetStatusColor(string status)
+    {
+        return status switch
+        {
+            "NEW" => Color.Info,
+            "SUBMITTED" => Color.Info,
+            "RECEIVED" => Color.Info,
+            "ASSEMBLING" => Color.Warning,
+            "ASSEMBLED" => Color.Success,
+            "IN TRANSIT" => Color.Primary,
+            "DELIVERED" => Color.Success,
+            "COMPLETE" => Color.Success,
+            "CANCELLED" => Color.Error,
+            "REJECTED" => Color.Error,
+            _ => Color.Default
+        };
+    }
+    
+    private async Task RemoveOrderFromDelivery(Txn order)
+    {
+        var parameters = new DialogParameters
+        {
+            { "ContentText", $"Are you sure you want to remove Order #{order.TxnId} from this delivery?" },
+            { "ButtonText", "Remove" },
+            { "Color", Color.Error }
+        };
+        
+        var options = new DialogOptions() { CloseButton = true, MaxWidth = MaxWidth.ExtraSmall };
+        var dialog = await DialogService.Show<Confirm>("Confirm Removal", parameters, options).Result;
+        
+        if (dialog.Canceled)
+            return;
+            
+        try
+        {
+            using (var context = new BestContext())
+            {
+                var txn = await context.Txns.FindAsync(order.TxnId);
+                if (txn != null)
+                {
+                    txn.DeliveryId = null;
+                    await context.SaveChangesAsync();
+                    
+                    // Create audit record for employee ID 9999 (Acadia)
+                    AuditTransactions.LogActivity(
+                        new Employee { EmployeeID = 9999 },
+                        txn.TxnId,
+                        txn.TxnType,
+                        txn.TxnStatus,
+                        txn.SiteIdto,
+                        null,
+                        $"Removed from delivery #{DeliveryId}"
+                    );
+                    
+                    Snackbar.Add($"Order #{order.TxnId} removed from delivery", Severity.Success);
+                    
+                    // Reload data
+                    await LoadDeliveryData();
+                }
+            }
+        }
+        catch (Exception ex)
+        {
+            Snackbar.Add($"Error removing order: {ex.Message}", Severity.Error);
+        }
+    }
+    
+    private async Task AddSelectedOrdersToDelivery()
+    {
+        if (!selectedOrders.Any())
+        {
+            Snackbar.Add("No orders selected", Severity.Warning);
+            return;
+        }
+        
+        // Check vehicle capacity
+        decimal totalWeight = currentOrdersTotalWeight + selectedOrders.Sum(o => CalculateOrderWeight(o));
+        decimal maxWeight = 0;
+        
+        switch (selectedVehicleType)
+        {
+            case "Van": maxWeight = 1000; break;
+            case "Small": maxWeight = 5000; break;
+            case "Medium": maxWeight = 10000; break;
+            case "Heavy": maxWeight = 25000; break;
+        }
+        
+        // If weight exceeds capacity, show a warning dialog
+        if (totalWeight > maxWeight)
+        {
+            var parameters = new DialogParameters
+            {
+                { "ContentText", $"The total weight ({totalWeight:0.00} kg) exceeds the capacity of the selected vehicle ({maxWeight} kg). Do you want to continue anyway?" },
+                { "ButtonText", "Continue" },
+                { "Color", Color.Warning }
+            };
+            
+            var options = new DialogOptions() { CloseButton = true, MaxWidth = MaxWidth.ExtraSmall };
+            var dialog = await DialogService.Show<Confirm>("Weight Warning", parameters, options).Result;
+            
+            if (dialog.Canceled)
+                return;
+        }
+        
+        try
+        {
+            using (var context = new BestContext())
+            {
+                foreach (var order in selectedOrders)
+                {
+                    var txn = await context.Txns.FindAsync(order.TxnId);
+                    if (txn != null)
+                    {
+                        txn.DeliveryId = DeliveryId;
+                        
+                        // Create audit record for employee ID 9999 (Acadia)
+                        AuditTransactions.LogActivity(
+                            new Employee { EmployeeID = 9999 },
+                            txn.TxnId,
+                            txn.TxnType,
+                            txn.TxnStatus,
+                            txn.SiteIdto,
+                            DeliveryId,
+                            $"Added to delivery #{DeliveryId}"
+                        );
+                    }
+                }
+                
+                await context.SaveChangesAsync();
+                
+                Snackbar.Add($"{selectedOrders.Count} orders added to delivery", Severity.Success);
+                
+                // Reload data
+                await LoadDeliveryData();
+                
+                // Clear selection
+                selectedOrders.Clear();
+            }
+        }
+        catch (Exception ex)
+        {
+            Snackbar.Add($"Error adding orders: {ex.Message}", Severity.Error);
+        }
+    }
+    
+    private async Task SaveDelivery()
+    {
+        if (delivery == null)
+            return;
+            
+        if (!deliveryDate.HasValue)
+        {
+            Snackbar.Add("Delivery date is required", Severity.Warning);
+            return;
+        }
+        
+        if (!deliveryTime.HasValue)
+        {
+            Snackbar.Add("Delivery time is required", Severity.Warning);
+            return;
+        }
+        
+        if (string.IsNullOrWhiteSpace(selectedVehicleType))
+        {
+            Snackbar.Add("Vehicle type is required", Severity.Warning);
+            return;
+        }
+        
+        try
+        {
+            using (var context = new BestContext())
+            {
+                var dbDelivery = await context.Deliveries.FindAsync(DeliveryId);
+                if (dbDelivery != null)
+                {
+                    // Update delivery
+                    dbDelivery.DeliveryDate = deliveryDate.Value.Add(deliveryTime.Value);
+                    dbDelivery.VehicleType = selectedVehicleType;
+                    dbDelivery.DistanceCost = distanceCost;
+                    dbDelivery.Notes = notes;
+                    
+                    await context.SaveChangesAsync();
+                    
+                    Snackbar.Add("Delivery updated successfully", Severity.Success);
+                    
+                    // Navigate back to delivery details
+                    NavigationManager.NavigateTo($"/acadia/delivery/{DeliveryId}");
+                }
+            }
+        }
+        catch (Exception ex)
+        {
+            Snackbar.Add($"Error updating delivery: {ex.Message}", Severity.Error);
+        }
+    }
+}

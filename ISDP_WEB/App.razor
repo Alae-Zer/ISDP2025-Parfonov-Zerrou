@@ -6,7 +6,11 @@
     <NotFound>
         <PageTitle>Not found</PageTitle>
         <LayoutView Layout="@typeof(MainLayout)">
-            <p role="alert">Sorry, there's nothing at this address.</p>
+            <MudContainer Class="d-flex flex-column align-center justify-center" Style="height: 70vh;">
+                <MudText Typo="Typo.h3" Class="mb-4">Page Not Found</MudText>
+                <MudText Typo="Typo.body1" Class="mb-6">Sorry, the page you're looking for doesn't exist.</MudText>
+                <MudButton Variant="Variant.Filled" Color="Color.Primary" Href="/">Return Home</MudButton>
+            </MudContainer>
         </LayoutView>
     </NotFound>
 </Router>

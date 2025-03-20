@@ -1,0 +1,84 @@
+﻿@* @using System.Threading.Tasks *@
+
+@* <div class="item-movement-overlay"> *@
+@*     <div class="item-movement-container"> *@
+@*         <MudPaper Elevation="4" Class="pa-4"> *@
+@*             <div class="text-center"> *@
+@*                 <MudProgressCircular Size="Size.Medium" Indeterminate="true" Color="Color.Primary" Class="mb-3" /> *@
+@*                 <MudText Typo="Typo.body1">@Message</MudText> *@
+@*             </div> *@
+@*         </MudPaper> *@
+@*     </div> *@
+@* </div> *@
+
+@* <style> *@
+@*     .item-movement-overlay { *@
+@*         position: fixed; *@
+@*         top: 0; *@
+@*         left: 0; *@
+@*         right: 0; *@
+@*         bottom: 0; *@
+@*         background-color: rgba(0, 0, 0, 0.5); *@
+@*         z-index: 1500; *@
+@*         display: flex; *@
+@*         justify-content: center; *@
+@*         align-items: center; *@
+@*         animation: fadeIn 0.3s ease-in-out; *@
+@*     } *@
+
+@*     .item-movement-container { *@
+@*         width: 300px; *@
+@*         animation: scaleIn 0.3s ease-in-out; *@
+@*     } *@
+
+@*     @keyframes fadeIn { *@
+@*         from *@
+
+@*     { *@
+@*         opacity: 0; *@
+@*     } *@
+
+@*     to { *@
+@*         opacity: 1; *@
+@*     } *@
+
+@*     } *@
+
+@*     @keyframes scaleIn { *@
+@*         from *@
+
+@*     { *@
+@*         transform: scale(0.8); *@
+@*     } *@
+
+@*     to { *@
+@*         transform: scale(1); *@
+@*     } *@
+
+@*     } *@
+@* </style> *@
+
+@* @code { *@
+@*     [Parameter] *@
+@*     public string Message { get; set; } = "Processing..."; *@
+
+@*     protected override async Task OnInitializedAsync() *@
+@*     { *@
+@*         await Task.Delay(1500); // Show for 1.5 seconds *@
+@*         await InvokeAsync(() => Close()); *@
+@*     } *@
+
+@*     private void Close() *@
+@*     { *@
+@*         try *@
+@*         { *@
+@*             // Find parent in DOM and remove this component *@
+@*             var jsRuntime = (IJSRuntime)ScopedServices.GetService(typeof(IJSRuntime)); *@
+@*             jsRuntime?.InvokeVoidAsync("document.querySelector('.item-movement-overlay').remove"); *@
+@*         } *@
+@*         catch *@
+@*         { *@
+@*             // Silently fail if runtime not available *@
+@*         } *@
+@*     } *@
+@* } *@

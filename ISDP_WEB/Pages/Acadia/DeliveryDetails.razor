@@ -1,0 +1,441 @@
+﻿@page "/acadia/delivery/{DeliveryId:int}"
+@using ISDP2025_Parfonov_Zerrou.Models
+@using Microsoft.EntityFrameworkCore
+@inject BestContext Context
+@inject NavigationManager NavigationManager
+@inject ISnackbar Snackbar
+
+<PageTitle>Delivery Details - Bullseye</PageTitle>
+
+<MudContainer MaxWidth="MaxWidth.ExtraLarge" Class="mt-4">
+    <MudCard>
+        <MudCardHeader>
+            <MudText Typo="Typo.h4">Delivery #@DeliveryId Details</MudText>
+        </MudCardHeader>
+        
+        <MudCardContent>
+            @if (isLoading)
+            {
+                <MudProgressCircular Color="Color.Primary" Indeterminate="true" />
+            }
+            else if (delivery == null)
+            {
+                <MudAlert Severity="Severity.Error">Delivery not found</MudAlert>
+            }
+            else
+            {
+                <!-- Delivery Information -->
+                <MudGrid>
+                    <MudItem xs="12" md="6">
+                        <MudPaper Elevation="0" Class="pa-4">
+                            <MudText Typo="Typo.h6" Class="mb-4">Delivery Information</MudText>
+
+                            <MudList T="string" Dense="true">
+                                <MudListItem>
+                                    <MudText Typo="Typo.body1">
+                                        <b>Date & Time:</b> @delivery.DeliveryDate.ToString("yyyy-MM-dd HH:mm")
+                                    </MudText>
+                                </MudListItem>
+                                <MudListItem>
+                                    <MudText Typo="Typo.body1">
+                                        <b>Vehicle Type:</b> @delivery.VehicleType
+                                    </MudText>
+                                </MudListItem>
+                                <MudListItem>
+                                    <MudText Typo="Typo.body1">
+                                        <b>Distance Cost:</b> $@delivery.DistanceCost.ToString("0.00")
+                                    </MudText>
+                                </MudListItem>
+                                @if (!string.IsNullOrEmpty(delivery.Notes))
+                                {
+                                    <MudListItem>
+                                        <MudText Typo="Typo.body1">
+                                            <b>Notes:</b> @delivery.Notes
+                                        </MudText>
+                                    </MudListItem>
+                                }
+                            </MudList>
+                        </MudPaper>
+                    </MudItem>
+                    
+                    <MudItem xs="12" md="6">
+                        <MudPaper Elevation="0" Class="pa-4">
+                            <MudText Typo="Typo.h6" Class="mb-4">Summary</MudText>
+
+                            <MudList T="string" Dense="true">
+                                <MudListItem>
+                                    <MudText Typo="Typo.body1">
+                                        <b>Total Orders:</b> @orders.Count
+                                    </MudText>
+                                </MudListItem>
+                                <MudListItem>
+                                    <MudText Typo="Typo.body1">
+                                        <b>Total Weight:</b> @totalWeight.ToString("0.00") kg
+                                    </MudText>
+                                </MudListItem>
+                                <MudListItem>
+                                    <MudText Typo="Typo.body1">
+                                        <b>Stores:</b> @string.Join(", ", storeNames)
+                                    </MudText>
+                                </MudListItem>
+                                <MudListItem>
+                                    <MudText Typo="Typo.body1">
+                                        <b>Status:</b> <MudChip Size="Size.Small" Color="Color.Success">Ready for Pickup</MudChip>
+                                    </MudText>
+                                </MudListItem>
+                            </MudList>
+                        </MudPaper>
+                    </MudItem>
+                </MudGrid>
+                
+                <MudDivider Class="my-4" />
+                
+                <!-- Orders in this Delivery -->
+                <MudText Typo="Typo.h6" Class="mb-4">Orders in this Delivery</MudText>
+                
+                <MudTable Items="@orders" Hover="true" Breakpoint="Breakpoint.Sm" LoadingProgressColor="Color.Info">
+                    <HeaderContent>
+                        <MudTh>Order #</MudTh>
+                        <MudTh>Type</MudTh>
+                        <MudTh>Store</MudTh>
+                        <MudTh>Status</MudTh>
+                        <MudTh>Weight</MudTh>
+                        <MudTh>Actions</MudTh>
+                    </HeaderContent>
+                    <RowTemplate>
+                        <MudTd DataLabel="Order #">@context.TxnId</MudTd>
+                        <MudTd DataLabel="Type">@context.TxnType</MudTd>
+                        <MudTd DataLabel="Store">@context.SiteIdtoNavigation?.SiteName</MudTd>
+                        <MudTd DataLabel="Status">
+                            <MudChip T="string" Size="Size.Small" Color="@GetStatusColor(context.TxnStatus)">@context.TxnStatus</MudChip>
+                        </MudTd>
+                        <MudTd DataLabel="Weight">@CalculateOrderWeight(context).ToString("0.00") kg</MudTd>
+                        <MudTd>
+                            <MudIconButton Icon="@Icons.Material.Filled.Visibility" 
+                                           OnClick="@(() => ViewOrderDetails(context))" 
+                                           Title="View Details" />
+                        </MudTd>
+                    </RowTemplate>
+                </MudTable>
+                
+                <MudDivider Class="my-4" />
+                
+                <!-- Delivery Route Map (placeholder) -->
+                <MudText Typo="Typo.h6" Class="mb-2">Delivery Route</MudText>
+                <MudPaper Class="d-flex justify-center align-center" Height="300px" Outlined="true">
+                    <MudText>Route map would be displayed here</MudText>
+                </MudPaper>
+                
+                <MudDivider Class="my-4" />
+                
+                <!-- Driver Actions -->
+                <MudGrid>
+                    <MudItem xs="12" md="4">
+                        <MudButton FullWidth="true" 
+                                  Variant="Variant.Outlined" 
+                                  StartIcon="@Icons.Material.Filled.Print"
+                                  OnClick="@PrintManifest">
+                            Print Manifest
+                        </MudButton>
+                    </MudItem>
+                    <MudItem xs="12" md="4">
+                        <MudButton FullWidth="true" 
+                                  Variant="Variant.Outlined" 
+                                  Color="Color.Primary"
+                                  StartIcon="@Icons.Material.Filled.LocalShipping"
+                                  OnClick="@StartDelivery">
+                            Start Delivery
+                        </MudButton>
+                    </MudItem>
+                    <MudItem xs="12" md="4">
+                        <MudButton FullWidth="true" 
+                                  Variant="Variant.Outlined" 
+                                  Color="Color.Secondary"
+                                  StartIcon="@Icons.Material.Filled.Edit"
+                                  Href="@($"/acadia/edit-delivery/{DeliveryId}")">
+                            Edit Delivery
+                        </MudButton>
+                    </MudItem>
+                </MudGrid>
+            }
+        </MudCardContent>
+        
+        <MudCardActions>
+            <MudButton Variant="Variant.Text" 
+                      StartIcon="@Icons.Material.Filled.ArrowBack" 
+                      OnClick="@(() => NavigationManager.NavigateTo("/acadia/deliveries"))">
+                Back to Deliveries
+            </MudButton>
+        </MudCardActions>
+    </MudCard>
+</MudContainer>
+
+<!-- Order Details Dialog -->
+<MudDialog @bind-IsVisible="showOrderDetailsDialog" Options="dialogOptions">
+    <TitleContent>
+        <MudText Typo="Typo.h6">Order Details #@selectedOrder?.TxnId</MudText>
+    </TitleContent>
+    <DialogContent>
+        @if (selectedOrder != null)
+        {
+            <MudGrid>
+                <MudItem xs="12" sm="6">
+                    <MudText Typo="Typo.body2">Type</MudText>
+                    <MudText Typo="Typo.body1">@selectedOrder.TxnType</MudText>
+                </MudItem>
+                <MudItem xs="12" sm="6">
+                    <MudText Typo="Typo.body2">Status</MudText>
+                    <MudText Typo="Typo.body1">@selectedOrder.TxnStatus</MudText>
+                </MudItem>
+                <MudItem xs="12" sm="6">
+                    <MudText Typo="Typo.body2">From</MudText>
+                    <MudText Typo="Typo.body1">@selectedOrder.SiteIdfromNavigation?.SiteName</MudText>
+                </MudItem>
+                <MudItem xs="12" sm="6">
+                    <MudText Typo="Typo.body2">To</MudText>
+                    <MudText Typo="Typo.body1">@selectedOrder.SiteIdtoNavigation?.SiteName</MudText>
+                </MudItem>
+                <MudItem xs="12" sm="6">
+                    <MudText Typo="Typo.body2">Created</MudText>
+                    <MudText Typo="Typo.body1">@selectedOrder.CreatedDate.ToString("yyyy-MM-dd HH:mm")</MudText>
+                </MudItem>
+                <MudItem xs="12" sm="6">
+                    <MudText Typo="Typo.body2">Ship Date</MudText>
+                    <MudText Typo="Typo.body1">@selectedOrder.ShipDate.ToString("yyyy-MM-dd")</MudText>
+                </MudItem>
+
+                @if (!string.IsNullOrEmpty(selectedOrder.Notes))
+                {
+                    <MudItem xs="12">
+                        <MudText Typo="Typo.body2">Notes</MudText>
+                        <MudText Typo="Typo.body1">@selectedOrder.Notes</MudText>
+                    </MudItem>
+                }
+            </MudGrid>
+
+            <MudDivider Class="my-4" />
+
+            <MudText Typo="Typo.h6" Class="mb-2">Items</MudText>
+
+            <MudTable Items="@selectedOrderItems"
+                     Hover="true"
+                     Striped="true"
+                     Dense="true">
+                <HeaderContent>
+                    <MudTh>ID</MudTh>
+                    <MudTh>Name</MudTh>
+                    <MudTh>Quantity</MudTh>
+                    <MudTh>Weight (ea)</MudTh>
+                    <MudTh>Total Weight</MudTh>
+                </HeaderContent>
+                <RowTemplate>
+                    <MudTd DataLabel="ID">@context.ItemId</MudTd>
+                    <MudTd DataLabel="Name">@context.Item?.Name</MudTd>
+                    <MudTd DataLabel="Quantity">@context.Quantity</MudTd>
+                    <MudTd DataLabel="Weight">@context.Item?.Weight kg</MudTd>
+                    <MudTd DataLabel="Total Weight">@((context.Item?.Weight * context.Quantity)?.ToString("0.00")) kg</MudTd>
+                </RowTemplate>
+            </MudTable>
+
+            <MudText Class="mt-4" Typo="Typo.body1">
+                <strong>Total Weight:</strong> @CalculateOrderWeight(selectedOrder).ToString("0.00") kg
+            </MudText>
+        }
+    </DialogContent>
+    <DialogActions>
+        <MudButton OnClick="CloseOrderDetailsDialog">Close</MudButton>
+    </DialogActions>
+</MudDialog>
+
+@code {
+    [Parameter]
+    public int DeliveryId { get; set; }
+    
+    private bool isLoading = true;
+    private Delivery delivery;
+    private List<Txn> orders = new List<Txn>();
+    private decimal totalWeight = 0;
+    private List<string> storeNames = new List<string>();
+    
+    // Dialog properties
+    private bool showOrderDetailsDialog = false;
+    private DialogOptions dialogOptions = new() { MaxWidth = MaxWidth.Medium, FullWidth = true };
+    private Txn selectedOrder;
+    private List<Txnitem> selectedOrderItems = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadDeliveryData();
+    }
+    
+    private async Task LoadDeliveryData()
+    {
+        isLoading = true;
+        StateHasChanged();
+        
+        try
+        {
+            // Load delivery
+            delivery = await Context.Deliveries
+                .FirstOrDefaultAsync(d => d.DeliveryId == DeliveryId);
+                
+            if (delivery != null)
+            {
+                // Load orders for this delivery
+                orders = await Context.Txns
+                    .Include(t => t.SiteIdtoNavigation)
+                    .Include(t => t.SiteIdfromNavigation)
+                    .Include(t => t.Txnitems)
+                        .ThenInclude(ti => ti.Item)
+                    .Where(t => t.DeliveryId == DeliveryId)
+                    .ToListAsync();
+                
+                // Calculate total weight
+                totalWeight = orders.Sum(o => CalculateOrderWeight(o));
+                
+                // Get unique store names
+                storeNames = orders
+                    .Select(o => o.SiteIdtoNavigation?.SiteName)
+                    .Where(s => !string.IsNullOrEmpty(s))
+                    .Distinct()
+                    .ToList();
+            }
+        }
+        catch (Exception ex)
+        {
+            Snackbar.Add($"Error loading delivery: {ex.Message}", Severity.Error);
+        }
+        finally
+        {
+            isLoading = false;
+            StateHasChanged();
+        }
+    }
+    
+    private decimal CalculateOrderWeight(Txn order)
+    {
+        if (order == null)
+            return 0;
+            
+        if (order.Txnitems == null || !order.Txnitems.Any())
+        {
+            // If Txnitems is not loaded, try to load from database
+            try
+            {
+                var items = Context.Txnitems
+                    .Include(i => i.Item)
+                    .Where(i => i.TxnId == order.TxnId)
+                    .ToList();
+                    
+                return items.Sum(i => i.Item?.Weight * i.Quantity ?? 0);
+            }
+            catch
+            {
+                return 0;
+            }
+        }
+        
+        return order.Txnitems.Sum(i => i.Item?.Weight * i.Quantity ?? 0);
+    }
+    
+    private Color GetStatusColor(string status)
+    {
+        return status switch
+        {
+            "NEW" => Color.Info,
+            "SUBMITTED" => Color.Info,
+            "RECEIVED" => Color.Info,
+            "ASSEMBLING" => Color.Warning,
+            "ASSEMBLED" => Color.Success,
+            "IN TRANSIT" => Color.Primary,
+            "DELIVERED" => Color.Success,
+            "COMPLETE" => Color.Success,
+            "CANCELLED" => Color.Error,
+            "REJECTED" => Color.Error,
+            _ => Color.Default
+        };
+    }
+    
+    private void ViewOrderDetails(Txn order)
+    {
+        selectedOrder = order;
+        
+        // Fetch order items if not already loaded
+        if (order.Txnitems == null || !order.Txnitems.Any())
+        {
+            try
+            {
+                selectedOrderItems = Context.Txnitems
+                    .Include(i => i.Item)
+                    .Where(i => i.TxnId == order.TxnId)
+                    .ToList();
+            }
+            catch (Exception ex)
+            {
+                Snackbar.Add($"Error loading order items: {ex.Message}", Severity.Error);
+                selectedOrderItems = new List<Txnitem>();
+            }
+        }
+        else
+        {
+            selectedOrderItems = order.Txnitems.ToList();
+        }
+        
+        showOrderDetailsDialog = true;
+    }
+    
+    private void CloseOrderDetailsDialog()
+    {
+        showOrderDetailsDialog = false;
+    }
+    
+    private void PrintManifest()
+    {
+        Snackbar.Add("Printing delivery manifest...", Severity.Success);
+    }
+    
+    private async Task StartDelivery()
+    {
+        if (orders.All(o => o.TxnStatus == "ASSEMBLED"))
+        {
+            try
+            {
+                // Update all orders to IN_TRANSIT
+                foreach (var order in orders)
+                {
+                    order.TxnStatus = "IN TRANSIT";
+                    
+                    // Add audit record
+                    var txnAudit = new Txnaudit
+                    {
+                        TxnId = order.TxnId,
+                        EmployeeId = 9999, // Acadia Driver
+                        TxnType = order.TxnType,
+                        Status = "IN TRANSIT",
+                        TxnDate = DateTime.Now,
+                        SiteId = order.SiteIdto,
+                        DeliveryId = DeliveryId,
+                        Notes = "Order picked up for delivery"
+                    };
+                    
+                    Context.Txnaudits.Add(txnAudit);
+                }
+                
+                await Context.SaveChangesAsync();
+                
+                Snackbar.Add("Delivery started successfully", Severity.Success);
+                
+                // Refresh data
+                await LoadDeliveryData();
+            }
+            catch (Exception ex)
+            {
+                Snackbar.Add($"Error starting delivery: {ex.Message}", Severity.Error);
+            }
+        }
+        else
+        {
+            Snackbar.Add("Not all orders are ready for pickup", Severity.Warning);
+        }
+    }
+}

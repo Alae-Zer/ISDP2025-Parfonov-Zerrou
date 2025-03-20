@@ -1,0 +1,485 @@
+﻿@page "/acadia/active-delivery/{DeliveryId:int}"
+@using ISDP2025_Parfonov_Zerrou.Models
+@using Microsoft.EntityFrameworkCore
+@using ISDP_WEB.Pages.Small_Components
+@inject BestContext Context
+@inject NavigationManager NavigationManager
+@inject ISnackbar Snackbar
+@inject IDialogService DialogService
+
+<PageTitle>Active Delivery - Bullseye</PageTitle>
+
+<MudContainer MaxWidth="MaxWidth.ExtraLarge" Class="mt-4">
+    <MudCard>
+        <MudCardHeader>
+            <MudText Typo="Typo.h4">Active Delivery #@DeliveryId</MudText>
+        </MudCardHeader>
+        
+        <MudCardContent>
+            @if (isLoading)
+            {
+                <MudProgressCircular Color="Color.Primary" Indeterminate="true" />
+            }
+            else if (delivery == null)
+            {
+                <MudAlert Severity="Severity.Error">Delivery not found</MudAlert>
+            }
+            else
+            {
+                <!-- Delivery Information -->
+                <MudGrid>
+                    <MudItem xs="12" md="6">
+                        <MudPaper Elevation="0" Class="pa-4">
+                            <MudText Typo="Typo.h6" Class="mb-4">Delivery Information</MudText>
+                            
+                            <MudList T="string" Dense="true">
+                                <MudListItem>
+                                    <MudText Typo="Typo.body1">
+                                        <b>Date & Time:</b> @delivery.DeliveryDate.ToString("yyyy-MM-dd HH:mm")
+                                    </MudText>
+                                </MudListItem>
+                                <MudListItem>
+                                    <MudText Typo="Typo.body1">
+                                        <b>Vehicle Type:</b> @delivery.VehicleType
+                                    </MudText>
+                                </MudListItem>
+                                <MudListItem>
+                                    <MudText Typo="Typo.body1">
+                                        <b>Distance Cost:</b> $@delivery.DistanceCost.ToString("0.00")
+                                    </MudText>
+                                </MudListItem>
+                                @if (!string.IsNullOrEmpty(delivery.Notes))
+                                {
+                                    <MudListItem>
+                                        <MudText Typo="Typo.body1">
+                                            <b>Notes:</b> @delivery.Notes
+                                        </MudText>
+                                    </MudListItem>
+                                }
+                            </MudList>
+                        </MudPaper>
+                    </MudItem>
+                    
+                    <MudItem xs="12" md="6">
+                        <MudPaper Elevation="0" Class="pa-4">
+                            <MudText Typo="Typo.h6" Class="mb-4">Summary</MudText>
+
+                            <MudList T="string" Dense="true">
+                                <MudListItem>
+                                    <MudText Typo="Typo.body1">
+                                        <b>Total Orders:</b> @orders.Count
+                                    </MudText>
+                                </MudListItem>
+                                <MudListItem>
+                                    <MudText Typo="Typo.body1">
+                                        <b>Completed Deliveries:</b> @orders.Count(o => o.TxnStatus == "DELIVERED") / @orders.Count
+                                    </MudText>
+                                </MudListItem>
+                                <MudListItem>
+                                    <MudText Typo="Typo.body1">
+                                        <b>Stores:</b> @string.Join(", ", storeNames)
+                                    </MudText>
+                                </MudListItem>
+                                <MudListItem>
+                                    <MudText Typo="Typo.body1">
+                                        <b>Status:</b> <MudChip Size="Size.Small" Color="Color.Primary">In Progress</MudChip>
+                                    </MudText>
+                                </MudListItem>
+                            </MudList>
+                        </MudPaper>
+                    </MudItem>
+                </MudGrid>
+                
+                <MudDivider Class="my-4" />
+                
+                <!-- Orders to Deliver -->
+                <MudText Typo="Typo.h6" Class="mb-4">Delivery Stops</MudText>
+                
+                @foreach (var storeGroup in ordersByStore)
+                {
+                    var storeName = storeGroup.Key;
+                    var storeOrders = storeGroup.Value;
+                    var allDelivered = storeOrders.All(o => o.TxnStatus == "DELIVERED");
+                    
+                    <MudExpansionPanel>
+                        <TitleContent>
+                            <div class="d-flex align-center w-100">
+                                <MudIcon Icon="@Icons.Material.Filled.StoreMallDirectory" Class="mr-2" />
+                                <MudText Typo="Typo.body1" Class="mr-2">@storeName</MudText>
+                                <MudText Typo="Typo.caption" Class="mr-2">(@storeOrders.Count orders)</MudText>
+                                
+                                <MudSpacer />
+                                
+                                @if (allDelivered)
+                                {
+                                    <MudChip T="string" Color="Color.Success" Size="Size.Small">Delivered</MudChip>
+                                }
+                                else
+                                {
+                                    <MudChip T="string" Color="Color.Primary" Size="Size.Small">Pending</MudChip>
+                                }
+                            </div>
+                        </TitleContent>
+                        <ChildContent>
+                            <MudTable Items="@storeOrders" Hover="true" Striped="true" Dense="true">
+                                <HeaderContent>
+                                    <MudTh>Order #</MudTh>
+                                    <MudTh>Type</MudTh>
+                                    <MudTh>Status</MudTh>
+                                    <MudTh>Items</MudTh>
+                                    <MudTh>Weight</MudTh>
+                                    <MudTh>Actions</MudTh>
+                                </HeaderContent>
+                                <RowTemplate>
+                                    <MudTd DataLabel="Order #">@context.TxnId</MudTd>
+                                    <MudTd DataLabel="Type">@context.TxnType</MudTd>
+                                    <MudTd DataLabel="Status">
+                                        <MudChip T="string" Size="Size.Small" Color="@GetStatusColor(context.TxnStatus)">@context.TxnStatus</MudChip>
+                                    </MudTd>
+                                    <MudTd DataLabel="Items">@GetItemCount(context.TxnId)</MudTd>
+                                    <MudTd DataLabel="Weight">@CalculateOrderWeight(context).ToString("0.00") kg</MudTd>
+                                    <MudTd>
+                                        @if (context.TxnStatus == "IN TRANSIT")
+                                        {
+                                            <MudButton Variant="Variant.Filled" 
+                                                      Color="Color.Success"
+                                                      Size="Size.Small"
+                                                      OnClick="@(() => MarkAsDelivered(context))">
+                                                Mark Delivered
+                                            </MudButton>
+                                        }
+                                        else if (context.TxnStatus == "DELIVERED")
+                                        {
+                                            <MudIcon Icon="@Icons.Material.Filled.CheckCircle" Color="Color.Success" />
+                                        }
+                                    </MudTd>
+                                </RowTemplate>
+                            </MudTable>
+                            
+                            @if (!allDelivered)
+                            {
+                                <div class="d-flex justify-end mt-3">
+                                    <MudButton Variant="Variant.Filled"
+                                              Color="Color.Success"
+                                              OnClick="@(() => MarkAllDelivered(storeOrders))">
+                                        Mark All Delivered
+                                    </MudButton>
+                                </div>
+                            }
+                        </ChildContent>
+                    </MudExpansionPanel>
+                }
+                
+                <MudDivider Class="my-4" />
+                
+                <!-- Delivery Map (placeholder) -->
+                <MudText Typo="Typo.h6" Class="mb-2">Delivery Route</MudText>
+                <MudPaper Class="d-flex justify-center align-center" Height="300px" Outlined="true">
+                    <MudText>Route map would be displayed here</MudText>
+                </MudPaper>
+                
+                <MudDivider Class="my-4" />
+                
+                <!-- Action Buttons -->
+                <div class="d-flex justify-end">
+                    @if (orders.All(o => o.TxnStatus == "DELIVERED"))
+                    {
+                        <MudButton Variant="Variant.Filled"
+                                  Color="Color.Success"
+                                  OnClick="CompleteDelivery">
+                            Complete Delivery
+                        </MudButton>
+                    }
+                    else
+                    {
+                        <MudText Class="d-flex align-center mr-4" Color="Color.Warning">
+                            <MudIcon Icon="@Icons.Material.Filled.Warning" Class="mr-1" />
+                            Delivery can be completed when all orders are delivered
+                        </MudText>
+                    }
+                </div>
+            }
+        </MudCardContent>
+        
+        <MudCardActions>
+            <MudButton Variant="Variant.Text" 
+                      StartIcon="@Icons.Material.Filled.ArrowBack" 
+                      OnClick="@(() => NavigationManager.NavigateTo("/acadia/driver"))">
+                Back to My Deliveries
+            </MudButton>
+        </MudCardActions>
+    </MudCard>
+</MudContainer>
+
+@code {
+    [Parameter]
+    public int DeliveryId { get; set; }
+    
+    private bool isLoading = true;
+    private Delivery delivery;
+    private List<Txn> orders = new List<Txn>();
+    private Dictionary<string, List<Txn>> ordersByStore = new Dictionary<string, List<Txn>>();
+    private List<string> storeNames = new List<string>();
+    private Dictionary<int, int> orderItemCounts = new Dictionary<int, int>();
+    
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadDeliveryData();
+    }
+    
+    private async Task LoadDeliveryData()
+    {
+        isLoading = true;
+        StateHasChanged();
+        
+        try
+        {
+            using (var context = new BestContext())
+            {
+                // Load delivery
+                delivery = await context.Deliveries
+                    .FirstOrDefaultAsync(d => d.DeliveryId == DeliveryId);
+                    
+                if (delivery != null)
+                {
+                    // Load orders for this delivery
+                    orders = await context.Txns
+                        .Include(t => t.SiteIdtoNavigation)
+                        .Where(t => t.DeliveryId == DeliveryId)
+                        .ToListAsync();
+                    
+                    // Group orders by store
+                    ordersByStore = orders
+                        .GroupBy(o => o.SiteIdtoNavigation.SiteName)
+                        .ToDictionary(g => g.Key, g => g.ToList());
+                    
+                    // Get unique store names
+                    storeNames = ordersByStore.Keys.ToList();
+                    
+                    // Load item counts for each order
+                    foreach (var order in orders)
+                    {
+                        var itemCount = await context.Txnitems
+                            .Where(ti => ti.TxnId == order.TxnId)
+                            .CountAsync();
+                            
+                        orderItemCounts[order.TxnId] = itemCount;
+                    }
+                }
+            }
+        }
+        catch (Exception ex)
+        {
+            Snackbar.Add($"Error loading delivery: {ex.Message}", Severity.Error);
+        }
+        finally
+        {
+            isLoading = false;
+            StateHasChanged();
+        }
+    }
+    
+    private int GetItemCount(int txnId)
+    {
+        return orderItemCounts.TryGetValue(txnId, out var count) ? count : 0;
+    }
+    
+    private decimal CalculateOrderWeight(Txn order)
+    {
+        if (order == null)
+            return 0;
+            
+        using (var context = new BestContext())
+        {
+            var items = context.Txnitems
+                .Include(i => i.Item)
+                .Where(i => i.TxnId == order.TxnId)
+                .ToList();
+                
+            return items.Sum(i => i.Item?.Weight * i.Quantity ?? 0);
+        }
+    }
+    
+    private Color GetStatusColor(string status)
+    {
+        return status switch
+        {
+            "IN TRANSIT" => Color.Primary,
+            "DELIVERED" => Color.Success,
+            _ => Color.Default
+        };
+    }
+    
+    private async Task MarkAsDelivered(Txn order)
+    {
+        var parameters = new DialogParameters
+        {
+            { "ContentText", $"Mark Order #{order.TxnId} as delivered to {order.SiteIdtoNavigation.SiteName}?" },
+            { "ButtonText", "Mark Delivered" },
+            { "Color", Color.Success }
+        };
+        
+        var options = new DialogOptions() { CloseButton = true, MaxWidth = MaxWidth.ExtraSmall };
+        var dialog = await DialogService.Show<Confirm>("Confirm Delivery", parameters, options).Result;
+        
+        if (dialog.Canceled)
+            return;
+            
+        try
+        {
+            using (var context = new BestContext())
+            {
+                var dbOrder = await context.Txns.FindAsync(order.TxnId);
+                if (dbOrder != null)
+                {
+                    dbOrder.TxnStatus = "DELIVERED";
+                    
+                    // Create audit record
+                    var txnAudit = new Txnaudit
+                    {
+                        TxnId = order.TxnId,
+                        EmployeeId = 9999, // Acadia Driver ID
+                        TxnType = order.TxnType,
+                        Status = "DELIVERED",
+                        TxnDate = DateTime.Now,
+                        SiteId = order.SiteIdto,
+                        DeliveryId = DeliveryId,
+                        Notes = $"Order delivered to {order.SiteIdtoNavigation.SiteName}"
+                    };
+                    
+                    context.Txnaudits.Add(txnAudit);
+                    await context.SaveChangesAsync();
+                    
+                    Snackbar.Add($"Order #{order.TxnId} marked as delivered", Severity.Success);
+                    
+                    // Refresh data
+                    await LoadDeliveryData();
+                }
+            }
+        }
+        catch (Exception ex)
+        {
+            Snackbar.Add($"Error marking order as delivered: {ex.Message}", Severity.Error);
+        }
+    }
+    
+    private async Task MarkAllDelivered(List<Txn> storeOrders)
+    {
+        var parameters = new DialogParameters
+        {
+            { "ContentText", $"Mark all {storeOrders.Count} orders as delivered to {storeOrders.First().SiteIdtoNavigation.SiteName}?" },
+            { "ButtonText", "Mark All Delivered" },
+            { "Color", Color.Success }
+        };
+        
+        var options = new DialogOptions() { CloseButton = true, MaxWidth = MaxWidth.ExtraSmall };
+        var dialog = await DialogService.Show<Confirm>("Confirm Delivery", parameters, options).Result;
+        
+        if (dialog.Canceled)
+            return;
+            
+        try
+        {
+            using (var context = new BestContext())
+            {
+                foreach (var order in storeOrders.Where(o => o.TxnStatus == "IN TRANSIT"))
+                {
+                    var dbOrder = await context.Txns.FindAsync(order.TxnId);
+                    if (dbOrder != null)
+                    {
+                        dbOrder.TxnStatus = "DELIVERED";
+                        
+                        // Create audit record
+                        var txnAudit = new Txnaudit
+                        {
+                            TxnId = order.TxnId,
+                            EmployeeId = 9999, // Acadia Driver ID
+                            TxnType = order.TxnType,
+                            Status = "DELIVERED",
+                            TxnDate = DateTime.Now,
+                            SiteId = order.SiteIdto,
+                            DeliveryId = DeliveryId,
+                            Notes = $"Order delivered to {order.SiteIdtoNavigation.SiteName}"
+                        };
+                        
+                        context.Txnaudits.Add(txnAudit);
+                    }
+                }
+                
+                await context.SaveChangesAsync();
+                
+                Snackbar.Add($"All orders marked as delivered", Severity.Success);
+                
+                // Refresh data
+                await LoadDeliveryData();
+            }
+        }
+        catch (Exception ex)
+        {
+            Snackbar.Add($"Error marking orders as delivered: {ex.Message}", Severity.Error);
+        }
+    }
+    
+    private async Task CompleteDelivery()
+    {
+        if (!orders.All(o => o.TxnStatus == "DELIVERED"))
+        {
+            Snackbar.Add("All orders must be delivered before completing the delivery", Severity.Warning);
+            return;
+        }
+        
+        var parameters = new DialogParameters
+        {
+            { "ContentText", "Are you sure you want to complete this delivery? All orders will be marked as COMPLETE." },
+            { "ButtonText", "Complete Delivery" },
+            { "Color", Color.Success }
+        };
+        
+        var options = new DialogOptions() { CloseButton = true, MaxWidth = MaxWidth.ExtraSmall };
+        var dialog = await DialogService.Show<Confirm>("Confirm Completion", parameters, options).Result;
+        
+        if (dialog.Canceled)
+            return;
+            
+        try
+        {
+            using (var context = new BestContext())
+            {
+                foreach (var order in orders)
+                {
+                    var dbOrder = await context.Txns.FindAsync(order.TxnId);
+                    if (dbOrder != null)
+                    {
+                        dbOrder.TxnStatus = "COMPLETE";
+                        
+                        // Create audit record
+                        var txnAudit = new Txnaudit
+                        {
+                            TxnId = order.TxnId,
+                            EmployeeId = 9999, // Acadia Driver ID
+                            TxnType = order.TxnType,
+                            Status = "COMPLETE",
+                            TxnDate = DateTime.Now,
+                            SiteId = order.SiteIdto,
+                            DeliveryId = DeliveryId,
+                            Notes = $"Delivery completed"
+                        };
+                        
+                        context.Txnaudits.Add(txnAudit);
+                    }
+                }
+                
+                await context.SaveChangesAsync();
+                
+                Snackbar.Add("Delivery completed successfully", Severity.Success);
+                
+                // Navigate back to driver's page
+                NavigationManager.NavigateTo("/acadia/driver");
+            }
+        }
+        catch (Exception ex)
+        {
+            Snackbar.Add($"Error completing delivery: {ex.Message}", Severity.Error);
+        }
+    }
+}

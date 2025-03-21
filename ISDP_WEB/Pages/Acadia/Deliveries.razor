@@ -44,10 +44,6 @@
                 </MudItem>
             </MudGrid>
 
-            <!-- Debug information - helpful to see what dates are actually being used -->
-            <MudText Typo="Typo.body2" Color="Color.Secondary" Class="mt-2">
-                Filtering: @(dateRange?.Start?.ToString("yyyy-MM-dd") ?? "No start date") to @(dateRange?.End?.ToString("yyyy-MM-dd") ?? "No end date")
-            </MudText>
 
             <MudDivider Class="my-4" />
 
@@ -57,8 +53,11 @@
                           Loading="@isLoading"
                           LoadingProgressColor="Color.Primary"
                           Hover="true"
+                          Bordered="true"
+                          Striped="true"
+                          FixedHeader="true"
+                          Dense="true"
                           Breakpoint="Breakpoint.Sm"
-                          T="Delivery"
                           Filter="FilterFunc">
                     <ToolBarContent>
                         <MudText Typo="Typo.h6">Scheduled Deliveries</MudText>
@@ -72,6 +71,7 @@
                                       Immediate="true"
                                       DebounceInterval="300"></MudTextField>
                     </ToolBarContent>
+                    
                     <HeaderContent>
                         <MudTh>Delivery ID</MudTh>
                         <MudTh>Date & Time</MudTh>
@@ -97,10 +97,6 @@
                                 <MudIconButton Icon="@Icons.Material.Filled.Edit"
                                                OnClick="@(() => EditDelivery(context))"
                                                Title="Edit Delivery" />
-
-                                <MudIconButton Icon="@Icons.Material.Filled.Print"
-                                               OnClick="@(() => PrintDeliveryManifest(context.DeliveryId))"
-                                               Title="Print Manifest" />
                             </MudButtonGroup>
                         </MudTd>
                     </RowTemplate>
@@ -120,9 +116,7 @@
                               Loading="@isLoading"
                               LoadingProgressColor="Color.Primary"
                               Hover="true"
-                              Striped="true"
-                              Dense="true"
-                              T="Txn">
+                              Striped="true">
                         <HeaderContent>
                             <MudTh>Order #</MudTh>
                             <MudTh>Type</MudTh>
@@ -130,7 +124,6 @@
                             <MudTh>Destination</MudTh>
                             <MudTh>Status</MudTh>
                             <MudTh>Weight</MudTh>
-                            <MudTh>Actions</MudTh>
                         </HeaderContent>
                         <RowTemplate>
                             <MudTd DataLabel="Order #">@context.TxnId</MudTd>
@@ -139,17 +132,6 @@
                             <MudTd DataLabel="Destination">@context.SiteIdtoNavigation?.SiteName</MudTd>
                             <MudTd DataLabel="Status">@context.TxnStatus</MudTd>
                             <MudTd DataLabel="Weight">@CalculateOrderWeight(context).ToString("0.00") kg</MudTd>
-                            <MudTd>
-                                <MudButtonGroup Size="Size.Small" Variant="Variant.Text">
-                                    <MudIconButton Icon="@Icons.Material.Filled.Visibility"
-                                                   OnClick="@(() => ViewOrderDetails(context))"
-                                                   Title="View Details" />
-
-                                    <MudIconButton Icon="@Icons.Material.Filled.Add"
-                                                   OnClick="@(() => AssignToDelivery(context))"
-                                                   Title="Assign to Delivery" />
-                                </MudButtonGroup>
-                            </MudTd>
                         </RowTemplate>
                         <NoRecordsContent>
                             <MudText>No unassigned orders found.</MudText>
@@ -161,126 +143,6 @@
     </MudCard>
 </MudContainer>
 
-<!-- Order Details Dialog -->
-<MudDialog @bind-IsVisible="showOrderDetailsDialog" Options="dialogOptions">
-    <TitleContent>
-        <MudText Typo="Typo.h6">Order Details #@selectedOrder?.TxnId</MudText>
-    </TitleContent>
-    <DialogContent>
-        @if (selectedOrder != null)
-        {
-            <MudGrid>
-                <MudItem xs="12" sm="6">
-                    <MudText Typo="Typo.body2">Type</MudText>
-                    <MudText Typo="Typo.body1">@selectedOrder.TxnType</MudText>
-                </MudItem>
-                <MudItem xs="12" sm="6">
-                    <MudText Typo="Typo.body2">Status</MudText>
-                    <MudText Typo="Typo.body1">@selectedOrder.TxnStatus</MudText>
-                </MudItem>
-                <MudItem xs="12" sm="6">
-                    <MudText Typo="Typo.body2">From</MudText>
-                    <MudText Typo="Typo.body1">@selectedOrder.SiteIdfromNavigation?.SiteName</MudText>
-                </MudItem>
-                <MudItem xs="12" sm="6">
-                    <MudText Typo="Typo.body2">To</MudText>
-                    <MudText Typo="Typo.body1">@selectedOrder.SiteIdtoNavigation?.SiteName</MudText>
-                </MudItem>
-                <MudItem xs="12" sm="6">
-                    <MudText Typo="Typo.body2">Created</MudText>
-                    <MudText Typo="Typo.body1">@selectedOrder.CreatedDate.ToString("yyyy-MM-dd HH:mm")</MudText>
-                </MudItem>
-                <MudItem xs="12" sm="6">
-                    <MudText Typo="Typo.body2">Ship Date</MudText>
-                    <MudText Typo="Typo.body1">@selectedOrder.ShipDate.ToString("yyyy-MM-dd")</MudText>
-                </MudItem>
-
-                @if (!string.IsNullOrEmpty(selectedOrder.Notes))
-                {
-                    <MudItem xs="12">
-                        <MudText Typo="Typo.body2">Notes</MudText>
-                        <MudText Typo="Typo.body1">@selectedOrder.Notes</MudText>
-                    </MudItem>
-                }
-            </MudGrid>
-
-            <MudDivider Class="my-4" />
-
-            <MudText Typo="Typo.h6" Class="mb-2">Items</MudText>
-
-            <MudTable Items="@selectedOrderItems"
-                      Hover="true"
-                      Striped="true"
-                      Dense="true">
-                <HeaderContent>
-                    <MudTh>ID</MudTh>
-                    <MudTh>Name</MudTh>
-                    <MudTh>Quantity</MudTh>
-                    <MudTh>Weight (ea)</MudTh>
-                    <MudTh>Total Weight</MudTh>
-                </HeaderContent>
-                <RowTemplate>
-                    <MudTd DataLabel="ID">@context.ItemId</MudTd>
-                    <MudTd DataLabel="Name">@context.Item?.Name</MudTd>
-                    <MudTd DataLabel="Quantity">@context.Quantity</MudTd>
-                    <MudTd DataLabel="Weight">@context.Item?.Weight kg</MudTd>
-                    <MudTd DataLabel="Total Weight">@((context.Item?.Weight * context.Quantity)?.ToString("0.00")) kg</MudTd>
-                </RowTemplate>
-            </MudTable>
-
-            <MudText Class="mt-4" Typo="Typo.body1">
-                <strong>Total Weight:</strong> @CalculateOrderWeight(selectedOrder).ToString("0.00") kg
-            </MudText>
-        }
-    </DialogContent>
-    <DialogActions>
-        <MudButton OnClick="CloseOrderDetailsDialog">Close</MudButton>
-    </DialogActions>
-</MudDialog>
-
-<!-- Assign Order to Delivery Dialog -->
-<MudDialog @bind-IsVisible="showAssignOrderDialog" Options="dialogOptions">
-    <TitleContent>
-        <MudText Typo="Typo.h6">Assign Order to Delivery</MudText>
-    </TitleContent>
-    <DialogContent>
-        @if (selectedOrder != null)
-        {
-            <MudGrid>
-                <MudItem xs="12">
-                    <MudText Typo="Typo.body1" Class="mb-2">
-                        Select a delivery to assign Order #@selectedOrder.TxnId to:
-                    </MudText>
-
-                    <MudSelect T="int?"
-                               Label="Delivery"
-                               @bind-Value="selectedDeliveryId"
-                               Required="true"
-                               RequiredError="Delivery is required">
-                        @foreach (var delivery in filteredDeliveries)
-                        {
-                            <MudSelectItem Value="@delivery.DeliveryId">
-                                #@delivery.DeliveryId - @delivery.DeliveryDate.ToString("yyyy-MM-dd HH:mm") (@delivery.VehicleType)
-                            </MudSelectItem>
-                        }
-                    </MudSelect>
-                </MudItem>
-
-                <MudItem xs="12" Class="mt-4">
-                    <MudAlert Severity="Severity.Info">
-                        Order weight: @CalculateOrderWeight(selectedOrder).ToString("0.00") kg
-                    </MudAlert>
-                </MudItem>
-            </MudGrid>
-        }
-    </DialogContent>
-    <DialogActions>
-        <MudButton OnClick="CloseAssignOrderDialog">Cancel</MudButton>
-        <MudButton Color="Color.Primary" OnClick="AssignOrderToSelectedDelivery" Disabled="@(selectedDeliveryId == null)">
-            Assign
-        </MudButton>
-    </DialogActions>
-</MudDialog>
 
 @code {
     // State variables
@@ -318,7 +180,7 @@
             // Load ALL deliveries without date filtering
             allDeliveries = DeliveryManager.GetDeliveries();
 
-            // Load ALL unassigned orders
+            // Load ALL unassigned orders (for now i set it to only Store Order)
             allUnassignedOrders = DeliveryManager.GetUnassignedOrders();
 
             // Apply filters to the loaded data
@@ -336,7 +198,6 @@
 
     private void ApplyFilters()
     {
-        // Get selected date range or default to today through next week
         DateTime startDate = dateRange?.Start ?? DateTime.Today;
         DateTime endDate = dateRange?.End ?? DateTime.Today.AddDays(7);
 
@@ -473,11 +334,6 @@
     private void EditDelivery(Delivery delivery)
     {
         NavigationManager.NavigateTo($"/acadia/edit-delivery/{delivery.DeliveryId}");
-    }
-
-    private void PrintDeliveryManifest(int deliveryId)
-    {
-        Snackbar.Add("Printing delivery manifest...", Severity.Success);
     }
 
     private void AssignToDelivery(Txn order)

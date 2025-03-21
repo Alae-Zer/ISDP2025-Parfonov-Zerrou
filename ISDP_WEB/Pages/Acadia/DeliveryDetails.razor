@@ -100,54 +100,21 @@
                         <MudTh>Store</MudTh>
                         <MudTh>Status</MudTh>
                         <MudTh>Weight</MudTh>
-                        <MudTh>Actions</MudTh>
                     </HeaderContent>
                     <RowTemplate>
                         <MudTd DataLabel="Order #">@context.TxnId</MudTd>
                         <MudTd DataLabel="Type">@context.TxnType</MudTd>
                         <MudTd DataLabel="Store">@context.SiteIdtoNavigation?.SiteName</MudTd>
                         <MudTd DataLabel="Status">
-                            <MudChip T="string" Size="Size.Small" Color="@GetStatusColor(context.TxnStatus)">@context.TxnStatus</MudChip>
+                            <MudChip T="string" Size="Size.Small" Color="Color.Success">@context.TxnStatus</MudChip>
                         </MudTd>
                         <MudTd DataLabel="Weight">@CalculateOrderWeight(context).ToString("0.00") kg</MudTd>
-                        <MudTd>
-                            <MudIconButton Icon="@Icons.Material.Filled.Visibility" 
-                                           OnClick="@(() => ViewOrderDetails(context))" 
-                                           Title="View Details" />
-                        </MudTd>
                     </RowTemplate>
                 </MudTable>
                 
-                <MudDivider Class="my-4" />
+                <MudDivider Class="my-10" DividerType="DividerType.Middle"/>
                 
-                <!-- Delivery Route Map (placeholder) -->
-                <MudText Typo="Typo.h6" Class="mb-2">Delivery Route</MudText>
-                <MudPaper Class="d-flex justify-center align-center" Height="300px" Outlined="true">
-                    <MudText>Route map would be displayed here</MudText>
-                </MudPaper>
                 
-                <MudDivider Class="my-4" />
-                
-                <!-- Driver Actions -->
-                <MudGrid>
-                    <MudItem xs="12" md="4">
-                        <MudButton FullWidth="true" 
-                                  Variant="Variant.Outlined" 
-                                  StartIcon="@Icons.Material.Filled.Print"
-                                  OnClick="@PrintManifest">
-                            Print Manifest
-                        </MudButton>
-                    </MudItem>
-                    <MudItem xs="12" md="4">
-                        <MudButton FullWidth="true" 
-                                  Variant="Variant.Outlined" 
-                                  Color="Color.Primary"
-                                  StartIcon="@Icons.Material.Filled.LocalShipping"
-                                  OnClick="@StartDelivery">
-                            Start Delivery
-                        </MudButton>
-                    </MudItem>
-                    <MudItem xs="12" md="4">
                         <MudButton FullWidth="true" 
                                   Variant="Variant.Outlined" 
                                   Color="Color.Secondary"
@@ -155,8 +122,7 @@
                                   Href="@($"/acadia/edit-delivery/{DeliveryId}")">
                             Edit Delivery
                         </MudButton>
-                    </MudItem>
-                </MudGrid>
+
             }
         </MudCardContent>
         
@@ -338,104 +304,9 @@
         return order.Txnitems.Sum(i => i.Item?.Weight * i.Quantity ?? 0);
     }
     
-    private Color GetStatusColor(string status)
-    {
-        return status switch
-        {
-            "NEW" => Color.Info,
-            "SUBMITTED" => Color.Info,
-            "RECEIVED" => Color.Info,
-            "ASSEMBLING" => Color.Warning,
-            "ASSEMBLED" => Color.Success,
-            "IN TRANSIT" => Color.Primary,
-            "DELIVERED" => Color.Success,
-            "COMPLETE" => Color.Success,
-            "CANCELLED" => Color.Error,
-            "REJECTED" => Color.Error,
-            _ => Color.Default
-        };
-    }
-    
-    private void ViewOrderDetails(Txn order)
-    {
-        selectedOrder = order;
-        
-        // Fetch order items if not already loaded
-        if (order.Txnitems == null || !order.Txnitems.Any())
-        {
-            try
-            {
-                selectedOrderItems = Context.Txnitems
-                    .Include(i => i.Item)
-                    .Where(i => i.TxnId == order.TxnId)
-                    .ToList();
-            }
-            catch (Exception ex)
-            {
-                Snackbar.Add($"Error loading order items: {ex.Message}", Severity.Error);
-                selectedOrderItems = new List<Txnitem>();
-            }
-        }
-        else
-        {
-            selectedOrderItems = order.Txnitems.ToList();
-        }
-        
-        showOrderDetailsDialog = true;
-    }
-    
     private void CloseOrderDetailsDialog()
     {
         showOrderDetailsDialog = false;
     }
     
-    private void PrintManifest()
-    {
-        Snackbar.Add("Printing delivery manifest...", Severity.Success);
-    }
-    
-    private async Task StartDelivery()
-    {
-        if (orders.All(o => o.TxnStatus == "ASSEMBLED"))
-        {
-            try
-            {
-                // Update all orders to IN_TRANSIT
-                foreach (var order in orders)
-                {
-                    order.TxnStatus = "IN TRANSIT";
-                    
-                    // Add audit record
-                    var txnAudit = new Txnaudit
-                    {
-                        TxnId = order.TxnId,
-                        EmployeeId = 9999, // Acadia Driver
-                        TxnType = order.TxnType,
-                        Status = "IN TRANSIT",
-                        TxnDate = DateTime.Now,
-                        SiteId = order.SiteIdto,
-                        DeliveryId = DeliveryId,
-                        Notes = "Order picked up for delivery"
-                    };
-                    
-                    Context.Txnaudits.Add(txnAudit);
-                }
-                
-                await Context.SaveChangesAsync();
-                
-                Snackbar.Add("Delivery started successfully", Severity.Success);
-                
-                // Refresh data
-                await LoadDeliveryData();
-            }
-            catch (Exception ex)
-            {
-                Snackbar.Add($"Error starting delivery: {ex.Message}", Severity.Error);
-            }
-        }
-        else
-        {
-            Snackbar.Add("Not all orders are ready for pickup", Severity.Warning);
-        }
-    }
 }

@@ -42,7 +42,7 @@ namespace ISDP2025_Parfonov_Zerrou.Functionality
                     if (date.HasValue)
                     {
                         var startDate = date.Value.Date;
-                        var endDate = startDate.AddDays(1);
+                        var endDate = startDate.AddDays(7);
                         query = query.Where(d => d.DeliveryDate >= startDate && d.DeliveryDate < endDate);
                     }
 
@@ -147,11 +147,14 @@ namespace ISDP2025_Parfonov_Zerrou.Functionality
                     return context.Txns
                         .Include(t => t.SiteIdtoNavigation)
                         .Where(t => t.TxnStatus == "ASSEMBLED" && t.DeliveryId == null &&
-                               (t.TxnType == "Store Order" ||
-                                t.TxnType == "Emergency Order" ||
-                                t.TxnType == "Back Order"))
+                               t.TxnType == "Store Order")
                         .OrderBy(t => t.ShipDate)
                         .ToList();
+                    //use this if you want to see other order types
+
+                    //(t.TxnType == "Store Order" ||
+                    //            t.TxnType == "Emergency Order" ||
+                    //            t.TxnType == "Back Order"))
                 }
             }
             catch (Exception ex)

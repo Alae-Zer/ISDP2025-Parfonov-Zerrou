@@ -62,12 +62,34 @@
                                    Min="0" />
                 </MudItem>
                 
-                <MudItem xs="12">
+                <MudItem xs="12" Class="pb-4">
                     <MudTextField @bind-Value="notes" 
                                  Label="Notes" 
                                  Lines="2" />
                 </MudItem>
             </MudGrid>
+
+            <MudPaper Elevation="2" Class="pa-4 mb-4">
+                <MudStack Row="true" AlignItems="AlignItems.Center">
+                    <MudText>
+                        <strong>Selected Orders:</strong> @selectedOrders.Count |
+                        <strong>Total Weight:</strong> @selectedOrdersTotalWeight.ToString("0.00") kg
+                    </MudText>
+
+                    <MudChip T="string" Color="GetWeightColor()" Size="Size.Medium">
+                        @GetRecommendedVehicle()
+                    </MudChip>
+
+                    <MudSpacer />
+
+                    <MudButton Variant="Variant.Filled"
+                               Color="Color.Primary"
+                               OnClick="CreateDeliveryWithSelectedOrders"
+                               Disabled="selectedOrders.Count == 0">
+                        Create Delivery
+                    </MudButton>
+                </MudStack>
+            </MudPaper>
             
             <MudDivider Class="my-4" />
             
@@ -75,33 +97,6 @@
             <MudText Typo="Typo.h6" Class="mb-2">Available Orders (Status: ASSEMBLED)</MudText>
             
             <MudGrid Class="mb-2">
-                <MudItem xs="12" sm="6" md="4">
-                    <MudSelect T="string" 
-                              Label="Filter by Order Type" 
-                              @bind-Value="orderTypeFilter"
-                              FullWidth="true"
-                              Immediate="true"
-                              OnSelectedValueChanged="ApplyFilters">
-                        <MudSelectItem Value="@("All")">All</MudSelectItem>
-                        <MudSelectItem Value="@("Store Order")">Store Order</MudSelectItem>
-                        <MudSelectItem Value="@("Emergency Order")">Emergency Order</MudSelectItem>
-                        <MudSelectItem Value="@("Back Order")">Back Order</MudSelectItem>
-                    </MudSelect>
-                </MudItem>
-                
-                <MudItem xs="12" sm="6" md="3">
-    <MudSelect T="string" 
-              Label="Vehicle Type" 
-              @bind-Value="selectedVehicleType" 
-              Required="true" 
-              RequiredError="Vehicle type is required">
-        @foreach (var vehicle in DeliveryCostCalculator.VehicleCosts)
-        {
-            <MudSelectItem Value="@vehicle.Type">@vehicle.Type Truck (up to @vehicle.MaxWeight.ToString("N0") kg)</MudSelectItem>
-        }
-    </MudSelect>
-</MudItem>
-                
                 <MudItem xs="12" sm="12" md="4">
                     <MudTextField @bind-Value="searchText" 
                                  Label="Search" 
@@ -109,32 +104,11 @@
                                  AdornmentIcon="@Icons.Material.Filled.Search"
                                  FullWidth="true"
                                  Immediate="true"
-                                 DebounceInterval="300"
-                                 OnDebounceIntervalElapsed="ApplyFilters" />
+                                 TextChanged="ApplyFilters"/>
                 </MudItem>
             </MudGrid>
             
-            <MudPaper Elevation="2" Class="pa-4 mb-4">
-                <MudStack Row="true" AlignItems="AlignItems.Center">
-                    <MudText>
-                        <strong>Selected Orders:</strong> @selectedOrders.Count | 
-                        <strong>Total Weight:</strong> @selectedOrdersTotalWeight.ToString("0.00") kg
-                    </MudText>
-                    
-                    <MudChip T="string" Color="GetWeightColor()" Size="Size.Medium">
-                        @GetRecommendedVehicle()
-                    </MudChip>
-                    
-                    <MudSpacer />
-                    
-                    <MudButton Variant="Variant.Filled" 
-                              Color="Color.Primary"
-                              OnClick="CreateDeliveryWithSelectedOrders"
-                              Disabled="selectedOrders.Count == 0">
-                        Create Delivery
-                    </MudButton>
-                </MudStack>
-            </MudPaper>
+            
             
             <MudTable Items="@filteredOrders" 
                      MultiSelection="true"
@@ -151,7 +125,6 @@
                     <MudTh>Store</MudTh>
                     <MudTh>Distance</MudTh>
                     <MudTh>Weight</MudTh>
-                    <MudTh>Details</MudTh>
                 </HeaderContent>
                 <RowTemplate>
                     <MudTd DataLabel="Order #">@context.TxnId</MudTd>
@@ -160,11 +133,6 @@
                     <MudTd DataLabel="Store">@context.SiteIdtoNavigation?.SiteName</MudTd>
                     <MudTd DataLabel="Distance">@context.SiteIdtoNavigation?.DistanceFromWh km</MudTd>
                     <MudTd DataLabel="Weight">@CalculateOrderWeight(context).ToString("0.00") kg</MudTd>
-                    <MudTd>
-                        <MudIconButton Icon="@Icons.Material.Filled.Info"
-                                      OnClick="@(() => ViewOrderDetails(context))"
-                                      Title="View Details" />
-                    </MudTd>
                 </RowTemplate>
                 <PagerContent>
                     <MudTablePager />
@@ -186,82 +154,6 @@
     </MudCard>
 </MudContainer>
 
-<!-- Order Details Dialog -->
-<MudDialog @bind-IsVisible="showOrderDetailsDialog" Options="dialogOptions">
-    <TitleContent>
-        <MudText Typo="Typo.h6">Order Details #@selectedOrder?.TxnId</MudText>
-    </TitleContent>
-    <DialogContent>
-        @if (selectedOrder != null)
-        {
-            <MudGrid>
-                <MudItem xs="12" sm="6">
-                    <MudText Typo="Typo.body2">Type</MudText>
-                    <MudText Typo="Typo.body1">@selectedOrder.TxnType</MudText>
-                </MudItem>
-                <MudItem xs="12" sm="6">
-                    <MudText Typo="Typo.body2">Status</MudText>
-                    <MudText Typo="Typo.body1">@selectedOrder.TxnStatus</MudText>
-                </MudItem>
-                <MudItem xs="12" sm="6">
-                    <MudText Typo="Typo.body2">From</MudText>
-                    <MudText Typo="Typo.body1">@selectedOrder.SiteIdfromNavigation?.SiteName</MudText>
-                </MudItem>
-                <MudItem xs="12" sm="6">
-                    <MudText Typo="Typo.body2">To</MudText>
-                    <MudText Typo="Typo.body1">@selectedOrder.SiteIdtoNavigation?.SiteName</MudText>
-                </MudItem>
-                <MudItem xs="12" sm="6">
-                    <MudText Typo="Typo.body2">Created</MudText>
-                    <MudText Typo="Typo.body1">@selectedOrder.CreatedDate.ToString("yyyy-MM-dd HH:mm")</MudText>
-                </MudItem>
-                <MudItem xs="12" sm="6">
-                    <MudText Typo="Typo.body2">Ship Date</MudText>
-                    <MudText Typo="Typo.body1">@selectedOrder.ShipDate.ToString("yyyy-MM-dd")</MudText>
-                </MudItem>
-                
-                @if (!string.IsNullOrEmpty(selectedOrder.Notes))
-                {
-                    <MudItem xs="12">
-                        <MudText Typo="Typo.body2">Notes</MudText>
-                        <MudText Typo="Typo.body1">@selectedOrder.Notes</MudText>
-                    </MudItem>
-                }
-            </MudGrid>
-            
-            <MudDivider Class="my-4" />
-            
-            <MudText Typo="Typo.h6" Class="mb-2">Items</MudText>
-            
-            <MudTable Items="@selectedOrderItems" 
-                     Hover="true" 
-                     Striped="true" 
-                     Dense="true">
-                <HeaderContent>
-                    <MudTh>ID</MudTh>
-                    <MudTh>Name</MudTh>
-                    <MudTh>Quantity</MudTh>
-                    <MudTh>Weight (ea)</MudTh>
-                    <MudTh>Total Weight</MudTh>
-                </HeaderContent>
-                <RowTemplate>
-                    <MudTd DataLabel="ID">@context.ItemId</MudTd>
-                    <MudTd DataLabel="Name">@context.Item?.Name</MudTd>
-                    <MudTd DataLabel="Quantity">@context.Quantity</MudTd>
-                    <MudTd DataLabel="Weight">@context.Item?.Weight kg</MudTd>
-                    <MudTd DataLabel="Total Weight">@((context.Item?.Weight * context.Quantity)?.ToString("0.00")) kg</MudTd>
-                </RowTemplate>
-            </MudTable>
-            
-            <MudText Class="mt-4" Typo="Typo.body1">
-                <strong>Total Weight:</strong> @CalculateOrderWeight(selectedOrder).ToString("0.00") kg
-            </MudText>
-        }
-    </DialogContent>
-    <DialogActions>
-        <MudButton OnClick="CloseOrderDetailsDialog">Close</MudButton>
-    </DialogActions>
-</MudDialog>
 
 @code {
     // State variables
@@ -282,10 +174,6 @@
     private string selectedVehicleType = "Medium";
     private decimal distanceCost = 0;
     private string notes = "";
-    
-    // Dialog control
-    private bool showOrderDetailsDialog = false;
-    private DialogOptions dialogOptions = new() { MaxWidth = MaxWidth.Medium, FullWidth = true };
     
     // Selected entity
     private Txn selectedOrder;
@@ -554,18 +442,6 @@
         {
             Snackbar.Add($"Error creating delivery: {ex.Message}", Severity.Error);
         }
-    }
-    
-    private void ViewOrderDetails(Txn order)
-    {
-        selectedOrder = order;
-        selectedOrderItems = order.Txnitems.ToList();
-        showOrderDetailsDialog = true;
-    }
-    
-    private void CloseOrderDetailsDialog()
-    {
-        showOrderDetailsDialog = false;
     }
     
     private void GoBack()

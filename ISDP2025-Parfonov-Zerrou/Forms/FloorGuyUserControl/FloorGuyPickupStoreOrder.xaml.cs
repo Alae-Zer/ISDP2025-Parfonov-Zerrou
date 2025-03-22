@@ -10,6 +10,12 @@ using System.Windows.Ink;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 
+// ISDP Project
+// Mohammed Alae-Zerrou, Serhii Parfonov
+// NBCC, Winter 2025
+// Completed By Equal Share of Mohammed and Serhii
+// Last Modified by Mohammed on March 18, 2025
+
 namespace ISDP2025_Parfonov_Zerrou.Forms.FloorGuyUserControl
 {
     public partial class FloorGuyPickupStoreOrder : UserControl
@@ -22,6 +28,7 @@ namespace ISDP2025_Parfonov_Zerrou.Forms.FloorGuyUserControl
         int[] notStores = { 1, 2, 3, 9999, 10000 };
         private int currentDeliveryId = 0;
 
+        // Set up the user control with employee information
         public FloorGuyPickupStoreOrder(Employee employee)
         {
             InitializeComponent();
@@ -33,6 +40,7 @@ namespace ISDP2025_Parfonov_Zerrou.Forms.FloorGuyUserControl
             cboStores.SelectedIndex = 0;
         }
 
+        // Set up the initial state of all control elements
         private void InitializeControls(bool isEnabled)
         {
             btnComplete.IsEnabled = false;
@@ -47,6 +55,7 @@ namespace ISDP2025_Parfonov_Zerrou.Forms.FloorGuyUserControl
             ResetSignature();
         }
 
+        // Set up the signature drawing tool
         private void InitializeSignatureCanvas()
         {
             inkSignature.DefaultDrawingAttributes = new DrawingAttributes
@@ -58,6 +67,7 @@ namespace ISDP2025_Parfonov_Zerrou.Forms.FloorGuyUserControl
             };
         }
 
+        // Load all store locations into the dropdown list
         private void PopulateSitesComboBox()
         {
             try
@@ -86,6 +96,7 @@ namespace ISDP2025_Parfonov_Zerrou.Forms.FloorGuyUserControl
             }
         }
 
+        // Get all assembled orders from database
         private void LoadAssembledOrders()
         {
             try
@@ -120,6 +131,7 @@ namespace ISDP2025_Parfonov_Zerrou.Forms.FloorGuyUserControl
             }
         }
 
+        // Filter orders by selected store
         private List<OrderViewModel> GetFilteredOrders(int? siteId = null)
         {
             if (allOrders == null) return new List<OrderViewModel>();
@@ -129,6 +141,7 @@ namespace ISDP2025_Parfonov_Zerrou.Forms.FloorGuyUserControl
                 : allOrders;
         }
 
+        // Show orders in the grid based on selected filter
         private void UpdateOrdersGrid()
         {
             int selectedSiteId = 0;
@@ -139,6 +152,7 @@ namespace ISDP2025_Parfonov_Zerrou.Forms.FloorGuyUserControl
             dgvOrders.ItemsSource = GetFilteredOrders(selectedSiteId);
         }
 
+        // Get all items for the selected order
         private void LoadOrderItems(int txnId)
         {
             try
@@ -157,6 +171,7 @@ namespace ISDP2025_Parfonov_Zerrou.Forms.FloorGuyUserControl
             }
         }
 
+        // Get item details from the database
         private List<OrderItemViewModel> QueryOrderItems(BestContext context, int txnId)
         {
             return (from ti in context.Txnitems
@@ -176,6 +191,7 @@ namespace ISDP2025_Parfonov_Zerrou.Forms.FloorGuyUserControl
                     }).ToList();
         }
 
+        // Clear the list of items selected for loading
         private void ResetLoadedItems()
         {
             loadedItems.Clear();
@@ -183,6 +199,7 @@ namespace ISDP2025_Parfonov_Zerrou.Forms.FloorGuyUserControl
             dgvLoadedItems.ItemsSource = loadedItems;
         }
 
+        // Filter items based on search text
         private void FilterItems(string searchText)
         {
             if (orderItems != null)
@@ -197,6 +214,7 @@ namespace ISDP2025_Parfonov_Zerrou.Forms.FloorGuyUserControl
             }
         }
 
+        // Move an item from order to truck loading list
         private void MoveItemToTruck(OrderItemViewModel item)
         {
             try
@@ -222,6 +240,7 @@ namespace ISDP2025_Parfonov_Zerrou.Forms.FloorGuyUserControl
             }
         }
 
+        // Check if there is enough stock available
         private bool HasSufficientStock(OrderItemViewModel item)
         {
             if (item.CurrentStock < item.Quantity)
@@ -232,6 +251,7 @@ namespace ISDP2025_Parfonov_Zerrou.Forms.FloorGuyUserControl
             return true;
         }
 
+        // Add item to the loaded items list
         private void AddToLoadedItems(OrderItemViewModel item, int quantity)
         {
             var loadedItem = loadedItems.FirstOrDefault(i => i.ItemId == item.ItemId);
@@ -253,6 +273,7 @@ namespace ISDP2025_Parfonov_Zerrou.Forms.FloorGuyUserControl
             }
         }
 
+        // Move item from loaded list back to order items
         private void MoveItemBack(OrderItemViewModel selectedItem)
         {
             var selectedOrder = dgvOrders.SelectedItem as OrderViewModel;
@@ -269,6 +290,7 @@ namespace ISDP2025_Parfonov_Zerrou.Forms.FloorGuyUserControl
             CheckOrderCompletion();
         }
 
+        // Add item back to order items list
         private void AddBackToOrderItems(OrderItemViewModel item, int quantity)
         {
             var orderItem = orderItems.FirstOrDefault(i => i.ItemId == item.ItemId);
@@ -290,6 +312,7 @@ namespace ISDP2025_Parfonov_Zerrou.Forms.FloorGuyUserControl
             }
         }
 
+        // Clear the signature and reset controls
         private void ResetSignature()
         {
             isSignatureProvided = false;
@@ -299,6 +322,7 @@ namespace ISDP2025_Parfonov_Zerrou.Forms.FloorGuyUserControl
             signatureSection.Visibility = Visibility.Collapsed;
         }
 
+        // Show or hide signature section based on order status
         private void UpdateSignatureVisibility()
         {
             // Only show signature when left DataGrid is empty and right DataGrid has items
@@ -316,6 +340,7 @@ namespace ISDP2025_Parfonov_Zerrou.Forms.FloorGuyUserControl
             }
         }
 
+        // Handle the signature provided by driver
         private void ProcessSignature()
         {
             if (inkSignature.Strokes.Count > 0)
@@ -332,6 +357,7 @@ namespace ISDP2025_Parfonov_Zerrou.Forms.FloorGuyUserControl
             }
         }
 
+        // Clear the signature and reset controls
         private void ClearSignature()
         {
             inkSignature.Strokes.Clear();
@@ -341,6 +367,7 @@ namespace ISDP2025_Parfonov_Zerrou.Forms.FloorGuyUserControl
             btnComplete.IsEnabled = false;
         }
 
+        // Convert signature to image data
         private byte[] ConvertSignatureToBytes(InkCanvas inkCanvas)
         {
             var rtb = new RenderTargetBitmap(
@@ -360,11 +387,13 @@ namespace ISDP2025_Parfonov_Zerrou.Forms.FloorGuyUserControl
             }
         }
 
+        // Check if all conditions for completing order are met
         private void CheckOrderCompletion()
         {
             btnComplete.IsEnabled = loadedItems.Count > 0 && isSignatureProvided;
         }
 
+        // Complete order loading process
         private void CompleteOrderLoading()
         {
             try
@@ -393,6 +422,7 @@ namespace ISDP2025_Parfonov_Zerrou.Forms.FloorGuyUserControl
             }
         }
 
+        // Check if all requirements for order completion are met
         private bool ValidateOrderCompletion()
         {
             if (!isSignatureProvided)
@@ -410,6 +440,7 @@ namespace ISDP2025_Parfonov_Zerrou.Forms.FloorGuyUserControl
             return true;
         }
 
+        // Get existing delivery or create a new one
         private int GetOrCreateDelivery(OrderViewModel order)
         {
             int existingDeliveryId = 0;
@@ -427,6 +458,7 @@ namespace ISDP2025_Parfonov_Zerrou.Forms.FloorGuyUserControl
             );
         }
 
+        // Update inventory to move items to the truck
         private bool MoveItemsToTruck()
         {
             foreach (var item in loadedItems)
@@ -442,6 +474,7 @@ namespace ISDP2025_Parfonov_Zerrou.Forms.FloorGuyUserControl
             return true;
         }
 
+        // Make sure truck inventory record exists for the item
         private void EnsureTruckInventoryExists(int itemId)
         {
             using (var context = new BestContext())
@@ -455,7 +488,7 @@ namespace ISDP2025_Parfonov_Zerrou.Forms.FloorGuyUserControl
                     {
                         ItemId = itemId,
                         SiteId = 9999,
-                        ItemLocation = "TRUCK",
+                        ItemLocation = "ON TRUCK",
                         Quantity = 0,
                         OptimumThreshold = 0
                     });
@@ -464,6 +497,7 @@ namespace ISDP2025_Parfonov_Zerrou.Forms.FloorGuyUserControl
             }
         }
 
+        // Update order status to IN TRANSIT
         private void UpdateOrderStatus(OrderViewModel order, int deliveryId)
         {
             using (var context = new BestContext())
@@ -492,6 +526,7 @@ namespace ISDP2025_Parfonov_Zerrou.Forms.FloorGuyUserControl
             }
         }
 
+        // Refresh all data and reset UI
         private void Refresh()
         {
             LoadAssembledOrders();
@@ -503,6 +538,7 @@ namespace ISDP2025_Parfonov_Zerrou.Forms.FloorGuyUserControl
             cboStores.IsEnabled = true;
         }
 
+        // Update both item grids with current data
         private void RefreshGrids()
         {
             dgvOrderItems.ItemsSource = null;
@@ -511,6 +547,7 @@ namespace ISDP2025_Parfonov_Zerrou.Forms.FloorGuyUserControl
             dgvLoadedItems.ItemsSource = loadedItems;
         }
 
+        // Show error message to user
         private void ShowErrorMessage(string message, Exception ex = null)
         {
             string fullMessage = ex != null ? $"{message}: {ex.Message}" : message;
@@ -518,6 +555,7 @@ namespace ISDP2025_Parfonov_Zerrou.Forms.FloorGuyUserControl
                 MessageBoxButton.OK, MessageBoxImage.Error);
         }
 
+        // Show success notification
         private void ShowSuccessMessage(string message)
         {
             Growl.Success(new GrowlInfo
@@ -528,6 +566,7 @@ namespace ISDP2025_Parfonov_Zerrou.Forms.FloorGuyUserControl
             });
         }
 
+        // Show warning notification
         private void ShowWarningMessage(string message)
         {
             Growl.Warning(new GrowlInfo
@@ -538,6 +577,7 @@ namespace ISDP2025_Parfonov_Zerrou.Forms.FloorGuyUserControl
             });
         }
 
+        // Event handlers for UI controls
         private void btnRefresh_Click(object sender, RoutedEventArgs e)
         {
             Refresh();

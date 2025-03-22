@@ -28,6 +28,7 @@
             <ComboBox Grid.Column="1" 
                    x:Name="cboStatus"
                    Width="200"
+                      SelectedIndex="1"
                    Margin="10,5"
                    SelectionChanged="cboStatus_SelectionChanged"
                    HorizontalAlignment="Left"/>

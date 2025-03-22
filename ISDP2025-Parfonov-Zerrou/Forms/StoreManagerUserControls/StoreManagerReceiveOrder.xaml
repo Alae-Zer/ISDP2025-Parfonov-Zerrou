@@ -26,6 +26,21 @@
                     Style="{StaticResource TextBlockLarge}" 
                     Margin="5"/>
 
+            <!-- New ComboBox for Admin users -->
+            <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center">
+                <TextBlock Text="Select Site:" 
+                          Margin="10,0,5,0" 
+                          VerticalAlignment="Center"
+                          x:Name="lblSiteSelector" 
+                          Visibility="Collapsed"/>
+                <ComboBox x:Name="cmbSiteSelector" 
+                          SelectedIndex="0"
+                         Width="200" 
+                         Margin="0,5" 
+                         SelectionChanged="cmbSiteSelector_SelectionChanged"
+                         Visibility="Collapsed"/>
+            </StackPanel>
+
             <Button Grid.Column="3" 
                   x:Name="btnRefresh" 
                   Content="Refresh" 

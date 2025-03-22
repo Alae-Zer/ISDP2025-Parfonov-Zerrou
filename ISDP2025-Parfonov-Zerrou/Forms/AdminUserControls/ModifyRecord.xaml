@@ -76,25 +76,20 @@
             <Label Content="Status:" VerticalAlignment="Center" Margin="0,0,5,0"/>
             <ComboBox x:Name="cmbTxnStatus" Width="150" Margin="0,0,10,0" Height="22"
                     DisplayMemberPath="StatusName"
-                    SelectedValuePath="StatusName"/>
+                    SelectedValuePath="StatusName"
+                    SelectionChanged="ComboBox_SelectionChanged"/>
 
             <Label Content="Type:" VerticalAlignment="Center" Margin="0,0,5,0"/>
             <ComboBox x:Name="cmbTxnType" Width="150" Margin="0,0,10,0" Height="22"
                     DisplayMemberPath="TxnType1"
-                    SelectedValuePath="TxnType1"/>
+                    SelectedValuePath="TxnType1"
+                    SelectionChanged="ComboBox_SelectionChanged"/>
 
-            <Button x:Name="btnSearch" Content="Search / Filter" Width="95"  
+            <Button x:Name="btnSearch" Content="Refresh" Width="95"  
                   Style="{StaticResource RoundedButton}"
                   Background="#2196F3"
                   Foreground="White"
                   Click="BtnSearch_Click"
-                  Margin="5,0,0,0"/>
-
-            <Button x:Name="btnClearSearch" Content="Clear" Width="80" 
-                  Style="{StaticResource RoundedButton}"
-                  Background="#FFF62D2D"
-                  Foreground="White"
-                  Click="BtnClearSearch_Click"
                   Margin="5,0,0,0"/>
         </StackPanel>
 
@@ -169,12 +164,14 @@
                 <Label Content="Transaction Type:" Grid.Row="1" Grid.Column="0" Margin="5"/>
                 <ComboBox x:Name="cmbEditTxnType" Grid.Row="1" Grid.Column="1" Margin="5"
                         DisplayMemberPath="TxnType1"
-                        SelectedValuePath="TxnType1"/>
+                        SelectedValuePath="TxnType1"
+                        SelectionChanged="DetailsComboBox_SelectionChanged"/>
 
                 <Label Content="Transaction Status:" Grid.Row="1" Grid.Column="2" Margin="5"/>
                 <ComboBox x:Name="cmbEditTxnStatus" Grid.Row="1" Grid.Column="3" Margin="5"
                          DisplayMemberPath="StatusName"
-                         SelectedValuePath="StatusName"/>
+                         SelectedValuePath="StatusName"
+                         SelectionChanged="DetailsComboBox_SelectionChanged"/>
 
                 <!-- Row 2 -->
                 <Label Content="From Site:" Grid.Row="2" Grid.Column="0" Margin="5"/>
@@ -183,11 +180,12 @@
                 <Label Content="To Site:" Grid.Row="2" Grid.Column="2" Margin="5"/>
                 <ComboBox x:Name="cmbEditSiteTo" Grid.Row="2" Grid.Column="3" Margin="5"
                         DisplayMemberPath="SiteName"
-                        SelectedValuePath="SiteId"/>
+                        SelectedValuePath="SiteId"
+                        SelectionChanged="DetailsComboBox_SelectionChanged"/>
 
                 <!-- Row 3 -->
                 <Label Content="Ship Date:" Grid.Row="3" Grid.Column="0" Margin="5"/>
-                <DatePicker x:Name="dpShipDate" Grid.Row="3" Grid.Column="1" Margin="5"/>
+                <DatePicker x:Name="dpShipDate" Grid.Row="3" Grid.Column="1" Margin="5" SelectedDateChanged="DatePicker_SelectedDateChanged"/>
 
                 <Label Content="Barcode:" Grid.Row="3" Grid.Column="2" Margin="5"/>
                 <TextBox x:Name="txtBarCode" Grid.Row="3" Grid.Column="3" Margin="5"/>
@@ -196,7 +194,8 @@
                 <Label Content="Delivery ID:" Grid.Row="4" Grid.Column="0" Margin="5"/>
                 <ComboBox x:Name="cmbDeliveryId" Grid.Row="4" Grid.Column="1" Margin="5"
                         DisplayMemberPath="DeliveryId"
-                        SelectedValuePath="DeliveryId">
+                        SelectedValuePath="DeliveryId"
+                        SelectionChanged="DetailsComboBox_SelectionChanged">
                     <ComboBox.ItemsPanel>
                         <ItemsPanelTemplate>
                             <VirtualizingStackPanel/>
@@ -205,7 +204,7 @@
                 </ComboBox>
 
                 <Label Content="Emergency Delivery:" Grid.Row="4" Grid.Column="2" Margin="5"/>
-                <CheckBox x:Name="chkEmergencyDelivery" Grid.Row="4" Grid.Column="3" Margin="5" VerticalAlignment="Center"/>
+                <CheckBox x:Name="chkEmergencyDelivery" Grid.Row="4" Grid.Column="3" Margin="5" VerticalAlignment="Center" Checked="CheckBox_CheckedChanged" Unchecked="CheckBox_CheckedChanged"/>
 
                 <!-- Row 5 -->
                 <Label Content="Notes:" Grid.Row="5" Grid.Column="0" Margin="5"/>
@@ -216,6 +215,13 @@
 
         <!-- Action Buttons -->
         <StackPanel Grid.Row="4" Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,10,0,0">
+            <Button x:Name="btnClear" Content="Clear All" Width="100" Height="30" 
+                  Style="{StaticResource RoundedButton}"
+                  Background="#FFF62D2D"
+                  Foreground="White"
+                  Click="BtnClearSearch_Click"
+                  Margin="0,0,10,0"/>
+
             <Button x:Name="btnCancel" Content="Cancel" Width="100" Height="30" 
                   Style="{StaticResource RoundedButton}"
                   Background="#FFF62D2D"

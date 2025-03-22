@@ -170,29 +170,45 @@
                     </Button>
 
                     <!-- Fulfil Button -->
-                    <Button x:Name="btnFulfil" Tag="Fulfil Order" Height="41" Margin="0,9" 
+                            <Button x:Name="btnFulfil" Tag="Fulfil Order" Height="41" Margin="0,9" 
                             Style="{StaticResource SidebarButtonStyle}" Click="btnFulfil_Click">
-                        <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
-                             <Label Style="{StaticResource SidebarLabelStyle}" Content="&#xF466;" Padding="9,5,0,5" Margin="10,0,10,0" Width="34" />
-                             <TextBlock Text="Fulfil Order" VerticalAlignment="Center" />
-                        </StackPanel>
-                    </Button>
+                                <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                                    <Label Style="{StaticResource SidebarLabelStyle}" Content="&#xF466;" Padding="9,5,0,5" Margin="10,0,10,0" Width="34" />
+                                    <TextBlock Text="Fulfil Order" VerticalAlignment="Center" />
+                                </StackPanel>
+                            </Button>
 
-                    <!-- Modify Button -->
-                    <Button x:Name="btnModify" Tag="Fulfil Order" Height="41" Margin="0,9" 
-                            Style="{StaticResource SidebarButtonStyle}" Click="btnModify_Click">
-                        <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
-                                    <Label Style="{StaticResource SidebarLabelStyle}" Content="&#xf044;" Padding="9,5,0,5" Margin="10,0,10,0" Width="34" />
-                                    <TextBlock Text="Modify Record" VerticalAlignment="Center" />
-                        </StackPanel>
-                    </Button>
-                    
                             <!-- Fulfil Button -->
                     <Button x:Name="btnFulfilOnline" Tag="Online Order" Height="41" Margin="0,9" 
                                 Style="{StaticResource SidebarButtonStyle}" Click="btnFulfilOnline_Click">
                                 <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
                                     <Label Style="{StaticResource SidebarLabelStyle}" Content="&#xF0AC;" Padding="9,5,0,5" Margin="10,0,10,0" Width="34" />
                                     <TextBlock Text="Online Order" VerticalAlignment="Center" />
+                                </StackPanel>
+                            </Button>
+
+                            <Button x:Name="btnPickup" Tag="Settings" Height="41" Margin="0,9" 
+                                Style="{StaticResource SidebarButtonStyle}" Click="btnPickup_Click">
+                                <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                                    <Label Style="{StaticResource SidebarLabelStyle}" Content="&#xF48B;" Padding="9,5,0,5"/>
+                                    <TextBlock Text="Pickup Order" VerticalAlignment="Center"/>
+                                </StackPanel>
+                            </Button>
+
+                            <Button x:Name="btnAccept" Tag="Settings" Height="41" Margin="0,9" 
+                                Style="{StaticResource SidebarButtonStyle}" Click="btnAccept_Click">
+                                <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                                    <Label Style="{StaticResource SidebarLabelStyle}" Content="&#xF09D;" Padding="9,5,0,5"/>
+                                    <TextBlock Text="Receive and Accept" VerticalAlignment="Center"/>
+                                </StackPanel>
+                            </Button>
+
+                            <!-- Modify Button -->
+                            <Button x:Name="btnModify" Tag="Fulfil Order" Height="41" Margin="0,9" 
+        Style="{StaticResource SidebarButtonStyle}" Click="btnModify_Click">
+                                <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                                    <Label Style="{StaticResource SidebarLabelStyle}" Content="&#xf044;" Padding="9,5,0,5" Margin="10,0,10,0" Width="34" />
+                                    <TextBlock Text="Modify Record" VerticalAlignment="Center" />
                                 </StackPanel>
                             </Button>
 

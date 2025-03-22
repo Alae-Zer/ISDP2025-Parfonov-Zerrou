@@ -1,9 +1,9 @@
-﻿using System.Windows;
-using System.Windows.Controls;
-using HandyControl.Controls;
+﻿using HandyControl.Controls;
 using ISDP2025_Parfonov_Zerrou.Functionality;
 using ISDP2025_Parfonov_Zerrou.Models;
 using Microsoft.EntityFrameworkCore;
+using System.Windows;
+using System.Windows.Controls;
 
 namespace ISDP2025_Parfonov_Zerrou.Forms.AdminUserControls
 {
@@ -13,6 +13,7 @@ namespace ISDP2025_Parfonov_Zerrou.Forms.AdminUserControls
         private Employee currentUser;
         private bool isEditMode = false;
         private Txn currentTransaction = null;
+        private bool isInitializing = true;
 
         public ModifyRecord(Employee employee)
         {
@@ -20,11 +21,13 @@ namespace ISDP2025_Parfonov_Zerrou.Forms.AdminUserControls
             currentUser = employee;
             context = new BestContext();
 
-            // Initialize combo boxes
+            isInitializing = true;
             LoadTxnStatusComboBox();
             LoadTxnTypeComboBox();
             LoadSitesToComboBox();
             LoadDeliveryIdsComboBox();
+            isInitializing = false;
+            EnableSearch(false);
         }
 
         private void LoadTxnStatusComboBox()
@@ -36,7 +39,18 @@ namespace ISDP2025_Parfonov_Zerrou.Forms.AdminUserControls
                     .OrderBy(s => s.StatusName)
                     .ToList();
 
-                cmbTxnStatus.ItemsSource = statuses;
+                var allStatuses = new List<Txnstatus>();
+                allStatuses.Add(new Txnstatus
+                {
+                    StatusName = "All",
+                    StatusDescription = "All Statuses",
+                    Active = 1
+                });
+                allStatuses.AddRange(statuses);
+
+                cmbTxnStatus.ItemsSource = allStatuses;
+                cmbTxnStatus.SelectedIndex = 0;
+
                 cmbEditTxnStatus.ItemsSource = statuses;
             }
             catch (Exception ex)
@@ -54,7 +68,17 @@ namespace ISDP2025_Parfonov_Zerrou.Forms.AdminUserControls
                     .OrderBy(t => t.TxnType1)
                     .ToList();
 
-                cmbTxnType.ItemsSource = types;
+                var allTypes = new List<Txntype>();
+                allTypes.Add(new Txntype
+                {
+                    TxnType1 = "All",
+                    Active = 1
+                });
+                allTypes.AddRange(types);
+
+                cmbTxnType.ItemsSource = allTypes;
+                cmbTxnType.SelectedIndex = 0;
+
                 cmbEditTxnType.ItemsSource = types;
             }
             catch (Exception ex)
@@ -87,10 +111,9 @@ namespace ISDP2025_Parfonov_Zerrou.Forms.AdminUserControls
             {
                 var deliveries = context.Deliveries
                     .OrderByDescending(d => d.DeliveryDate)
-                    .Take(100) // Limit to recent deliveries
+                    .Take(100)
                     .ToList();
 
-                // Add a null option for no delivery
                 var deliveryList = new List<Delivery>
                 {
                     new Delivery { DeliveryId = 0, DeliveryDate = DateTime.Now, Notes = "No Delivery" }
@@ -109,38 +132,27 @@ namespace ISDP2025_Parfonov_Zerrou.Forms.AdminUserControls
         {
             try
             {
-                // Start with base query
                 var query = context.Txns
                     .Include(t => t.Employee)
                     .Include(t => t.SiteIdfromNavigation)
                     .Include(t => t.SiteIdtoNavigation)
                     .AsQueryable();
 
-                // Filter by transaction ID if provided
                 if (!string.IsNullOrWhiteSpace(txtSearchTxnId.Text) && int.TryParse(txtSearchTxnId.Text, out int txnId))
                 {
                     query = query.Where(t => t.TxnId == txnId);
                 }
 
-                // Filter by status if selected
-                if (cmbTxnStatus.SelectedValue != null)
+                if (cmbTxnStatus.SelectedIndex > 0 && cmbTxnStatus.SelectedItem is Txnstatus selectedStatus)
                 {
-                    string status = cmbTxnStatus.SelectedValue.ToString();
-                    query = query.Where(t => t.TxnStatus == status);
+                    query = query.Where(t => t.TxnStatus == selectedStatus.StatusName);
                 }
 
-                // Filter by type if selected
-                if (cmbTxnType.SelectedValue != null)
+                if (cmbTxnType.SelectedIndex > 0 && cmbTxnType.SelectedItem is Txntype selectedType)
                 {
-                    string type = cmbTxnType.SelectedValue.ToString();
-                    query = query.Where(t => t.TxnType == type);
+                    query = query.Where(t => t.TxnType == selectedType.TxnType1);
                 }
 
-                // Exclude completed/closed transactions
-                var closedStatuses = new[] { "COMPLETE", "CLOSED", "CANCELLED", "REJECTED" };
-                query = query.Where(t => !closedStatuses.Contains(t.TxnStatus));
-
-                // Execute query and format results for display
                 var transactions = query.Select(t => new
                 {
                     t.TxnId,
@@ -179,7 +191,6 @@ namespace ISDP2025_Parfonov_Zerrou.Forms.AdminUserControls
 
                 if (currentTransaction != null)
                 {
-                    // Display transaction details
                     txtTxnId.Text = currentTransaction.TxnId.ToString();
                     txtEmployeeName.Text = $"{currentTransaction.Employee.FirstName} {currentTransaction.Employee.LastName}";
                     cmbEditTxnType.SelectedValue = currentTransaction.TxnType;
@@ -189,20 +200,18 @@ namespace ISDP2025_Parfonov_Zerrou.Forms.AdminUserControls
                     dpShipDate.SelectedDate = currentTransaction.ShipDate;
                     txtBarCode.Text = currentTransaction.BarCode;
 
-                    // Handle nullable fields
                     if (currentTransaction.DeliveryId.HasValue)
                     {
                         cmbDeliveryId.SelectedValue = currentTransaction.DeliveryId;
                     }
                     else
                     {
-                        cmbDeliveryId.SelectedValue = 0; // No delivery
+                        cmbDeliveryId.SelectedValue = 0;
                     }
 
                     chkEmergencyDelivery.IsChecked = currentTransaction.EmergencyDelivery == 1;
                     txtNotes.Text = currentTransaction.Notes;
 
-                    // Enable edit button
                     btnEdit.IsEnabled = true;
                 }
             }
@@ -214,12 +223,29 @@ namespace ISDP2025_Parfonov_Zerrou.Forms.AdminUserControls
 
         private void EnterEditMode()
         {
+            // Check if the transaction is in transit or complete - these statuses cannot be edited
+            if (currentTransaction.TxnStatus == "IN TRANSIT")
+            {
+                Growl.Warning("Transactions in transit cannot be edited.");
+                return;
+            }
+
+            if (currentTransaction.TxnStatus == "COMPLETE")
+            {
+                Growl.Warning("Completed transactions cannot be edited.");
+                return;
+            }
+
             isEditMode = true;
             gridTransactionDetails.IsEnabled = true;
             btnEdit.Visibility = Visibility.Collapsed;
             btnSave.Visibility = Visibility.Visible;
             btnCancel.Visibility = Visibility.Visible;
             dgvTransactions.IsEnabled = false;
+            EnableSearch(false);
+
+            // Disable the refresh button in edit mode
+            btnSearch.IsEnabled = false;
         }
 
         private void ExitEditMode()
@@ -230,6 +256,10 @@ namespace ISDP2025_Parfonov_Zerrou.Forms.AdminUserControls
             btnSave.Visibility = Visibility.Collapsed;
             btnCancel.Visibility = Visibility.Collapsed;
             dgvTransactions.IsEnabled = true;
+            EnableSearch(true);
+
+            // Re-enable the refresh button when exiting edit mode
+            btnSearch.IsEnabled = true;
         }
 
         private bool ValidateTransaction()
@@ -280,14 +310,23 @@ namespace ISDP2025_Parfonov_Zerrou.Forms.AdminUserControls
                 string newStatus = cmbEditTxnStatus.SelectedValue.ToString();
                 bool isCancelling = newStatus == "CANCELLED" && oldStatus != "CANCELLED";
 
-                // Update transaction fields
+                // Check if user is trying to cancel a non-online order with invalid status
+                if (isCancelling && currentTransaction.TxnType != "Online")
+                {
+                    string[] allowedStatusesForCancel = { "NEW", "SUBMITTED", "ASSEMBLING", "ASSEMBLED" };
+                    if (!allowedStatusesForCancel.Contains(oldStatus))
+                    {
+                        Growl.Warning("Non-online orders can only be cancelled if they are NEW, SUBMITTED, ASSEMBLING, or ASSEMBLED.");
+                        return;
+                    }
+                }
+
                 currentTransaction.TxnType = cmbEditTxnType.SelectedValue.ToString();
                 currentTransaction.TxnStatus = newStatus;
                 currentTransaction.SiteIdto = (int)cmbEditSiteTo.SelectedValue;
                 currentTransaction.ShipDate = dpShipDate.SelectedDate.Value;
                 currentTransaction.BarCode = txtBarCode.Text;
 
-                // Handle nullable delivery ID
                 if (cmbDeliveryId.SelectedValue != null && (int)cmbDeliveryId.SelectedValue != 0)
                 {
                     currentTransaction.DeliveryId = (int)cmbDeliveryId.SelectedValue;
@@ -300,16 +339,13 @@ namespace ISDP2025_Parfonov_Zerrou.Forms.AdminUserControls
                 currentTransaction.EmergencyDelivery = (sbyte)(chkEmergencyDelivery.IsChecked == true ? 1 : 0);
                 currentTransaction.Notes = txtNotes.Text;
 
-                // Save changes
                 context.SaveChanges();
 
-                // If cancelling, handle inventory return
                 if (isCancelling)
                 {
                     HandleCancelledTransaction(currentTransaction);
                 }
 
-                // Log the activity
                 AuditTransactions.LogActivity(
                     currentUser,
                     currentTransaction.TxnId,
@@ -320,7 +356,6 @@ namespace ISDP2025_Parfonov_Zerrou.Forms.AdminUserControls
                     $"Transaction modified by {currentUser.FirstName} {currentUser.LastName}"
                 );
 
-                // Refresh the UI
                 ExitEditMode();
                 SearchTransactions();
                 Growl.Success("Transaction updated successfully");
@@ -335,60 +370,48 @@ namespace ISDP2025_Parfonov_Zerrou.Forms.AdminUserControls
         {
             try
             {
-                // Get the transaction items
                 var txnItems = context.Txnitems
                     .Where(ti => ti.TxnId == transaction.TxnId)
                     .ToList();
 
                 if (!txnItems.Any())
                 {
-                    return; // No items to return
+                    return;
                 }
 
-                // For each item, return inventory to the source
                 foreach (var item in txnItems)
                 {
-                    // Determine current item location
-                    // - If status is before ASSEMBLED, inventory is still at source
-                    // - If status is ASSEMBLED, inventory is at warehouse bay
-                    // - If status is IN TRANSIT, inventory is on truck
-                    // - If status is DELIVERED, inventory is at destination
-
                     int fromSiteId;
                     int toSiteId;
+
+                    bool isOnlineOrder = transaction.TxnType == "Online";
 
                     switch (transaction.TxnStatus)
                     {
                         case "NEW":
                         case "SUBMITTED":
                         case "RECEIVED":
-                            // Inventory not yet moved
-                            continue; // Skip - no inventory movement needed
+                            continue;
                         case "ASSEMBLING":
-                            // Move from warehouse bay to warehouse
-                            fromSiteId = 3; // Warehouse bay
-                            toSiteId = 2;   // Warehouse
+                            fromSiteId = 3;
+                            toSiteId = isOnlineOrder ? transaction.SiteIdfrom : 2;
                             break;
                         case "ASSEMBLED":
-                            // Move from warehouse bay to warehouse
-                            fromSiteId = 3; // Warehouse bay
-                            toSiteId = 2;   // Warehouse
+                            fromSiteId = 3;
+                            toSiteId = isOnlineOrder ? transaction.SiteIdfrom : 2;
                             break;
                         case "IN TRANSIT":
-                            // Move from truck to warehouse
-                            fromSiteId = 9999; // Truck
-                            toSiteId = 2;      // Warehouse
+                            fromSiteId = 9999;
+                            toSiteId = isOnlineOrder ? transaction.SiteIdfrom : 2;
                             break;
                         case "DELIVERED":
-                            // Move from destination back to warehouse
                             fromSiteId = transaction.SiteIdto;
-                            toSiteId = 2; // Warehouse
+                            toSiteId = isOnlineOrder ? transaction.SiteIdfrom : 2;
                             break;
                         default:
-                            continue; // Skip for other statuses
+                            continue;
                     }
 
-                    // Use MoveInventory to return the items
                     bool success = MoveInventory.Move(
                         item.ItemId,
                         item.Quantity,
@@ -402,7 +425,10 @@ namespace ISDP2025_Parfonov_Zerrou.Forms.AdminUserControls
                     }
                 }
 
-                // Log the inventory return
+                string transactionDescription = transaction.TxnType == "Online"
+                    ? $"Online order cancelled and inventory returned to original store (Site ID: {transaction.SiteIdfrom})"
+                    : "Transaction cancelled and inventory returned to warehouse";
+
                 AuditTransactions.LogActivity(
                     currentUser,
                     transaction.TxnId,
@@ -410,7 +436,7 @@ namespace ISDP2025_Parfonov_Zerrou.Forms.AdminUserControls
                     "CANCELLED",
                     transaction.SiteIdto,
                     transaction.DeliveryId,
-                    $"Transaction cancelled and inventory returned by {currentUser.FirstName} {currentUser.LastName}"
+                    $"{transactionDescription} by {currentUser.FirstName} {currentUser.LastName}"
                 );
             }
             catch (Exception ex)
@@ -419,9 +445,50 @@ namespace ISDP2025_Parfonov_Zerrou.Forms.AdminUserControls
             }
         }
 
-        #region Event Handlers
+        private void ComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if (!isInitializing && dgvTransactions != null)
+            {
+                SearchTransactions();
+            }
+        }
+
+        private void DetailsComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if (isEditMode && currentTransaction != null)
+            {
+            }
+        }
+
+        private void DatePicker_SelectedDateChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if (isEditMode && currentTransaction != null)
+            {
+            }
+        }
+
+        private void CheckBox_CheckedChanged(object sender, RoutedEventArgs e)
+        {
+            if (isEditMode && currentTransaction != null)
+            {
+            }
+        }
+
         private void BtnSearch_Click(object sender, RoutedEventArgs e)
         {
+            int statusIndex = cmbTxnStatus.SelectedIndex;
+            int typeIndex = cmbTxnType.SelectedIndex;
+
+            isInitializing = true;
+            LoadTxnStatusComboBox();
+            LoadTxnTypeComboBox();
+            LoadSitesToComboBox();
+            LoadDeliveryIdsComboBox();
+
+            cmbTxnStatus.SelectedIndex = statusIndex;
+            cmbTxnType.SelectedIndex = typeIndex;
+            isInitializing = false;
+            EnableSearch(true);
             SearchTransactions();
         }
 
@@ -429,10 +496,33 @@ namespace ISDP2025_Parfonov_Zerrou.Forms.AdminUserControls
         {
             txtSearchTxnId.Clear();
             cmbTxnStatus.SelectedIndex = 0;
-            cmbTxnType.SelectedIndex = -1;
+            cmbTxnType.SelectedIndex = 0;
             dgvTransactions.ItemsSource = null;
             lblRecordCount.Text = string.Empty;
+
+            txtTxnId.Text = string.Empty;
+            txtEmployeeName.Text = string.Empty;
+            cmbEditTxnType.SelectedIndex = -1;
+            cmbEditTxnStatus.SelectedIndex = -1;
+            txtSiteFrom.Text = string.Empty;
+            cmbEditSiteTo.SelectedIndex = -1;
+            dpShipDate.SelectedDate = null;
+            txtBarCode.Text = string.Empty;
+            cmbDeliveryId.SelectedIndex = -1;
+            chkEmergencyDelivery.IsChecked = false;
+            txtNotes.Text = string.Empty;
+
             btnEdit.IsEnabled = false;
+            currentTransaction = null;
+            EnableSearch(false);
+        }
+
+        private void EnableSearch(bool isEnabled)
+        {
+            txtSearchTxnId.IsEnabled = isEnabled;
+            cmbTxnStatus.IsEnabled = isEnabled;
+            cmbTxnType.IsEnabled = isEnabled;
+            btnClear.Visibility = isEnabled ? Visibility.Visible : Visibility.Collapsed;
         }
 
         private void DgvTransactions_SelectionChanged(object sender, SelectionChangedEventArgs e)
@@ -465,12 +555,10 @@ namespace ISDP2025_Parfonov_Zerrou.Forms.AdminUserControls
         {
             if (isEditMode)
             {
-                // Confirm cancellation
                 Growl.Ask("Are you sure you want to cancel editing?", isConfirmed =>
                 {
                     if (isConfirmed)
                     {
-                        // Reload transaction details to reset any changes
                         LoadTransactionDetails(currentTransaction.TxnId);
                         ExitEditMode();
                     }
@@ -486,6 +574,5 @@ namespace ISDP2025_Parfonov_Zerrou.Forms.AdminUserControls
                 context.Dispose();
             }
         }
-        #endregion
     }
 }

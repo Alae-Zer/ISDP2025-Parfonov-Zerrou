@@ -1,6 +1,6 @@
 ﻿using ISDP2025_Parfonov_Zerrou.Models;
 
-namespace ISDP_WEB.Pages.Small_Components
+namespace ISDP_WEB.Pages.Services
 {
     public static class DeliveryCostCalculator
     {
@@ -62,7 +62,7 @@ namespace ISDP_WEB.Pages.Small_Components
                 .ToList();
 
             // Calculate time for stops (30 mins per store plus 5 mins per order)
-            decimal totalHours = destinations.Sum(d => BaseTimePerStop + (d.OrderCount * 0.08m));
+            decimal totalHours = destinations.Sum(d => BaseTimePerStop + d.OrderCount * 0.08m);
 
             // Add drive time based on distance (assume 60 km/h average speed)
             var sites = orders

@@ -46,7 +46,8 @@
                     <MudItem xs="12" sm="6" md="3">
                         <MudSelect T="string" 
                                   Label="Vehicle Type" 
-                                  @bind-Value="selectedVehicleType" 
+                                  Value="selectedVehicleType"
+                                  ValueChanged="@((string value) => VehicleTypeChanged(value))"
                                   Required="true" 
                                   RequiredError="Vehicle type is required">
                             <MudSelectItem Value="@("Van")">Van (max 1,000 kg)</MudSelectItem>
@@ -124,7 +125,7 @@
                 <!-- Available Orders Section -->
                 <MudExpansionPanels>
                     <MudExpansionPanel Text="Add Orders to Delivery">
-                        <MudGrid Class="mb-2">
+                        <MudGrid>
                             <MudItem xs="12" sm="12" md="8">
                                 <MudTextField @bind-Value="searchText" 
                                              Label="Search" 
@@ -253,21 +254,24 @@
                             .ThenInclude(ti => ti.Item)
                         .Where(t => t.DeliveryId == DeliveryId)
                         .ToListAsync();
-                    
+
                     // Load available orders
                     availableOrders = await context.Txns
                         .Include(t => t.SiteIdtoNavigation)
                         .Include(t => t.Txnitems)
                             .ThenInclude(ti => ti.Item)
-                        .Where(t => t.TxnStatus == "ASSEMBLED" && 
+                        .Where(t => t.TxnStatus == "ASSEMBLED" &&
                                    t.DeliveryId == null &&
-                                   (t.TxnType == "Store Order" || 
-                                    t.TxnType == "Emergency Order" || 
+                                   (t.TxnType == "Store Order" ||
+                                    t.TxnType == "Emergency Order" ||
                                     t.TxnType == "Back Order"))
                         .ToListAsync();
-                        
+
                     // Apply initial filters
                     ApplyFilters();
+
+                    // Calculate distance cost
+                    CalculateDistanceCost();
                 }
             }
         }
@@ -281,11 +285,17 @@
             StateHasChanged();
         }
     }
-    
+
+    private void VehicleTypeChanged(string value)
+    {
+        selectedVehicleType = value;
+        CalculateDistanceCost();
+    }
+
     private void ApplyFilters()
     {
         filteredAvailableOrders = availableOrders;
-        
+
         // Apply order type filter
         if (orderTypeFilter != "All")
         {
@@ -293,28 +303,28 @@
                 .Where(o => o.TxnType == orderTypeFilter)
                 .ToList();
         }
-        
+
         // Apply search text
         if (!string.IsNullOrWhiteSpace(searchText))
         {
             filteredAvailableOrders = filteredAvailableOrders
-                .Where(o => 
+                .Where(o =>
                     o.TxnId.ToString().Contains(searchText) ||
-                    o.SiteIdtoNavigation.SiteName.Contains(searchText, StringComparison.OrdinalIgnoreCase) ||
+                    (o.SiteIdtoNavigation?.SiteName?.Contains(searchText, StringComparison.OrdinalIgnoreCase) ?? false) ||
                     o.TxnType.Contains(searchText, StringComparison.OrdinalIgnoreCase)
                 )
                 .ToList();
         }
-        
+
         // Clear selected orders that are no longer in filtered list
         selectedOrders = new HashSet<Txn>(selectedOrders.Where(o => filteredAvailableOrders.Contains(o)));
     }
-    
+
     private decimal CalculateOrderWeight(Txn order)
     {
         if (order == null)
             return 0;
-            
+
         if (order.Txnitems == null || !order.Txnitems.Any())
         {
             // If Txnitems is not loaded, try to load from database
@@ -326,7 +336,7 @@
                         .Include(i => i.Item)
                         .Where(i => i.TxnId == order.TxnId)
                         .ToList();
-                        
+
                     return items.Sum(i => i.Item?.Weight * i.Quantity ?? 0);
                 }
             }
@@ -335,17 +345,57 @@
                 return 0;
             }
         }
-        
+
         return order.Txnitems.Sum(i => i.Item?.Weight * i.Quantity ?? 0);
     }
-    
+
     private decimal currentOrdersTotalWeight => currentOrders.Sum(o => CalculateOrderWeight(o));
-    
+
+    private void CalculateDistanceCost()
+    {
+        if (currentOrders.Count == 0 || string.IsNullOrEmpty(selectedVehicleType))
+        {
+            distanceCost = 0;
+            return;
+        }
+
+        try
+        {
+            // Get vehicle cost per km from DeliveryManager
+            var vehicle = DeliveryManager.VehicleTypes.FirstOrDefault(v => v.Type == selectedVehicleType);
+            if (vehicle == null)
+            {
+                distanceCost = 0;
+                return;
+            }
+
+            // Group orders by destination site
+            var destinations = currentOrders
+                .Select(o => o.SiteIdtoNavigation)
+                .Where(s => s != null)
+                .DistinctBy(s => s.SiteId)
+                .ToList();
+
+            // Calculate total distance (assume round trip)
+            decimal totalDistance = destinations.Sum(s => s.DistanceFromWh) * 2;
+
+            // Calculate distance cost
+            distanceCost = totalDistance * vehicle.CostPerKm;
+
+            StateHasChanged();
+        }
+        catch (Exception ex)
+        {
+            Snackbar.Add($"Error calculating distance cost: {ex.Message}", Severity.Error);
+            distanceCost = 0;
+        }
+    }
+
     private string GetRecommendedVehicle()
     {
         if (currentOrdersTotalWeight <= 0)
             return "Select orders to get a recommendation";
-            
+
         if (currentOrdersTotalWeight <= 1000)
             return "Recommended: Van (up to 1,000 kg)";
         else if (currentOrdersTotalWeight <= 5000)
@@ -355,7 +405,7 @@
         else
             return "Recommended: Heavy Truck (up to 25,000 kg)";
     }
-    
+
     private Color GetWeightColor()
     {
         if (currentOrdersTotalWeight <= 0)
@@ -369,7 +419,7 @@
         else
             return Color.Error;
     }
-    
+
     private Color GetStatusColor(string status)
     {
         return status switch
@@ -387,7 +437,7 @@
             _ => Color.Default
         };
     }
-    
+
     private async Task RemoveOrderFromDelivery(Txn order)
     {
         var parameters = new DialogParameters
@@ -396,13 +446,13 @@
             { "ButtonText", "Remove" },
             { "Color", Color.Error }
         };
-        
+
         var options = new DialogOptions() { CloseButton = true, MaxWidth = MaxWidth.ExtraSmall };
         var dialog = await DialogService.Show<Confirm>("Confirm Removal", parameters, options).Result;
-        
+
         if (dialog.Canceled)
             return;
-            
+
         try
         {
             using (var context = new BestContext())
@@ -412,7 +462,7 @@
                 {
                     txn.DeliveryId = null;
                     await context.SaveChangesAsync();
-                    
+
                     // Create audit record for employee ID 9999 (Acadia)
                     AuditTransactions.LogActivity(
                         new Employee { EmployeeID = 9999 },
@@ -423,9 +473,9 @@
                         null,
                         $"Removed from delivery #{DeliveryId}"
                     );
-                    
+
                     Snackbar.Add($"Order #{order.TxnId} removed from delivery", Severity.Success);
-                    
+
                     // Reload data
                     await LoadDeliveryData();
                 }
@@ -436,7 +486,7 @@
             Snackbar.Add($"Error removing order: {ex.Message}", Severity.Error);
         }
     }
-    
+
     private async Task AddSelectedOrdersToDelivery()
     {
         if (!selectedOrders.Any())
@@ -444,11 +494,11 @@
             Snackbar.Add("No orders selected", Severity.Warning);
             return;
         }
-        
+
         // Check vehicle capacity
         decimal totalWeight = currentOrdersTotalWeight + selectedOrders.Sum(o => CalculateOrderWeight(o));
         decimal maxWeight = 0;
-        
+
         switch (selectedVehicleType)
         {
             case "Van": maxWeight = 1000; break;
@@ -456,7 +506,7 @@
             case "Medium": maxWeight = 10000; break;
             case "Heavy": maxWeight = 25000; break;
         }
-        
+
         // If weight exceeds capacity, show a warning dialog
         if (totalWeight > maxWeight)
         {
@@ -466,14 +516,14 @@
                 { "ButtonText", "Continue" },
                 { "Color", Color.Warning }
             };
-            
+
             var options = new DialogOptions() { CloseButton = true, MaxWidth = MaxWidth.ExtraSmall };
             var dialog = await DialogService.Show<Confirm>("Weight Warning", parameters, options).Result;
-            
+
             if (dialog.Canceled)
                 return;
         }
-        
+
         try
         {
             using (var context = new BestContext())
@@ -484,7 +534,7 @@
                     if (txn != null)
                     {
                         txn.DeliveryId = DeliveryId;
-                        
+
                         // Create audit record for employee ID 9999 (Acadia)
                         AuditTransactions.LogActivity(
                             new Employee { EmployeeID = 9999 },
@@ -497,14 +547,14 @@
                         );
                     }
                 }
-                
+
                 await context.SaveChangesAsync();
-                
+
                 Snackbar.Add($"{selectedOrders.Count} orders added to delivery", Severity.Success);
-                
+
                 // Reload data
                 await LoadDeliveryData();
-                
+
                 // Clear selection
                 selectedOrders.Clear();
             }
@@ -514,30 +564,33 @@
             Snackbar.Add($"Error adding orders: {ex.Message}", Severity.Error);
         }
     }
-    
+
     private async Task SaveDelivery()
     {
         if (delivery == null)
             return;
-            
+
         if (!deliveryDate.HasValue)
         {
             Snackbar.Add("Delivery date is required", Severity.Warning);
             return;
         }
-        
+
         if (!deliveryTime.HasValue)
         {
             Snackbar.Add("Delivery time is required", Severity.Warning);
             return;
         }
-        
+
         if (string.IsNullOrWhiteSpace(selectedVehicleType))
         {
             Snackbar.Add("Vehicle type is required", Severity.Warning);
             return;
         }
-        
+
+        // Recalculate distance cost before saving
+        CalculateDistanceCost();
+
         try
         {
             using (var context = new BestContext())
@@ -550,11 +603,11 @@
                     dbDelivery.VehicleType = selectedVehicleType;
                     dbDelivery.DistanceCost = distanceCost;
                     dbDelivery.Notes = notes;
-                    
+
                     await context.SaveChangesAsync();
-                    
+
                     Snackbar.Add("Delivery updated successfully", Severity.Success);
-                    
+
                     // Navigate back to delivery details
                     NavigationManager.NavigateTo($"/acadia/delivery/{DeliveryId}");
                 }

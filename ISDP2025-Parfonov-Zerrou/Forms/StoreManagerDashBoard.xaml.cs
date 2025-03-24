@@ -83,7 +83,7 @@ namespace ISDP2025_Parfonov_Zerrou
 
         private void btnSettings_Click(object sender, RoutedEventArgs e)
         {
-            MainContent.Content = new StoreManagerReceiveOrder(employee);
+            MainContent.Content = new StoreManagerReceiveOrder(employee, " ");
         }
 
         private void btnOrders_Click(object sender, RoutedEventArgs e)

@@ -44,6 +44,7 @@ namespace ISDP2025_Parfonov_Zerrou.Forms.StoreManagerUserControls
             }
 
             InitializeSignatureControls();
+            // Notice: No LoadOnlineOrders() call here
         }
 
         private void LoadSites()
@@ -112,7 +113,16 @@ namespace ISDP2025_Parfonov_Zerrou.Forms.StoreManagerUserControls
             btnClearSignature.IsEnabled = false;
         }
 
-        private void SetupForNewOrSubmittedStatus()
+        private void SetupForNewStatus()
+        {
+            dgvOrderItems.ItemsSource = orderItems;
+            dgvPreparedItems.ItemsSource = preparedItems;
+            btnComplete.Content = "Accept Order";
+            signaturePanel.Visibility = Visibility.Collapsed;
+            btnComplete.IsEnabled = false;
+        }
+
+        private void SetupForSubmittedStatus()
         {
             dgvOrderItems.ItemsSource = orderItems;
             dgvPreparedItems.ItemsSource = preparedItems;
@@ -141,6 +151,8 @@ namespace ISDP2025_Parfonov_Zerrou.Forms.StoreManagerUserControls
 
         private void MoveItemToAssembled(OrderItemViewModel selectedItem)
         {
+            int selectedIndex = dgvOrderItems.SelectedIndex;
+
             var existingItem = preparedItems.FirstOrDefault(i => i.ItemId == selectedItem.ItemId);
             if (existingItem != null)
             {
@@ -166,11 +178,24 @@ namespace ISDP2025_Parfonov_Zerrou.Forms.StoreManagerUserControls
             }
 
             RefreshGrids();
+
+            // Select next item
+            if (orderItems.Count > 0)
+            {
+                if (selectedIndex >= orderItems.Count)
+                    selectedIndex = orderItems.Count - 1;
+
+                dgvOrderItems.SelectedIndex = selectedIndex;
+                dgvOrderItems.Focus();
+            }
+
             UpdateCompleteButtonState();
         }
 
         private void MoveItemBack(OrderItemViewModel selectedItem)
         {
+            int selectedIndex = dgvPreparedItems.SelectedIndex;
+
             var existingItem = orderItems.FirstOrDefault(i => i.ItemId == selectedItem.ItemId);
             if (existingItem != null)
             {
@@ -196,6 +221,17 @@ namespace ISDP2025_Parfonov_Zerrou.Forms.StoreManagerUserControls
             }
 
             RefreshGrids();
+
+            // Select next item
+            if (preparedItems.Count > 0)
+            {
+                if (selectedIndex >= preparedItems.Count)
+                    selectedIndex = preparedItems.Count - 1;
+
+                dgvPreparedItems.SelectedIndex = selectedIndex;
+                dgvPreparedItems.Focus();
+            }
+
             UpdateCompleteButtonState();
         }
 
@@ -286,7 +322,6 @@ namespace ISDP2025_Parfonov_Zerrou.Forms.StoreManagerUserControls
                 var txn = context.Txns.FirstOrDefault(t => t.TxnId == txnId);
                 if (txn == null) return;
 
-                // Get inventory site ID
                 int inventorySiteId;
                 if (userPermission == "Admin" && selectedSite.SiteId != 0)
                 {
@@ -321,8 +356,10 @@ namespace ISDP2025_Parfonov_Zerrou.Forms.StoreManagerUserControls
                 switch (txn.TxnStatus)
                 {
                     case "NEW":
+                        SetupForNewStatus();
+                        break;
                     case "SUBMITTED":
-                        SetupForNewOrSubmittedStatus();
+                        SetupForSubmittedStatus();
                         break;
 
                     case "ASSEMBLING":
@@ -405,7 +442,7 @@ namespace ISDP2025_Parfonov_Zerrou.Forms.StoreManagerUserControls
 
         private void cboStatus_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            if (allOrders != null || cboStatus.SelectedIndex >= 0)
+            if (allOrders != null && e.OriginalSource == cboStatus)
             {
                 LoadOnlineOrders();
             }
@@ -413,10 +450,14 @@ namespace ISDP2025_Parfonov_Zerrou.Forms.StoreManagerUserControls
 
         private void cboSite_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            if (cboSite.SelectedItem is Site site)
+            if (cboSite.SelectedItem is Site site && allOrders != null && e.OriginalSource == cboSite)
             {
                 selectedSite = site;
                 LoadOnlineOrders();
+            }
+            else if (cboSite.SelectedItem is Site siteInitial)
+            {
+                selectedSite = siteInitial;
             }
         }
 

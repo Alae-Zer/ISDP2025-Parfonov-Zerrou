@@ -49,6 +49,30 @@ namespace ISDP2025_Parfonov_Zerrou.Functionality
             }
         }
 
+        public static bool SaveSignature(int deliveryId, byte[] signatureData)
+        {
+            try
+            {
+                using (var context = new BestContext())
+                {
+                    var delivery = context.Deliveries.Find(deliveryId);
+                    if (delivery == null)
+                    {
+                        throw new Exception($"Delivery not found: {deliveryId}");
+                    }
+
+                    delivery.Signature = signatureData;
+                    context.SaveChanges();
+
+                    return true;
+                }
+            }
+            catch (Exception ex)
+            {
+                throw new Exception($"Failed to save signature: {ex.Message}");
+            }
+        }
+
         // Get all deliveries with optional date filter
         public static List<Delivery> GetDeliveries(DateTime? date = null)
         {

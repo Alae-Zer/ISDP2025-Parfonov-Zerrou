@@ -192,7 +192,7 @@
         new OrderStatus { Name = "Order Placed", Description = "Your order has been received by our system.", IsCompleted = true },
         new OrderStatus { Name = "Processing", Description = "Store staff are reviewing your order.", IsCompleted = currentStatus != "NEW" },
         new OrderStatus { Name = "Assembling", Description = "Your items are being gathered and prepared.", IsCompleted = currentStatus == "ASSEMBLING" || currentStatus == "ASSEMBLED" || currentStatus == "READY" || currentStatus == "COMPLETE" },
-        new OrderStatus { Name = "Ready for Pickup", Description = "Your order is ready to be picked up from the store.", IsCompleted = currentStatus == "READY" || currentStatus == "COMPLETE" },
+        new OrderStatus { Name = "Ready for Pickup", Description = "Your order is ready to be picked up from the store.", IsCompleted = currentStatus == "READY" || currentStatus == "ASSEMBLED"  || currentStatus == "COMPLETE" },
         new OrderStatus { Name = "Completed", Description = "Your order has been picked up and completed.", IsCompleted = currentStatus == "COMPLETE" }
     };
 
@@ -324,23 +324,6 @@
             "CANCELLED" => Color.Error,
             "REJECTED" => Color.Error,
             _ => Color.Default
-        };
-    }
-
-    private string GetStatusMessage(string status)
-    {
-        return status switch
-        {
-            "NEW" => "Your order has been received and is waiting to be processed.",
-            "SUBMITTED" => "Your order has been submitted and is waiting to be processed.",
-            "RECEIVED" => "Your order has been received by the store and will be assembled soon.",
-            "ASSEMBLING" => "Your order is currently being assembled by our staff.",
-            "ASSEMBLED" => "Your order has been assembled and will be ready for pickup soon.",
-            "READY" => "Your order is ready for pickup! Please come to the store with your order ID.",
-            "COMPLETE" => "Your order has been completed. Thank you for shopping with us!",
-            "CANCELLED" => "Your order has been cancelled. Please contact customer service for assistance.",
-            "REJECTED" => "Your order has been rejected. Please contact customer service for assistance.",
-            _ => "Your order status is being updated. Please check back later."
         };
     }
 }

@@ -8,24 +8,22 @@ namespace ISDP2025_Parfonov_Zerrou.Functionality
         // Vehicle information model
         public class VehicleInfo
         {
-            public string Type { get; set; }
+            public string? Type { get; set; }
             public decimal MaxWeight { get; set; }
             public decimal CostPerKm { get; set; }
             public decimal HourlyRate { get; set; }
         }
 
-        // Static list of available vehicle types
         public static List<VehicleInfo> VehicleTypes = new List<VehicleInfo>
         {
             new VehicleInfo { Type = "Van", MaxWeight = 1000, CostPerKm = 0.75m, HourlyRate = 10.00m },
             new VehicleInfo { Type = "Small", MaxWeight = 5000, CostPerKm = 1.25m, HourlyRate = 20.00m },
             new VehicleInfo { Type = "Medium", MaxWeight = 10000, CostPerKm = 2.50m, HourlyRate = 25.00m },
-            new VehicleInfo { Type = "Heavy", MaxWeight = 25000, CostPerKm = 3.50m, HourlyRate = 35.00m },
-            new VehicleInfo { Type = "Courier", MaxWeight = 1000, CostPerKm = 0.00m, HourlyRate = 50.00m }
+            new VehicleInfo { Type = "Heavy", MaxWeight = 25000, CostPerKm = 3.50m, HourlyRate = 35.00m }
         };
 
         // Create a new delivery
-        public static int CreateDelivery(string vehicleType, string notes = null, decimal distanceCost = 0)
+        public static int CreateDelivery(string vehicleType, string? notes = null, decimal distanceCost = 0)
         {
             try
             {
@@ -58,8 +56,9 @@ namespace ISDP2025_Parfonov_Zerrou.Functionality
             {
                 using (var context = new BestContext())
                 {
+                    // get all deliveries
                     var query = context.Deliveries.AsQueryable();
-
+                    // and get the ones you need if nessesary
                     if (date.HasValue)
                     {
                         var startDate = date.Value.Date;
@@ -181,7 +180,12 @@ namespace ISDP2025_Parfonov_Zerrou.Functionality
                             .Where(i => i.TxnId == order.TxnId)
                             .ToList();
 
-                        return items.Sum(i => i.Item?.Weight * i.Quantity ?? 0);
+                        decimal totalWeight = 0;
+                        foreach (var item in items)
+                        {
+                            totalWeight += item.Item.Weight * item.Quantity;
+                        }
+                        return totalWeight;
                     }
                 }
                 catch
@@ -190,19 +194,31 @@ namespace ISDP2025_Parfonov_Zerrou.Functionality
                 }
             }
 
-            return order.Txnitems.Sum(i => i.Item?.Weight * i.Quantity ?? 0);
+            decimal weight = 0;
+            foreach (var item in order.Txnitems)
+            {
+                weight += item.Item.Weight * item.Quantity;
+            }
+            return weight;
         }
 
         // Calculate distance cost for a delivery based on orders and vehicle type
         public static decimal CalculateDistanceCost(List<Txn> orders, string vehicleType)
         {
+            decimal totalDistance = 0;
             if (orders == null || !orders.Any())
                 return 0;
 
             // Get vehicle cost per km
-            var vehicle = VehicleTypes.FirstOrDefault(v => v.Type == vehicleType);
-            if (vehicle == null)
-                return 0;
+            VehicleInfo vehicle = null;
+            foreach (var v in VehicleTypes)
+            {
+                if (v.Type == vehicleType)
+                {
+                    vehicle = v;
+                    break;
+                }
+            }
 
             // Group orders by destination site
             var destinations = orders
@@ -211,8 +227,11 @@ namespace ISDP2025_Parfonov_Zerrou.Functionality
                 .DistinctBy(s => s.SiteId)
                 .ToList();
 
-            // Calculate total distance (assume round trip)
-            decimal totalDistance = destinations.Sum(s => s.DistanceFromWh) * 2;
+            // Calculate total distance (we will assume round trip to store and back)
+            foreach (var destination in destinations)
+            {
+                totalDistance += destination.DistanceFromWh * 2;
+            }
 
             // Calculate distance cost
             return totalDistance * vehicle.CostPerKm;

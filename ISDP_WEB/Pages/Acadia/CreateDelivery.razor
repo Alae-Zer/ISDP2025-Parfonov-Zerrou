@@ -11,7 +11,7 @@
 
 <PageTitle>Create Delivery - Bullseye</PageTitle>
 
-<MudContainer MaxWidth="MaxWidth.ExtraLarge" Class="mt-4">
+<MudContainer MaxWidth="MaxWidth.Large" Class="mt-4">
     <MudCard>
         <MudCardHeader>
             <MudText Typo="Typo.h4">Create New Delivery</MudText>
@@ -26,21 +26,14 @@
 
             <!-- Delivery Form -->
             <MudGrid>
-                <MudItem xs="12" sm="6" md="3">
+                <MudItem xs="12" sm="12" md="6">
                     <MudDatePicker Label="Delivery Date"
                                    @bind-Date="deliveryDate"
                                    Required="true"
                                    RequiredError="Delivery date is required" />
                 </MudItem>
 
-                <MudItem xs="12" sm="6" md="3">
-                    <MudTimePicker Label="Delivery Time"
-                                   @bind-Time="deliveryTime"
-                                   Required="true"
-                                   RequiredError="Delivery time is required" />
-                </MudItem>
-
-                <MudItem xs="12" sm="6" md="3">
+                <MudItem xs="12" sm="12" md="6">
                     <MudSelect T="string"
                                Label="Vehicle Type"
                                Value="selectedVehicleType"
@@ -54,15 +47,6 @@
                     </MudSelect>
                 </MudItem>
 
-                <MudItem xs="12" sm="6" md="3">
-                    <MudNumericField @bind-Value="distanceCost"
-                                     Label="Distance Cost"
-                                     Adornment="Adornment.Start"
-                                     AdornmentText="$"
-                                     Format="F2"
-                                     Min="0" />
-                </MudItem>
-
                 <MudItem xs="12" Class="pb-4">
                     <MudTextField @bind-Value="notes"
                                   Label="Notes"
@@ -74,7 +58,7 @@
                 <MudStack Row="true" AlignItems="AlignItems.Center">
                     <MudText>
                         <strong>Selected Orders:</strong> @selectedOrders.Count |
-                        <strong>Total Weight:</strong> @selectedOrdersTotalWeight.ToString("0.00") kg
+                        <strong>Total Weight:</strong> @totalWeight.ToString("0.00") kg
                     </MudText>
 
                     <MudChip T="string" Color="GetWeightColor()" Size="Size.Medium">
@@ -169,13 +153,12 @@
 
     // Delivery form fields
     private DateTime? deliveryDate = DateTime.Today;
-    private TimeSpan? deliveryTime = new TimeSpan(9, 0, 0); // 9:00 AM default
     private string selectedVehicleType = "Medium";
     private decimal distanceCost = 0;
     private string notes = "";
+    decimal totalWeight = 0;
 
     // Selected entity
-    private Txn selectedOrder;
     private List<Txnitem> selectedOrderItems = new();
 
     protected override async Task OnInitializedAsync()
@@ -184,7 +167,6 @@
 
         try
         {
-            await LoadStores();
             await LoadOrders();
 
             // Set initial recommended vehicle type based on weight
@@ -200,30 +182,6 @@
         finally
         {
             isLoading = false;
-        }
-    }
-
-    private async Task LoadStores()
-    {
-        try
-        {
-            using (var context = new BestContext())
-            {
-                // Get all active stores (excluding warehouse, corporate, etc.)
-                stores = await context.Sites
-                    .Where(s => s.Active == 1 &&
-                               s.SiteId != 1 && // Corporate
-                               s.SiteId != 2 && // Warehouse
-                               s.SiteId != 3 && // Warehouse Bay
-                               s.SiteId != 9999 && // Truck
-                               s.SiteId != 10000) // Online
-                    .OrderBy(s => s.SiteName)
-                    .ToListAsync();
-            }
-        }
-        catch (Exception ex)
-        {
-            Snackbar.Add($"Error loading stores: {ex.Message}", Severity.Error);
         }
     }
 
@@ -247,9 +205,7 @@
                         .ThenInclude(ti => ti.Item)
                     .Where(t => t.TxnStatus == "ASSEMBLED" &&
                                t.DeliveryId == null &&
-                               (t.TxnType == "Store Order" ||
-                                t.TxnType == "Emergency Order" ||
-                                t.TxnType == "Back Order"))
+                               t.TxnType == "Store Order")
                     .OrderBy(t => t.ShipDate)
                     .ToListAsync();
 
@@ -267,7 +223,7 @@
     {
         filteredOrders = allOrders;
 
-        // Apply order type filter
+        // Apply the filters one after the other if they exist
         if (orderTypeFilter != "All")
         {
             filteredOrders = filteredOrders
@@ -275,7 +231,7 @@
                 .ToList();
         }
 
-        // Apply store filter
+        
         if (storeFilter.HasValue)
         {
             filteredOrders = filteredOrders
@@ -283,7 +239,7 @@
                 .ToList();
         }
 
-        // Apply search text
+
         if (!string.IsNullOrWhiteSpace(searchText))
         {
             filteredOrders = filteredOrders
@@ -295,8 +251,25 @@
                 .ToList();
         }
 
-        // Clear selected orders that are no longer in filtered list
-        selectedOrders = new HashSet<Txn>(selectedOrders.Where(o => filteredOrders.Contains(o)));
+        HashSet<Txn> newSelectedOrders = new HashSet<Txn>();
+        foreach (var order in selectedOrders)
+        {
+            bool isInFilteredList = false;
+            foreach (var filteredOrder in filteredOrders)
+            {
+                if (filteredOrder.TxnId == order.TxnId)
+                {
+                    isInFilteredList = true;
+                    break;
+                }
+            }
+
+            if (isInFilteredList)
+            {
+                newSelectedOrders.Add(order);
+            }
+        }
+        selectedOrders = newSelectedOrders;
 
         // Update recommended vehicle
         UpdateRecommendedVehicle();
@@ -310,7 +283,16 @@
         if (order == null)
             return 0;
 
-        return order.Txnitems?.Sum(i => i.Item.Weight * i.Quantity) ?? 0;
+        totalWeight = 0;
+            foreach (var item in order.Txnitems)
+            {
+                if (item.Item != null)
+                {
+                    totalWeight += item.Item.Weight * item.Quantity;
+                }
+            }
+
+        return totalWeight;
     }
 
     private void CalculateDistanceCost()
@@ -326,7 +308,16 @@
             var ordersList = selectedOrders.ToList();
 
             // Get vehicle cost per km from DeliveryManager
-            var vehicle = DeliveryManager.VehicleTypes.FirstOrDefault(v => v.Type == selectedVehicleType);
+            DeliveryManager.VehicleInfo vehicle = null;
+            foreach (var v in DeliveryManager.VehicleTypes)
+            {
+                if (v.Type == selectedVehicleType)
+                {
+                    vehicle = v;
+                    break;
+                }
+            }
+
             if (vehicle == null)
             {
                 distanceCost = 0;
@@ -336,12 +327,14 @@
             // Group orders by destination site
             var destinations = ordersList
                 .Select(o => o.SiteIdtoNavigation)
-                .Where(s => s != null)
                 .DistinctBy(s => s.SiteId)
                 .ToList();
 
-            // Calculate total distance (assume round trip)
-            decimal totalDistance = destinations.Sum(s => s.DistanceFromWh) * 2;
+            decimal totalDistance = 0;
+            foreach (var site in destinations)
+            {
+                totalDistance += site.DistanceFromWh * 2;
+            }
 
             // Calculate distance cost
             distanceCost = totalDistance * vehicle.CostPerKm;
@@ -355,18 +348,28 @@
         }
     }
 
-    private decimal selectedOrdersTotalWeight => selectedOrders.Sum(o => CalculateOrderWeight(o));
+    private decimal CalculateSelectedOrdersTotalWeight()
+    {
+        decimal totalWeight = 0;
+        foreach (var order in selectedOrders)
+        {
+            totalWeight += CalculateOrderWeight(order);
+        }
+        return totalWeight;
+    }
 
     private string GetRecommendedVehicle()
     {
-        if (selectedOrdersTotalWeight <= 0)
+        decimal totalWeight = CalculateSelectedOrdersTotalWeight();
+
+        if (totalWeight <= 0)
             return "Select orders to get a recommendation";
 
-        if (selectedOrdersTotalWeight <= 1000)
+        if (totalWeight <= 1000)
             return "Recommended: Van (up to 1,000 kg)";
-        else if (selectedOrdersTotalWeight <= 5000)
+        else if (totalWeight <= 5000)
             return "Recommended: Small Truck (up to 5,000 kg)";
-        else if (selectedOrdersTotalWeight <= 10000)
+        else if (totalWeight <= 10000)
             return "Recommended: Medium Truck (up to 10,000 kg)";
         else
             return "Recommended: Heavy Truck (up to 25,000 kg)";
@@ -374,13 +377,15 @@
 
     private void UpdateRecommendedVehicle()
     {
-        if (selectedOrdersTotalWeight <= 0)
+        decimal totalWeight = CalculateSelectedOrdersTotalWeight();
+
+        if (totalWeight <= 0)
             selectedVehicleType = "Medium"; // Default
-        else if (selectedOrdersTotalWeight <= 1000)
+        else if (totalWeight <= 1000)
             selectedVehicleType = "Van";
-        else if (selectedOrdersTotalWeight <= 5000)
+        else if (totalWeight <= 5000)
             selectedVehicleType = "Small";
-        else if (selectedOrdersTotalWeight <= 10000)
+        else if (totalWeight <= 10000)
             selectedVehicleType = "Medium";
         else
             selectedVehicleType = "Heavy";
@@ -391,13 +396,15 @@
 
     private Color GetWeightColor()
     {
-        if (selectedOrdersTotalWeight <= 0)
+        decimal totalWeight = CalculateSelectedOrdersTotalWeight();
+
+        if (totalWeight <= 0)
             return Color.Default;
-        else if (selectedOrdersTotalWeight <= 1000)
+        else if (totalWeight <= 1000)
             return Color.Success;
-        else if (selectedOrdersTotalWeight <= 5000)
+        else if (totalWeight <= 5000)
             return Color.Info;
-        else if (selectedOrdersTotalWeight <= 10000)
+        else if (totalWeight <= 10000)
             return Color.Warning;
         else
             return Color.Error;
@@ -408,24 +415,6 @@
         if (!selectedOrders.Any())
         {
             Snackbar.Add("Please select at least one order", Severity.Warning);
-            return;
-        }
-
-        if (!deliveryDate.HasValue)
-        {
-            Snackbar.Add("Delivery date is required", Severity.Warning);
-            return;
-        }
-
-        if (!deliveryTime.HasValue)
-        {
-            Snackbar.Add("Delivery time is required", Severity.Warning);
-            return;
-        }
-
-        if (string.IsNullOrWhiteSpace(selectedVehicleType))
-        {
-            Snackbar.Add("Vehicle type is required", Severity.Warning);
             return;
         }
 
@@ -442,12 +431,12 @@
             case "Heavy": maxWeight = 25000; break;
         }
 
-        // If weight exceeds capacity, show a warning dialog
-        if (selectedOrdersTotalWeight > maxWeight)
+        decimal totalWeight = CalculateSelectedOrdersTotalWeight();
+        if (totalWeight > maxWeight)
         {
             var parameters = new DialogParameters
             {
-                { "ContentText", $"The total weight ({selectedOrdersTotalWeight:0.00} kg) exceeds the capacity of the selected vehicle ({maxWeight} kg). Do you want to continue anyway?" },
+                { "ContentText", $"The total weight ({totalWeight:0.00} kg) exceeds the capacity of the selected vehicle ({maxWeight} kg). Do you want to continue anyway?" },
                 { "ButtonText", "Continue" },
                 { "Color", Color.Warning }
             };
@@ -467,7 +456,7 @@
                 // Create new delivery
                 var delivery = new Delivery
                     {
-                        DeliveryDate = deliveryDate.Value.Add(deliveryTime.Value),
+                        DeliveryDate = deliveryDate.Value.Add(new TimeSpan(9,0,0)),
                         DistanceCost = distanceCost,
                         VehicleType = selectedVehicleType,
                         Notes = notes

@@ -7,7 +7,7 @@
 
 <PageTitle>Delivery Management - Bullseye</PageTitle>
 
-<MudContainer MaxWidth="MaxWidth.ExtraLarge" Class="mt-4">
+<MudContainer MaxWidth="MaxWidth.Large" Class="mt-4">
     <MudCard>
         <MudCardHeader>
             <MudText Typo="Typo.h4">Delivery Management</MudText>
@@ -16,7 +16,7 @@
         <MudCardContent>
             <!-- Date Range Selection -->
             <MudGrid>
-                <MudItem xs="12" sm="8" md="6">
+                <MudItem xs="12" sm="12" md="6">
                     <MudDateRangePicker Label="Filter by Delivery Date"
                                         @bind-DateRange="dateRange"
                                         DateFormat="yyyy-MM-dd"
@@ -30,7 +30,7 @@
                                OnClick="ApplyDateFilter"
                                FullWidth="true"
                                Class="mt-4">
-                        Apply Filter
+                        Apply Date Filter
                     </MudButton>
                 </MudItem>
                 <MudItem xs="12" sm="8" md="4" Class="d-flex justify-end">
@@ -44,8 +44,7 @@
                 </MudItem>
             </MudGrid>
 
-
-            <MudDivider Class="my-4" />
+            <MudDivider Class="my-6" />
 
             <!-- Deliveries Table -->
             <MudPaper Class="mt-4">
@@ -61,6 +60,7 @@
                           Filter="FilterFunc">
                     <ToolBarContent>
                         <MudText Typo="Typo.h6">Scheduled Deliveries</MudText>
+                        <MudSpacer />
                         <MudSpacer />
                         <MudTextField @bind-Value="searchString"
                                       Placeholder="Search"
@@ -81,6 +81,7 @@
                         <MudTh>Distance Cost</MudTh>
                         <MudTh>Actions</MudTh>
                     </HeaderContent>
+
                     <RowTemplate>
                         <MudTd DataLabel="Delivery ID">@context.DeliveryId</MudTd>
                         <MudTd DataLabel="Date & Time">@context.DeliveryDate.ToString("yyyy-MM-dd HH:mm")</MudTd>
@@ -91,15 +92,14 @@
                         <MudTd>
                             <MudButtonGroup Size="Size.Small" Variant="Variant.Text">
                                 <MudIconButton Icon="@Icons.Material.Filled.Visibility"
-                                               OnClick="@(() => ViewDeliveryDetails(context))"
-                                               Title="View Details" />
+                                               OnClick="@(() => ViewDeliveryDetails(context))"/>
 
                                 <MudIconButton Icon="@Icons.Material.Filled.Edit"
-                                               OnClick="@(() => EditDelivery(context))"
-                                               Title="Edit Delivery" />
+                                               OnClick="@(() => EditDelivery(context))"/>
                             </MudButtonGroup>
                         </MudTd>
                     </RowTemplate>
+                    <!-- if no deliveries found -->
                     <NoRecordsContent>
                         <MudText>No deliveries found for the selected date range.</MudText>
                     </NoRecordsContent>
@@ -110,7 +110,7 @@
             </MudPaper>
 
             <!-- Unassigned Orders Section -->
-            <MudExpansionPanels Class="mt-4">
+            <MudExpansionPanels Class="my-5">
                 <MudExpansionPanel Text="Unassigned Orders">
                     <MudTable Items="@filteredUnassignedOrders"
                               Loading="@isLoading"
@@ -133,6 +133,7 @@
                             <MudTd DataLabel="Status">@context.TxnStatus</MudTd>
                             <MudTd DataLabel="Weight">@CalculateOrderWeight(context).ToString("0.00") kg</MudTd>
                         </RowTemplate>
+                        <!-- if no order found -->
                         <NoRecordsContent>
                             <MudText>No unassigned orders found.</MudText>
                         </NoRecordsContent>
@@ -145,7 +146,6 @@
 
 
 @code {
-    // State variables
     private DateRange dateRange = new DateRange(DateTime.Today, DateTime.Today.AddDays(7));
     private List<Delivery> allDeliveries = new List<Delivery>();
     private List<Delivery> filteredDeliveries = new List<Delivery>();
@@ -154,12 +154,6 @@
     private bool isLoading = false;
     private string searchString = "";
 
-    // Dialog control
-    private bool showOrderDetailsDialog = false;
-    private bool showAssignOrderDialog = false;
-    private DialogOptions dialogOptions = new() { MaxWidth = MaxWidth.Medium, FullWidth = true };
-
-    // Selected entities
     private Txn selectedOrder;
     private List<Txnitem> selectedOrderItems = new();
     private int? selectedDeliveryId;
@@ -198,8 +192,8 @@
 
     private void ApplyFilters()
     {
-        DateTime startDate = dateRange?.Start ?? DateTime.Today;
-        DateTime endDate = dateRange?.End ?? DateTime.Today.AddDays(7);
+        DateTime startDate = dateRange.Start ?? DateTime.Today;
+        DateTime endDate = dateRange.End ?? DateTime.Today.AddDays(7);
 
         // Apply date range filter to deliveries
         filteredDeliveries = allDeliveries
@@ -261,7 +255,14 @@
         try
         {
             var orders = DeliveryManager.GetOrdersByDelivery(deliveryId);
-            return orders.Sum(o => CalculateOrderWeight(o));
+            decimal totalWeight = 0;
+
+            foreach (var order in orders)
+            {
+                totalWeight += CalculateOrderWeight(order);
+            }
+
+            return totalWeight;
         }
         catch
         {
@@ -285,7 +286,15 @@
                         .Where(i => i.TxnId == order.TxnId)
                         .ToList();
 
-                    return items.Sum(i => i.Item?.Weight * i.Quantity ?? 0);
+                    decimal totalWeight = 0;
+                    foreach (var item in items)
+                    {
+                        if (item.Item != null)
+                        {
+                            totalWeight += item.Item.Weight * item.Quantity;
+                        }
+                    }
+                    return totalWeight;
                 }
             }
             catch
@@ -294,7 +303,15 @@
             }
         }
 
-        return order.Txnitems.Sum(i => i.Item?.Weight * i.Quantity ?? 0);
+        decimal weight = 0;
+        foreach (var item in order.Txnitems)
+        {
+            if (item.Item != null)
+            {
+                weight += item.Item.Weight * item.Quantity;
+            }
+        }
+        return weight;
     }
 
     private void ViewOrderDetails(Txn order)
@@ -318,12 +335,6 @@
             selectedOrderItems = new List<Txnitem>();
         }
 
-        showOrderDetailsDialog = true;
-    }
-
-    private void CloseOrderDetailsDialog()
-    {
-        showOrderDetailsDialog = false;
     }
 
     private void ViewDeliveryDetails(Delivery delivery)
@@ -334,56 +345,5 @@
     private void EditDelivery(Delivery delivery)
     {
         NavigationManager.NavigateTo($"/acadia/edit-delivery/{delivery.DeliveryId}");
-    }
-
-    private void AssignToDelivery(Txn order)
-    {
-        selectedOrder = order;
-        selectedDeliveryId = null;
-        showAssignOrderDialog = true;
-    }
-
-    private void CloseAssignOrderDialog()
-    {
-        showAssignOrderDialog = false;
-    }
-
-    private async Task AssignOrderToSelectedDelivery()
-    {
-        if (selectedOrder == null || !selectedDeliveryId.HasValue)
-        {
-            Snackbar.Add("Order and delivery must be selected", Severity.Warning);
-            return;
-        }
-
-        try
-        {
-            // Assign the employee based on the current user (acadia or admin)
-            // For now we'll use a hardcoded employee ID (9999 for Acadia)
-            var employee = new Employee { EmployeeID = 9999 };
-
-            bool success = DeliveryManager.AssignOrderToDelivery(
-                selectedOrder.TxnId,
-                selectedDeliveryId.Value,
-                employee
-            );
-
-            if (success)
-            {
-                Snackbar.Add($"Order #{selectedOrder.TxnId} assigned to Delivery #{selectedDeliveryId}", Severity.Success);
-                showAssignOrderDialog = false;
-
-                // Reload data
-                await LoadAllData();
-            }
-            else
-            {
-                Snackbar.Add("Failed to assign order to delivery", Severity.Error);
-            }
-        }
-        catch (Exception ex)
-        {
-            Snackbar.Add($"Error assigning order: {ex.Message}", Severity.Error);
-        }
     }
 }

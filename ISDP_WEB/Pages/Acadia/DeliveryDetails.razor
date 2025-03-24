@@ -7,7 +7,7 @@
 
 <PageTitle>Delivery Details - Bullseye</PageTitle>
 
-<MudContainer MaxWidth="MaxWidth.ExtraLarge" Class="mt-4">
+<MudContainer MaxWidth="MaxWidth.Large" Class="mt-4">
     <MudCard>
         <MudCardHeader>
             <MudText Typo="Typo.h4">Delivery #@DeliveryId Details</MudText>
@@ -16,15 +16,17 @@
         <MudCardContent>
             @if (isLoading)
             {
+                <!-- this here to show the loading if nothing is loaded -->
                 <MudProgressCircular Color="Color.Primary" Indeterminate="true" />
             }
             else if (delivery == null)
             {
+                <!-- if there is no deliveries -->
                 <MudAlert Severity="Severity.Error">Delivery not found</MudAlert>
             }
             else
             {
-                <!-- Delivery Information -->
+                <!-- if there are deliveries -->
                 <MudGrid>
                     <MudItem xs="12" md="6">
                         <MudPaper Elevation="0" Class="pa-4">
@@ -136,83 +138,6 @@
     </MudCard>
 </MudContainer>
 
-<!-- Order Details Dialog -->
-<MudDialog @bind-IsVisible="showOrderDetailsDialog" Options="dialogOptions">
-    <TitleContent>
-        <MudText Typo="Typo.h6">Order Details #@selectedOrder?.TxnId</MudText>
-    </TitleContent>
-    <DialogContent>
-        @if (selectedOrder != null)
-        {
-            <MudGrid>
-                <MudItem xs="12" sm="6">
-                    <MudText Typo="Typo.body2">Type</MudText>
-                    <MudText Typo="Typo.body1">@selectedOrder.TxnType</MudText>
-                </MudItem>
-                <MudItem xs="12" sm="6">
-                    <MudText Typo="Typo.body2">Status</MudText>
-                    <MudText Typo="Typo.body1">@selectedOrder.TxnStatus</MudText>
-                </MudItem>
-                <MudItem xs="12" sm="6">
-                    <MudText Typo="Typo.body2">From</MudText>
-                    <MudText Typo="Typo.body1">@selectedOrder.SiteIdfromNavigation?.SiteName</MudText>
-                </MudItem>
-                <MudItem xs="12" sm="6">
-                    <MudText Typo="Typo.body2">To</MudText>
-                    <MudText Typo="Typo.body1">@selectedOrder.SiteIdtoNavigation?.SiteName</MudText>
-                </MudItem>
-                <MudItem xs="12" sm="6">
-                    <MudText Typo="Typo.body2">Created</MudText>
-                    <MudText Typo="Typo.body1">@selectedOrder.CreatedDate.ToString("yyyy-MM-dd HH:mm")</MudText>
-                </MudItem>
-                <MudItem xs="12" sm="6">
-                    <MudText Typo="Typo.body2">Ship Date</MudText>
-                    <MudText Typo="Typo.body1">@selectedOrder.ShipDate.ToString("yyyy-MM-dd")</MudText>
-                </MudItem>
-
-                @if (!string.IsNullOrEmpty(selectedOrder.Notes))
-                {
-                    <MudItem xs="12">
-                        <MudText Typo="Typo.body2">Notes</MudText>
-                        <MudText Typo="Typo.body1">@selectedOrder.Notes</MudText>
-                    </MudItem>
-                }
-            </MudGrid>
-
-            <MudDivider Class="my-4" />
-
-            <MudText Typo="Typo.h6" Class="mb-2">Items</MudText>
-
-            <MudTable Items="@selectedOrderItems"
-                     Hover="true"
-                     Striped="true"
-                     Dense="true">
-                <HeaderContent>
-                    <MudTh>ID</MudTh>
-                    <MudTh>Name</MudTh>
-                    <MudTh>Quantity</MudTh>
-                    <MudTh>Weight (ea)</MudTh>
-                    <MudTh>Total Weight</MudTh>
-                </HeaderContent>
-                <RowTemplate>
-                    <MudTd DataLabel="ID">@context.ItemId</MudTd>
-                    <MudTd DataLabel="Name">@context.Item?.Name</MudTd>
-                    <MudTd DataLabel="Quantity">@context.Quantity</MudTd>
-                    <MudTd DataLabel="Weight">@context.Item?.Weight kg</MudTd>
-                    <MudTd DataLabel="Total Weight">@((context.Item?.Weight * context.Quantity)?.ToString("0.00")) kg</MudTd>
-                </RowTemplate>
-            </MudTable>
-
-            <MudText Class="mt-4" Typo="Typo.body1">
-                <strong>Total Weight:</strong> @CalculateOrderWeight(selectedOrder).ToString("0.00") kg
-            </MudText>
-        }
-    </DialogContent>
-    <DialogActions>
-        <MudButton OnClick="CloseOrderDetailsDialog">Close</MudButton>
-    </DialogActions>
-</MudDialog>
-
 @code {
     [Parameter]
     public int DeliveryId { get; set; }
@@ -222,12 +147,6 @@
     private List<Txn> orders = new List<Txn>();
     private decimal totalWeight = 0;
     private List<string> storeNames = new List<string>();
-    
-    // Dialog properties
-    private bool showOrderDetailsDialog = false;
-    private DialogOptions dialogOptions = new() { MaxWidth = MaxWidth.Medium, FullWidth = true };
-    private Txn selectedOrder;
-    private List<Txnitem> selectedOrderItems = new();
 
     protected override async Task OnInitializedAsync()
     {
@@ -257,14 +176,21 @@
                     .ToListAsync();
                 
                 // Calculate total weight
-                totalWeight = orders.Sum(o => CalculateOrderWeight(o));
+                totalWeight = 0;
+                foreach (var order in orders)
+                {
+                    totalWeight += CalculateOrderWeight(order);
+                }
                 
-                // Get unique store names
-                storeNames = orders
-                    .Select(o => o.SiteIdtoNavigation?.SiteName)
-                    .Where(s => !string.IsNullOrEmpty(s))
-                    .Distinct()
-                    .ToList();
+                storeNames = new List<string>();
+                foreach (var order in orders)
+                {
+                    string storeName = order.SiteIdtoNavigation.SiteName;
+                    if (!storeNames.Contains(storeName))
+                    {
+                        storeNames.Add(storeName);
+                    }
+                }
             }
         }
         catch (Exception ex)
@@ -293,7 +219,15 @@
                     .Where(i => i.TxnId == order.TxnId)
                     .ToList();
                     
-                return items.Sum(i => i.Item?.Weight * i.Quantity ?? 0);
+                decimal totalWeight = 0;
+                foreach (var item in items)
+                {
+                    if (item.Item != null)
+                    {
+                        totalWeight += item.Item.Weight * item.Quantity;
+                    }
+                }
+                return totalWeight;
             }
             catch
             {
@@ -301,12 +235,14 @@
             }
         }
         
-        return order.Txnitems.Sum(i => i.Item?.Weight * i.Quantity ?? 0);
+        decimal weight = 0;
+        foreach (var item in order.Txnitems)
+        {
+            if (item.Item != null)
+            {
+                weight += item.Item.Weight * item.Quantity;
+            }
+        }
+        return weight;
     }
-    
-    private void CloseOrderDetailsDialog()
-    {
-        showOrderDetailsDialog = false;
-    }
-    
 }

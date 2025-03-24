@@ -10,7 +10,7 @@
 
 <PageTitle>Edit Delivery - Bullseye</PageTitle>
 
-<MudContainer MaxWidth="MaxWidth.ExtraLarge" Class="mt-4">
+<MudContainer MaxWidth="MaxWidth.Large" Class="mt-4">
     <MudCard>
         <MudCardHeader>
             <MudText Typo="Typo.h4">Edit Delivery #@DeliveryId</MudText>
@@ -29,21 +29,14 @@
             {
                 <!-- Delivery Form -->
                 <MudGrid>
-                    <MudItem xs="12" sm="6" md="3">
+                    <MudItem xs="12" md="6">
                         <MudDatePicker Label="Delivery Date" 
                                       @bind-Date="deliveryDate" 
                                       Required="true" 
                                       RequiredError="Delivery date is required" />
                     </MudItem>
-                    
-                    <MudItem xs="12" sm="6" md="3">
-                        <MudTimePicker Label="Delivery Time" 
-                                      @bind-Time="deliveryTime" 
-                                      Required="true"
-                                      RequiredError="Delivery time is required" />
-                    </MudItem>
-                    
-                    <MudItem xs="12" sm="6" md="3">
+
+                    <MudItem xs="12" md="6">
                         <MudSelect T="string" 
                                   Label="Vehicle Type" 
                                   Value="selectedVehicleType"
@@ -57,14 +50,6 @@
                         </MudSelect>
                     </MudItem>
                     
-                    <MudItem xs="12" sm="6" md="3">
-                        <MudNumericField @bind-Value="distanceCost" 
-                                       Label="Distance Cost" 
-                                       Adornment="Adornment.Start" 
-                                       AdornmentText="$"
-                                       Format="F2"
-                                       Min="0" />
-                    </MudItem>
                     
                     <MudItem xs="12">
                         <MudTextField @bind-Value="notes" 
@@ -262,9 +247,7 @@
                             .ThenInclude(ti => ti.Item)
                         .Where(t => t.TxnStatus == "ASSEMBLED" &&
                                    t.DeliveryId == null &&
-                                   (t.TxnType == "Store Order" ||
-                                    t.TxnType == "Emergency Order" ||
-                                    t.TxnType == "Back Order"))
+                                   t.TxnType == "Store Order")
                         .ToListAsync();
 
                     // Apply initial filters
@@ -316,8 +299,25 @@
                 .ToList();
         }
 
-        // Clear selected orders that are no longer in filtered list
-        selectedOrders = new HashSet<Txn>(selectedOrders.Where(o => filteredAvailableOrders.Contains(o)));
+        var newSelectedOrders = new HashSet<Txn>();
+        foreach (var order in selectedOrders)
+        {
+            bool isInFilteredList = false;
+            foreach (var filteredOrder in filteredAvailableOrders)
+            {
+                if (filteredOrder.TxnId == order.TxnId)
+                {
+                    isInFilteredList = true;
+                    break;
+                }
+            }
+
+            if (isInFilteredList)
+            {
+                newSelectedOrders.Add(order);
+            }
+        }
+        selectedOrders = newSelectedOrders;
     }
 
     private decimal CalculateOrderWeight(Txn order)
@@ -337,7 +337,15 @@
                         .Where(i => i.TxnId == order.TxnId)
                         .ToList();
 
-                    return items.Sum(i => i.Item?.Weight * i.Quantity ?? 0);
+                    decimal totalWeight = 0;
+                    foreach (var item in items)
+                    {
+                        if (item.Item != null)
+                        {
+                            totalWeight += item.Item.Weight * item.Quantity;
+                        }
+                    }
+                    return totalWeight;
                 }
             }
             catch
@@ -346,10 +354,28 @@
             }
         }
 
-        return order.Txnitems.Sum(i => i.Item?.Weight * i.Quantity ?? 0);
+        decimal weight = 0;
+        foreach (var item in order.Txnitems)
+        {
+            if (item.Item != null)
+            {
+                weight += item.Item.Weight * item.Quantity;
+            }
+        }
+        return weight;
     }
 
-    private decimal currentOrdersTotalWeight => currentOrders.Sum(o => CalculateOrderWeight(o));
+    private decimal GetCurrentOrdersTotalWeight()
+    {
+        decimal totalWeight = 0;
+        foreach (var order in currentOrders)
+        {
+            totalWeight += CalculateOrderWeight(order);
+        }
+        return totalWeight;
+    }
+
+    private decimal currentOrdersTotalWeight => GetCurrentOrdersTotalWeight();
 
     private void CalculateDistanceCost()
     {
@@ -362,7 +388,15 @@
         try
         {
             // Get vehicle cost per km from DeliveryManager
-            var vehicle = DeliveryManager.VehicleTypes.FirstOrDefault(v => v.Type == selectedVehicleType);
+            DeliveryManager.VehicleInfo vehicle = null;
+            foreach (var v in DeliveryManager.VehicleTypes)
+            {
+                if (v.Type == selectedVehicleType)
+                {
+                    vehicle = v;
+                    break;
+                }
+            }
             if (vehicle == null)
             {
                 distanceCost = 0;
@@ -376,8 +410,11 @@
                 .DistinctBy(s => s.SiteId)
                 .ToList();
 
-            // Calculate total distance (assume round trip)
-            decimal totalDistance = destinations.Sum(s => s.DistanceFromWh) * 2;
+            decimal totalDistance = 0;
+            foreach (var site in destinations)
+            {
+                totalDistance += site.DistanceFromWh * 2;
+            }
 
             // Calculate distance cost
             distanceCost = totalDistance * vehicle.CostPerKm;
@@ -495,8 +532,13 @@
             return;
         }
 
-        // Check vehicle capacity
-        decimal totalWeight = currentOrdersTotalWeight + selectedOrders.Sum(o => CalculateOrderWeight(o));
+        decimal orderWeightSum = 0;
+        foreach (var order in selectedOrders)
+        {
+            orderWeightSum += CalculateOrderWeight(order);
+        }
+
+        decimal totalWeight = currentOrdersTotalWeight + orderWeightSum;
         decimal maxWeight = 0;
 
         switch (selectedVehicleType)
@@ -570,25 +612,6 @@
         if (delivery == null)
             return;
 
-        if (!deliveryDate.HasValue)
-        {
-            Snackbar.Add("Delivery date is required", Severity.Warning);
-            return;
-        }
-
-        if (!deliveryTime.HasValue)
-        {
-            Snackbar.Add("Delivery time is required", Severity.Warning);
-            return;
-        }
-
-        if (string.IsNullOrWhiteSpace(selectedVehicleType))
-        {
-            Snackbar.Add("Vehicle type is required", Severity.Warning);
-            return;
-        }
-
-        // Recalculate distance cost before saving
         CalculateDistanceCost();
 
         try
@@ -599,7 +622,7 @@
                 if (dbDelivery != null)
                 {
                     // Update delivery
-                    dbDelivery.DeliveryDate = deliveryDate.Value.Add(deliveryTime.Value);
+                    dbDelivery.DeliveryDate = deliveryDate.Value.Add(new TimeSpan(9,0,0));
                     dbDelivery.VehicleType = selectedVehicleType;
                     dbDelivery.DistanceCost = distanceCost;
                     dbDelivery.Notes = notes;
@@ -609,7 +632,7 @@
                     Snackbar.Add("Delivery updated successfully", Severity.Success);
 
                     // Navigate back to delivery details
-                    NavigationManager.NavigateTo($"/acadia/delivery/{DeliveryId}");
+                    NavigationManager.NavigateTo($"/acadia/delivery/{DeliveryId}", forceLoad: true);
                 }
             }
         }

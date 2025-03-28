@@ -1,0 +1,117 @@
+﻿<UserControl x:Class="ISDP2025_Parfonov_Zerrou.Forms.InventoryControls.InventoryAdjustmentControl"
+            xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+            xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+            xmlns:hc="https://handyorg.github.io/handycontrol"
+            xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+            xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+            mc:Ignorable="d">
+    <Grid Margin="10">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <!-- Header Section -->
+        <Grid Grid.Row="0">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="Auto"/>
+            </Grid.ColumnDefinitions>
+
+            <TextBlock Text="Inventory Adjustment" 
+                     Style="{StaticResource TextBlockLarge}" 
+                     Margin="5"/>
+
+            <ComboBox Grid.Column="1" 
+                     x:Name="cboStores"
+                     Width="200"
+                     Margin="10,5"
+                     SelectionChanged="cboStores_SelectionChanged"
+                     HorizontalAlignment="Left"/>
+
+            <Button Grid.Column="2" 
+                   x:Name="btnRefresh" 
+                   Content="Refresh" 
+                   Style="{StaticResource ButtonInfo}"
+                   Click="btnRefresh_Click"
+                   Width="80"
+                   Margin="5"/>
+        </Grid>
+
+        <!-- Type Selection -->
+        <StackPanel Grid.Row="1" Orientation="Horizontal" Margin="0,10">
+            <TextBlock Text="Record Type:" VerticalAlignment="Center" Margin="5,0"/>
+            <RadioButton x:Name="rbLoss" Content="Loss" IsChecked="True" Margin="10,0" Checked="rbType_Checked"/>
+            <RadioButton x:Name="rbDamage" Content="Damage" Margin="10,0" Checked="rbType_Checked"/>
+            <RadioButton x:Name="rbReturn" Content="Return" Margin="10,0" Checked="rbType_Checked"/>
+        </StackPanel>
+
+        <!-- Main Content Area -->
+        <Grid Grid.Row="2">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+
+            <!-- Inventory Items -->
+            <GroupBox Grid.Column="0" Header="Inventory Items">
+                <DockPanel>
+                    <TextBox x:Name="txtSearch"
+                            DockPanel.Dock="Top"
+                            TextChanged="txtSearch_TextChanged"
+                            Style="{StaticResource TextBoxExtend}"
+                            hc:InfoElement.Placeholder="Search items by ID or name..."
+                            Margin="0,5"/>
+
+                    <DataGrid x:Name="dgvInventoryItems" 
+                             AutoGenerateColumns="False"
+                             SelectionChanged="dgvInventoryItems_SelectionChanged"
+                             CanUserAddRows="False"
+                             IsReadOnly="True"
+                             SelectionMode="Single">
+                        <DataGrid.Columns>
+                            <DataGridTextColumn Header="ID" Binding="{Binding ItemId}" Width="60"/>
+                            <DataGridTextColumn Header="Name" Binding="{Binding Name}" Width="*"/>
+                            <DataGridTextColumn Header="In Stock" Binding="{Binding CurrentStock}" Width="70"/>
+                        </DataGrid.Columns>
+                    </DataGrid>
+                </DockPanel>
+            </GroupBox>
+
+            <!-- Adjustment Form -->
+            <GroupBox Grid.Column="1" Header="Record Details" Margin="10,0,0,0">
+                <StackPanel Margin="10">
+                    <TextBlock Text="Selected Item:" FontWeight="Bold"/>
+                    <TextBlock x:Name="txtSelectedItem" Text="No item selected" Margin="0,0,0,10"/>
+
+                    <TextBlock Text="Quantity:"/>
+                    <hc:NumericUpDown x:Name="numQuantity" Value="1" Minimum="1" Margin="0,0,0,10"/>
+
+                    <!-- Good Condition checkbox for returns -->
+                    <CheckBox x:Name="chkGoodCondition" 
+                             Content="Item in resaleable condition" 
+                             IsChecked="True"
+                             Visibility="Collapsed"
+                             Margin="0,0,0,10"/>
+
+                    <TextBlock Text="Notes:"/>
+                    <TextBox x:Name="txtNotes" 
+                            TextWrapping="Wrap" 
+                            Height="80"
+                            Margin="0,0,0,10"/>
+
+                    <Button x:Name="btnSubmit" 
+                           Content="Submit Record" 
+                           Style="{StaticResource ButtonPrimary}"
+                           Click="btnSubmit_Click"
+                           IsEnabled="False"
+                           HorizontalAlignment="Center"
+                           Width="150"
+                           Margin="0,10"/>
+                </StackPanel>
+            </GroupBox>
+        </Grid>
+    </Grid>
+</UserControl>

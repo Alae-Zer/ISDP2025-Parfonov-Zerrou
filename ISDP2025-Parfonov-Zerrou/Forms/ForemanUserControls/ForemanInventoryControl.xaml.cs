@@ -475,7 +475,6 @@ namespace ISDP2025_Parfonov_Zerrou.Forms.ForemanUserControls
             btnUpdate.IsEnabled = false;
         }
 
-        // Browse for image
         private void BrowseImage()
         {
             selectedImagePath = string.Empty;
@@ -508,7 +507,6 @@ namespace ISDP2025_Parfonov_Zerrou.Forms.ForemanUserControls
             }
         }
 
-        // Prepares UI for editing an existing item
         private void PrepareForEdit()
         {
             isNewItem = false;

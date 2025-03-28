@@ -316,45 +316,36 @@ namespace ISDP2025_Parfonov_Zerrou.Forms.AdminUserControls
                 var selectedSiteId = (int)cmbStores.SelectedValue;
                 bool isWarehouse = selectedSiteId == 2;
 
+                var query = context.Inventories
+                    .Include(i => i.Item)
+                    .Where(i => i.SiteId == selectedSiteId && i.Item.Active == 1);
+
+                if (isWarehouse && cmbSuppliers != null && cmbSuppliers.SelectedValue != null && (int)cmbSuppliers.SelectedValue != 0)
+                {
+                    int supplierId = (int)cmbSuppliers.SelectedValue;
+                    query = query.Where(i => i.Item.SupplierId == supplierId);
+                }
+
                 if (isWarehouse)
                 {
-                    var query = context.Items
-                        .Where(i => i.Active == 1);
-
-                    if (cmbSuppliers != null && cmbSuppliers.SelectedValue != null && (int)cmbSuppliers.SelectedValue != 0)
-                    {
-                        int supplierId = (int)cmbSuppliers.SelectedValue;
-                        query = query.Where(i => i.SupplierId == supplierId);
-                    }
-
                     allInventoryItems = query
-                        .OrderBy(i => i.SupplierId)
-                        .ThenBy(i => i.Name)
+                        .OrderBy(i => i.Item.SupplierId)
+                        .ThenBy(i => i.Item.Name)
                         .Select(i => new OrderItem
                         {
                             ItemId = i.ItemId,
-                            Name = i.Name,
-                            Quantity = context.Inventories
-                                .Where(inv => inv.ItemId == i.ItemId && inv.SiteId == selectedSiteId)
-                                .Select(inv => inv.Quantity)
-                                .FirstOrDefault(),
-                            CaseSize = i.CaseSize,
-                            Weight = i.Weight,
-                            ReorderThreshold = context.Inventories
-                                .Where(inv => inv.ItemId == i.ItemId && inv.SiteId == selectedSiteId)
-                                .Select(inv => inv.ReorderThreshold ?? 0)
-                                .FirstOrDefault(),
-                            Description = i.Description ?? i.Name,
-                            SupplierId = i.SupplierId
+                            Name = i.Item.Name,
+                            Quantity = i.Quantity,
+                            CaseSize = i.Item.CaseSize,
+                            Weight = i.Item.Weight,
+                            ReorderThreshold = i.ReorderThreshold ?? 0,
+                            Description = i.Item.Description ?? i.Item.Name,
+                            SupplierId = i.Item.SupplierId
                         })
                         .ToList();
                 }
                 else
                 {
-                    var query = context.Inventories
-                        .Include(i => i.Item)
-                        .Where(i => i.SiteId == selectedSiteId && i.Item.Active == 1);
-
                     allInventoryItems = query
                         .Select(i => new OrderItem
                         {

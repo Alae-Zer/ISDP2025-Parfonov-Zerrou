@@ -282,7 +282,6 @@ namespace ISDP2025_Parfonov_Zerrou.Forms.ForemanUserControls
             {
                 string sku = txtSku.Text.Trim();
 
-                // Check if an item with this SKU already exists
                 if (context.Items.Any(i => i.Sku.ToLower() == sku.ToLower()))
                 {
                     Growl.Warning("An item with this SKU already exists");
@@ -309,7 +308,30 @@ namespace ISDP2025_Parfonov_Zerrou.Forms.ForemanUserControls
                 context.Items.Add(newItem);
                 context.SaveChanges();
 
-                Growl.Success("New product added successfully!");
+                int[] excludedSites = { 1, 3, 9999, 10000 };
+
+                var sites = context.Sites
+                    .Where(s => s.Active == 1 && !excludedSites.Contains(s.SiteId))
+                    .ToList();
+
+                foreach (var site in sites)
+                {
+                    var inventory = new Inventory
+                    {
+                        ItemId = newItem.ItemId,
+                        SiteId = site.SiteId,
+                        ItemLocation = "0",
+                        Quantity = 0,
+                        ReorderThreshold = 0,
+                        OptimumThreshold = 0
+                    };
+
+                    context.Inventories.Add(inventory);
+                }
+
+                context.SaveChanges();
+
+                Growl.Success("New product added successfully and added to all site inventories!");
 
                 isNewItem = false;
                 EnableEditControls(false);

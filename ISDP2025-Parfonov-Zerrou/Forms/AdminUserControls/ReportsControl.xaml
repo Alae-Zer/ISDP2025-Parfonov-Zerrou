@@ -1,0 +1,158 @@
+﻿<UserControl x:Class="ISDP2025_Parfonov_Zerrou.Forms.AdminUserControls.ReportsControl"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:ISDP2025_Parfonov_Zerrou.Forms.AdminUserControls"
+             xmlns:hc="https://handyorg.github.io/handycontrol"
+             mc:Ignorable="d" 
+             d:DesignHeight="700" d:DesignWidth="1000">
+    <Grid Margin="10">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <!-- Header Section -->
+        <TextBlock Text="Report Generator" 
+                   FontSize="24" 
+                   FontWeight="Bold" 
+                   Margin="0,0,0,10"
+                   Grid.Row="0"/>
+
+        <!-- Report Selection and Parameters Section -->
+        <Grid Grid.Row="1" Margin="0,0,0,10">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+
+            <!-- Report Type Selection -->
+            <GroupBox Header="Report Type" Grid.Column="0" Margin="0,0,5,0" Padding="10">
+                <StackPanel>
+                    <hc:ComboBox x:Name="cmbReportType" 
+                                 hc:InfoElement.Title="Select Report Type:"
+                                 hc:InfoElement.Necessary="True"
+                                 Margin="0,5,0,10"
+                                 SelectionChanged="cmbReportType_SelectionChanged"/>
+
+                    <!-- Site Selection (appears for most reports) -->
+                    <StackPanel x:Name="siteSelectionPanel" Margin="0,5,0,5">
+                        <hc:ComboBox x:Name="cmbSite" 
+                                    hc:InfoElement.Title="Select Site:"
+                                    DisplayMemberPath="SiteName"
+                                    SelectedValuePath="SiteId"
+                                    Margin="0,5,0,10"/>
+                    </StackPanel>
+
+                    <!-- Parameters that change based on report type -->
+                    <StackPanel x:Name="dynamicParametersPanel">
+                        <!-- Day of Week filter (for Delivery report) -->
+                        <StackPanel x:Name="dayOfWeekPanel" Visibility="Collapsed">
+                            <TextBlock Text="Filter by Day:" Margin="0,5,0,5"/>
+                            <hc:ComboBox x:Name="cmbDayOfWeek" Margin="0,0,0,10">
+                                <ComboBoxItem Content="All Days"/>
+                                <ComboBoxItem Content="Monday"/>
+                                <ComboBoxItem Content="Tuesday"/>
+                                <ComboBoxItem Content="Wednesday"/>
+                                <ComboBoxItem Content="Thursday"/>
+                                <ComboBoxItem Content="Friday"/>
+                                <ComboBoxItem Content="Saturday"/>
+                                <ComboBoxItem Content="Sunday"/>
+                            </hc:ComboBox>
+                        </StackPanel>
+
+                        <!-- Role filter (for Users report) -->
+                        <StackPanel x:Name="rolePanel" Visibility="Collapsed">
+                            <TextBlock Text="Filter by Role:" Margin="0,5,0,5"/>
+                            <hc:ComboBox x:Name="cmbRole" Margin="0,0,0,10"/>
+                        </StackPanel>
+
+                        <!-- Supplier filter (for Supplier Order report) -->
+                        <StackPanel x:Name="supplierPanel" Visibility="Collapsed">
+                            <TextBlock Text="Filter by Supplier:" Margin="0,5,0,5"/>
+                            <hc:ComboBox x:Name="cmbSupplier" Margin="0,0,0,10"/>
+                            <CheckBox x:Name="chkPageBreakBySupplier" Content="Insert page break between suppliers" Margin="0,5,0,10"/>
+                        </StackPanel>
+
+                        <!-- Order ID input (for Store Order and Shipping Receipt reports) -->
+                        <StackPanel x:Name="orderIdPanel" Visibility="Collapsed">
+                            <TextBlock Text="Select Order ID:" Margin="0,5,0,5"/>
+                            <hc:TextBox x:Name="txtOrderId" Margin="0,0,0,10"/>
+                        </StackPanel>
+                    </StackPanel>
+                </StackPanel>
+            </GroupBox>
+
+            <!-- Date Range Selection -->
+            <GroupBox Header="Date Range" Grid.Column="1" Margin="5,0,0,0" Padding="10">
+                <StackPanel>
+                    <CheckBox x:Name="chkUseDateRange" Content="Use Date Range" 
+                              Margin="0,5,0,10" 
+                              Checked="chkUseDateRange_CheckedChanged"
+                              Unchecked="chkUseDateRange_CheckedChanged"/>
+
+                    <StackPanel x:Name="dateRangePanel" IsEnabled="False">
+                        <StackPanel Orientation="Horizontal" Margin="0,5,0,5">
+                            <TextBlock Text="Start Date:" VerticalAlignment="Center" Width="80"/>
+                            <hc:DatePicker x:Name="dpStartDate"/>
+                        </StackPanel>
+
+                        <StackPanel Orientation="Horizontal" Margin="0,5,0,5">
+                            <TextBlock Text="End Date:" VerticalAlignment="Center" Width="80"/>
+                            <hc:DatePicker x:Name="dpEndDate"/>
+                        </StackPanel>
+                    </StackPanel>
+                </StackPanel>
+            </GroupBox>
+        </Grid>
+
+        <!-- Report Data Preview Area -->
+        <Grid Grid.Row="2">
+            <GroupBox Header="Report Data Preview">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
+
+                    <!-- Toolbar for data controls -->
+                    <TextBlock x:Name="txtRecordCount" 
+                                  Text="Records: 0" 
+                                  VerticalAlignment="Center" 
+                                  Margin="10,5,0,5"/>
+
+                    <!-- Data preview grid -->
+                    <DataGrid x:Name="dgReportData" 
+                              Grid.Row="1" 
+                              AutoGenerateColumns="True" 
+                              IsReadOnly="True"
+                              CanUserSortColumns="True"
+                              AlternatingRowBackground="AliceBlue"/>
+                </Grid>
+            </GroupBox>
+        </Grid>
+
+        <!-- Action Buttons -->
+        <StackPanel Grid.Row="3" Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,10,0,0">
+            <Button x:Name="btnGenerate" Content="Generate Report" 
+                    Style="{StaticResource ButtonPrimary}" 
+                    Width="130" Height="35" 
+                    Margin="0,0,10,0" 
+                    Click="btnGenerate_Click"/>
+
+            <Button x:Name="btnExportPDF" Content="Export to PDF" 
+                    Style="{StaticResource ButtonSuccess}" 
+                    Width="120" Height="35" 
+                    Margin="0,0,10,0"
+                    Click="btnExportPDF_Click"/>
+
+            <Button x:Name="btnClose" Content="Close" 
+                    Style="{StaticResource ButtonDefault}" 
+                    Width="100" Height="35" 
+                    Click="btnClose_Click"/>
+        </StackPanel>
+    </Grid>
+</UserControl>

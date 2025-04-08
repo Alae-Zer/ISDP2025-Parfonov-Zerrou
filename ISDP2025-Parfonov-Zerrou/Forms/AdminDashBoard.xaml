@@ -265,16 +265,24 @@
                     </Button>
 
                     <!-- Permissions Button -->
-                    <Button x:Name="btnPermissions" Tag="PermissionsPage" Height="41" Margin="0,9" 
+                    <Button x:Name="btnPermissions" Tag="Permissions Page" Height="41" Margin="0,9" 
                             Style="{StaticResource SidebarButtonStyle}" Click="btnPermissions_Click">
                         <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
                             <Label Style="{StaticResource SidebarLabelStyle}" Content="&#xF4FF;" Padding="9,5,0,5" Margin="10,0,10,0" Width="34" />
                             <TextBlock Text="Permissions" VerticalAlignment="Center" />
                         </StackPanel>
                     </Button>
+                            <!-- Permissions Button -->
+                            <Button x:Name="btnReports" Tag="Reports" Height="41" Margin="0,9" 
+        Style="{StaticResource SidebarButtonStyle}" Click="btnReports_Click">
+                                <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                                    <Label Style="{StaticResource SidebarLabelStyle}" Content="&#xF4FF;" Padding="9,5,0,5" Margin="10,0,10,0" Width="34" />
+                                    <TextBlock Text="Permissions" VerticalAlignment="Center" />
+                                </StackPanel>
+                            </Button>
 
 
-                    <Button x:Name="btnSettings" Tag="Settings" Height="41" Margin="0,9" 
+                            <Button x:Name="btnSettings" Tag="Settings" Height="41" Margin="0,9" 
                             Style="{StaticResource SidebarButtonStyle}" Click="btnSettings_Click">
                         <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
                             <Label Style="{StaticResource SidebarLabelStyle}" Content="&#xF013;" Padding="9,5,0,5"/>

@@ -1,11 +1,11 @@
 ﻿<UserControl x:Class="ISDP2025_Parfonov_Zerrou.Forms.ForemanUserControls.ForemanInventoryControl"
-             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
-             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
-             xmlns:local="clr-namespace:ISDP2025_Parfonov_Zerrou.Forms.ForemanUserControls"
-             mc:Ignorable="d" 
-             d:DesignHeight="900" d:DesignWidth="900">
+            xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+            xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+            xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+            xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+            xmlns:local="clr-namespace:ISDP2025_Parfonov_Zerrou.Forms.ForemanUserControls"
+            mc:Ignorable="d" 
+            d:DesignHeight="900" d:DesignWidth="900">
 
     <UserControl.Resources>
         <Style x:Key="RoundedButton" TargetType="Button">
@@ -13,8 +13,8 @@
                 <Setter.Value>
                     <ControlTemplate TargetType="Button">
                         <Border CornerRadius="5" Background="{TemplateBinding Background}"
-                                BorderBrush="{TemplateBinding BorderBrush}"
-                                BorderThickness="{TemplateBinding BorderThickness}">
+                               BorderBrush="{TemplateBinding BorderBrush}"
+                               BorderThickness="{TemplateBinding BorderThickness}">
                             <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
                         </Border>
                     </ControlTemplate>
@@ -32,9 +32,9 @@
                         <BeginStoryboard>
                             <Storyboard>
                                 <DoubleAnimation Storyboard.TargetProperty="RenderTransform.ScaleX"
-                                           To="1.1" Duration="0:0:0.1"/>
+                                          To="1.1" Duration="0:0:0.1"/>
                                 <DoubleAnimation Storyboard.TargetProperty="RenderTransform.ScaleY"
-                                           To="1.1" Duration="0:0:0.1"/>
+                                          To="1.1" Duration="0:0:0.1"/>
                             </Storyboard>
                         </BeginStoryboard>
                     </Trigger.EnterActions>
@@ -42,9 +42,9 @@
                         <BeginStoryboard>
                             <Storyboard>
                                 <DoubleAnimation Storyboard.TargetProperty="RenderTransform.ScaleX"
-                                           To="1" Duration="0:0:0.1"/>
+                                          To="1" Duration="0:0:0.1"/>
                                 <DoubleAnimation Storyboard.TargetProperty="RenderTransform.ScaleY"
-                                           To="1" Duration="0:0:0.1"/>
+                                          To="1" Duration="0:0:0.1"/>
                             </Storyboard>
                         </BeginStoryboard>
                     </Trigger.ExitActions>
@@ -65,9 +65,9 @@
                         <BeginStoryboard>
                             <Storyboard>
                                 <DoubleAnimation Storyboard.TargetProperty="RenderTransform.ScaleX"
-                                           To="1.25" Duration="0:0:0.1"/>
+                                          To="1.25" Duration="0:0:0.1"/>
                                 <DoubleAnimation Storyboard.TargetProperty="RenderTransform.ScaleY"
-                                           To="1.25" Duration="0:0:0.1"/>
+                                          To="1.25" Duration="0:0:0.1"/>
                             </Storyboard>
                         </BeginStoryboard>
                     </Trigger.EnterActions>
@@ -75,9 +75,9 @@
                         <BeginStoryboard>
                             <Storyboard>
                                 <DoubleAnimation Storyboard.TargetProperty="RenderTransform.ScaleX"
-                                           To="1" Duration="0:0:0.1"/>
+                                          To="1" Duration="0:0:0.1"/>
                                 <DoubleAnimation Storyboard.TargetProperty="RenderTransform.ScaleY"
-                                           To="1" Duration="0:0:0.1"/>
+                                          To="1" Duration="0:0:0.1"/>
                             </Storyboard>
                         </BeginStoryboard>
                     </Trigger.ExitActions>
@@ -102,10 +102,10 @@
             </Grid.RowDefinitions>
 
             <TextBlock Text="Foreman Inventory View" 
-                      FontSize="24" 
-                      FontWeight="Bold" 
-                      Margin="0,0,0,20"
-                      Grid.Row="0"/>
+                     FontSize="24" 
+                     FontWeight="Bold" 
+                     Margin="0,0,0,20"
+                     Grid.Row="0"/>
 
             <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto">
                 <StackPanel>
@@ -113,24 +113,26 @@
                     <Grid Margin="0,0,10,20">
                         <Border BorderThickness="1" BorderBrush="#CCCCCC">
                             <Image x:Name="imgProduct" 
-                                Height="200" 
-                                Stretch="Uniform"
-                                Margin="5"
-                                Style="{StaticResource ImageWithZoom}"/>
+                               Height="200" 
+                               Stretch="Uniform"
+                               Margin="5"
+                               Style="{StaticResource ImageWithZoom}"/>
                         </Border>
                         <Button x:Name="btnBrowseImage" 
-                            Content="Change Image" 
-                            Width="120" 
-                            Height="30"
-                            Click="BtnBrowseImage_Click"
-                            Style="{StaticResource RoundedButton}"
-                            Background="#FFF62D2D"
-                            Foreground="White"
-                            Margin="5"
-                            Panel.ZIndex="1"
-                            VerticalAlignment="Top"
-                            HorizontalAlignment="Right"
-                            Cursor="Hand" ToolTip="Browse Image"/>
+                           Content="Change Image" 
+                           Width="120" 
+                           Height="30"
+                           Click="BtnBrowseImage_Click"
+                           Style="{StaticResource RoundedButton}"
+                           Background="#FFF62D2D"
+                           Foreground="White"
+                           Margin="5"
+                           Panel.ZIndex="1"
+                           VerticalAlignment="Top"
+                           HorizontalAlignment="Right"
+                           Cursor="Hand" 
+                           Visibility="Collapsed"
+                           ToolTip="Browse Image"/>
                     </Grid>
 
                     <!-- Item Information -->
@@ -150,54 +152,49 @@
                                 <RowDefinition Height="Auto"/>
                                 <RowDefinition Height="Auto"/>
                                 <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
                             </Grid.RowDefinitions>
 
                             <!-- Row 0 -->
                             <Label Content="Item ID:" Grid.Row="0" Grid.Column="0"/>
-                            <Label x:Name="lblItemId" Grid.Row="0" Grid.Column="1" Margin="5"/>
+                            <TextBox x:Name="txtItemId" Grid.Row="0" Grid.Column="1" Margin="5" IsEnabled="False"/>
                             <Label Content="SKU:" Grid.Row="0" Grid.Column="2"/>
-                            <Label x:Name="lblSku" Grid.Row="0" Grid.Column="3" Margin="5"/>
+                            <TextBox x:Name="txtSku" Grid.Row="0" Grid.Column="3" Margin="5" IsEnabled="False"/>
 
                             <!-- Row 1 -->
                             <Label Content="Item Name:" Grid.Row="1" Grid.Column="0"/>
-                            <Label x:Name="lblItemName" Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="3" Margin="5"/>
+                            <TextBox x:Name="txtItemName" Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="3" Margin="5" IsEnabled="False"/>
 
                             <!-- Row 2 -->
                             <Label Content="Category:" Grid.Row="2" Grid.Column="0"/>
-                            <Label x:Name="lblCategory" Grid.Row="2" Grid.Column="1" Margin="5"/>
+                            <ComboBox x:Name="cmbCategory" Grid.Row="2" Grid.Column="1" Margin="5" IsEnabled="False"/>
                             <Label Content="Supplier:" Grid.Row="2" Grid.Column="2"/>
-                            <Label x:Name="lblSupplier" Grid.Row="2" Grid.Column="3" Margin="5"/>
+                            <ComboBox x:Name="cmbSupplier" Grid.Row="2" Grid.Column="3" Margin="5" IsEnabled="False"/>
 
                             <!-- Row 3 -->
                             <Label Content="Case Size:" Grid.Row="3" Grid.Column="0"/>
-                            <Label x:Name="lblCaseSize" Grid.Row="3" Grid.Column="1" Margin="5"/>
-                            <Label Content="Retail Price:" Grid.Row="3" Grid.Column="2"/>
-                            <Label x:Name="lblRetailPrice" Grid.Row="3" Grid.Column="3" Margin="5"/>
+                            <TextBox x:Name="txtCaseSize" Grid.Row="3" Grid.Column="1" Margin="5" IsEnabled="False"/>
+                            <Label Content="Cost Price:" Grid.Row="3" Grid.Column="2"/>
+                            <TextBox x:Name="txtCostPrice" Grid.Row="3" Grid.Column="3" Margin="5" IsEnabled="False"/>
 
                             <!-- Row 4 -->
-                            <Label Content="Description:" Grid.Row="4" Grid.Column="0"/>
-                            <TextBox x:Name="txtDescription" Grid.Row="4" Grid.Column="1" 
-                                    Grid.ColumnSpan="3" Margin="5" TextWrapping="Wrap" 
-                                    AcceptsReturn="True" Height="60" Cursor="Pen" ToolTip="Enter Or Modify Description"/>
+                            <Label Content="Weight:" Grid.Row="4" Grid.Column="0"/>
+                            <TextBox x:Name="txtWeight" Grid.Row="4" Grid.Column="1" Margin="5" IsEnabled="False"/>
+                            <Label Content="Retail Price:" Grid.Row="4" Grid.Column="2"/>
+                            <TextBox x:Name="txtRetailPrice" Grid.Row="4" Grid.Column="3" Margin="5" IsEnabled="False"/>
 
                             <!-- Row 5 -->
-                            <Label Content="Notes:" Grid.Row="5" Grid.Column="0"/>
-                            <TextBox x:Name="txtNotes" Grid.Row="5" Grid.Column="1" 
-                                    Grid.ColumnSpan="3" Margin="5" TextWrapping="Wrap" 
-                                    AcceptsReturn="True" Height="60" Cursor="Pen" ToolTip="Enter Notes Here"/>
-
-                            <!-- Row 6 -->
-                            <Label Content="Active:" Grid.Row="6" Grid.Column="0"/>
+                            <Label Content="Active:" Grid.Row="5" Grid.Column="0"/>
                             <CheckBox x:Name="chkActive" 
-                                    Grid.Row="6" 
-                                    Grid.Column="1" 
-                                    VerticalAlignment="Center" 
-                                    HorizontalAlignment="Left"
-                                    Margin="5" 
-                                    IsEnabled="False" 
-                                    Cursor="Hand" 
-                                    Unchecked="ChkActive_Unchecked"
-                                    ToolTip="Toggle Item Active Status" >
+                                   Grid.Row="5" 
+                                   Grid.Column="1" 
+                                   VerticalAlignment="Center" 
+                                   HorizontalAlignment="Left"
+                                   Margin="5" 
+                                   IsEnabled="False" 
+                                   Cursor="Hand" 
+                                   Unchecked="ChkActive_Unchecked"
+                                   ToolTip="Toggle Item Active Status">
                                 <CheckBox.Style>
                                     <Style TargetType="CheckBox">
                                         <Style.Triggers>
@@ -208,6 +205,18 @@
                                     </Style>
                                 </CheckBox.Style>
                             </CheckBox>
+
+                            <!-- Row 6 -->
+                            <Label Content="Description:" Grid.Row="6" Grid.Column="0"/>
+                            <TextBox x:Name="txtDescription" Grid.Row="6" Grid.Column="1" 
+                                   Grid.ColumnSpan="3" Margin="5" TextWrapping="Wrap" 
+                                   AcceptsReturn="True" Height="60" IsEnabled="False" Cursor="Pen" ToolTip="Enter Or Modify Description"/>
+
+                            <!-- Row 7 -->
+                            <Label Content="Notes:" Grid.Row="7" Grid.Column="0"/>
+                            <TextBox x:Name="txtNotes" Grid.Row="7" Grid.Column="1" 
+                                   Grid.ColumnSpan="3" Margin="5" TextWrapping="Wrap" 
+                                   AcceptsReturn="True" Height="60" IsEnabled="False" Cursor="Pen" ToolTip="Enter Notes Here"/>
                         </Grid>
                     </GroupBox>
                 </StackPanel>
@@ -216,31 +225,45 @@
             <!-- Buttons Panel -->
             <DockPanel Grid.Row="2" LastChildFill="False" Margin="0,10">
                 <Button x:Name="btnRefresh" Content="Refresh" Width="100" Height="30" 
-                        DockPanel.Dock="Left" Margin="5,0"
-                        Click="BtnRefresh_Click"
-                        Style="{StaticResource RoundedButton}"
-                        Background="#2196F3"
-                        Foreground="White" Cursor="Hand"/>
+                       DockPanel.Dock="Left" Margin="5,0"
+                       Click="BtnRefresh_Click"
+                       Style="{StaticResource RoundedButton}"
+                       Background="#2196F3"
+                       Foreground="White" Cursor="Hand"/>
                 <Button x:Name="btnClear" Content="Clear" Width="100" Height="30" 
-                        DockPanel.Dock="Left" Margin="5,0"
-                        Click="BtnClear_Click"
-                        Style="{StaticResource RoundedButton}"
-                        Background="#FFF62D2D"
-                        Foreground="White" Cursor="Hand"/>
-                <Button x:Name="btnSave" Content="Save/Cancel" Width="100" Height="30" 
-                        DockPanel.Dock="Right" Margin="5,0"
-                        Click="BtnSave_Click"
-                        Style="{StaticResource RoundedButton}"
-                        Background="#4CAF50"
-                        Foreground="White"
-                        Visibility="Collapsed"
-                        Cursor="Hand"/>
+                       DockPanel.Dock="Left" Margin="5,0"
+                       Click="BtnClear_Click"
+                       Style="{StaticResource RoundedButton}"
+                       Background="#FFF62D2D"
+                       Foreground="White" Cursor="Hand"/>
+                <Button x:Name="btnCancel" Content="Cancel" Width="100" Height="30" 
+                       DockPanel.Dock="Right" Margin="5,0"
+                       Click="BtnCancel_Click"
+                       Style="{StaticResource RoundedButton}"
+                       Background="#FF9800"
+                       Foreground="White"
+                       Visibility="Collapsed"
+                       Cursor="Hand"/>
+                <Button x:Name="btnSave" Content="Save" Width="100" Height="30" 
+                       DockPanel.Dock="Right" Margin="5,0"
+                       Click="BtnSave_Click"
+                       Style="{StaticResource RoundedButton}"
+                       Background="#4CAF50"
+                       Foreground="White"
+                       Visibility="Collapsed"
+                       Cursor="Hand"/>
                 <Button x:Name="btnUpdate" Content="Edit" Width="100" Height="30" 
-                        DockPanel.Dock="Right" Margin="5,0"
-                        Click="BtnUpdate_Click"
-                        Style="{StaticResource RoundedButton}"
-                        Background="#FFD700"
-                        Foreground="Black" Cursor="Hand"/>
+                       DockPanel.Dock="Right" Margin="5,0"
+                       Click="BtnUpdate_Click"
+                       Style="{StaticResource RoundedButton}"
+                       Background="#FFD700"
+                       Foreground="Black" Cursor="Hand"/>
+                <Button x:Name="btnAddNew" Content="Add New" Width="100" Height="30" 
+                       DockPanel.Dock="Right" Margin="5,0"
+                       Click="BtnAddNew_Click"
+                       Style="{StaticResource RoundedButton}"
+                       Background="#2196F3"
+                       Foreground="White" Cursor="Hand"/>
             </DockPanel>
         </Grid>
 
@@ -255,22 +278,22 @@
             <StackPanel Grid.Row="0" Orientation="Horizontal" Margin="0,0,0,10">
                 <Label Content="Search:" VerticalAlignment="Center" Margin="0,0,5,0"/>
                 <TextBox x:Name="txtSearch" Width="150" Margin="0,0,10,0" 
-                         TextChanged="TxtSearch_TextChanged"
-                         Cursor="Pen" ToolTip="Start Entering For Dynamic Search"/>
+                        TextChanged="TxtSearch_TextChanged"
+                        Cursor="Pen" ToolTip="Start Entering For Dynamic Search"/>
                 <Label Content="Category:" VerticalAlignment="Center" Margin="0,0,5,0"/>
                 <ComboBox x:Name="cmbSearchCategory" Width="150" Margin="0,0,10,0" 
-                          SelectionChanged="CmbSearchCategory_SelectionChanged"
-                          Cursor="Hand" ToolTip="Choose Category"/>
+                         SelectionChanged="CmbSearchCategory_SelectionChanged"
+                         Cursor="Hand" ToolTip="Choose Category"/>
             </StackPanel>
 
             <!-- DataGrid -->
             <DataGrid x:Name="dgvItems" 
-                      Grid.Row="1" 
-                      AutoGenerateColumns="False" 
-                      IsReadOnly="True"
-                      SelectionMode="Single"
-                      SelectionChanged="DgInventory_SelectionChanged"
-                      Margin="0,5,0,0">
+                     Grid.Row="1" 
+                     AutoGenerateColumns="False" 
+                     IsReadOnly="True"
+                     SelectionMode="Single"
+                     SelectionChanged="DgInventory_SelectionChanged"
+                     Margin="0,5,0,0">
                 <DataGrid.Columns>
                     <DataGridTextColumn Header="ID" Binding="{Binding ItemId}" Width="50">
                         <DataGridTextColumn.ElementStyle>

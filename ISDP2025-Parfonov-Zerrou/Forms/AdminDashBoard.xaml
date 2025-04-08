@@ -247,7 +247,16 @@
                         </StackPanel>
                     </Button>
 
-                    <!-- Suppliers Button -->
+                            <!-- Loss/Return Button -->
+                            <Button x:Name="btnLossReturn" Tag="LossReturnPage" Height="41" Margin="0,9" 
+                                Style="{StaticResource SidebarButtonStyle}" Click="btnLossReturn_Click">
+                                <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                                    <Label Style="{StaticResource SidebarLabelStyle}" Content="&#xF793;" Padding="9,5,0,5" Margin="10,0,10,0" Width="34" />
+                                    <TextBlock Text="Loss/Return" VerticalAlignment="Center" />
+                                </StackPanel>
+                            </Button>
+
+                            <!-- Suppliers Button -->
                     <Button x:Name="btnSuppliers" Tag="SuppliersPage" Height="41" Margin="0,9" 
                             Style="{StaticResource SidebarButtonStyle}" Click="btnSuppliers_Click">
                         <StackPanel Orientation="Horizontal" VerticalAlignment="Center">

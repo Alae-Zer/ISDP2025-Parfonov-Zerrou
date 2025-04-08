@@ -1,0 +1,83 @@
+﻿<Window x:Class="ISDP2025_Parfonov_Zerrou.Forms.AdminUserControls.ItemDetailsPopup"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:hc="https://handyorg.github.io/handycontrol"
+        Title="Item Details" 
+        Height="550" Width="700"
+        WindowStartupLocation="CenterScreen">
+    <Grid Margin="15">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <TextBlock Text="Item Details" 
+                   FontSize="20" 
+                   FontWeight="Bold" 
+                   Margin="0,0,0,10"/>
+
+        <Grid Grid.Row="1">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="250"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+
+            <!-- Left side - Image -->
+            <Border BorderBrush="#DDD" 
+                    BorderThickness="1" 
+                    Margin="0,0,15,0">
+                <Image x:Name="itemImage" 
+                       Stretch="Uniform" 
+                       Margin="5"/>
+            </Border>
+
+            <!-- Right side - Item Information -->
+            <Grid Grid.Column="1">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="*"/>
+                </Grid.RowDefinitions>
+
+                <!-- Column 1 -->
+                <hc:TextBox Grid.Row="0" Grid.Column="0" Margin="3" hc:TitleElement.Title="Item ID" x:Name="txtItemId" IsReadOnly="True"/>
+                <hc:TextBox Grid.Row="1" Grid.Column="0" Margin="3" hc:TitleElement.Title="Name" x:Name="txtName" IsReadOnly="True"/>
+                <hc:TextBox Grid.Row="2" Grid.Column="0" Margin="3" hc:TitleElement.Title="SKU" x:Name="txtSku" IsReadOnly="True"/>
+                <hc:TextBox Grid.Row="3" Grid.Column="0" Margin="3" hc:TitleElement.Title="Category" x:Name="txtCategory" IsReadOnly="True"/>
+                <hc:TextBox Grid.Row="4" Grid.Column="0" Margin="3" hc:TitleElement.Title="Supplier" x:Name="txtSupplier" IsReadOnly="True"/>
+
+                <!-- Column 2 -->
+                <hc:TextBox Grid.Row="0" Grid.Column="1" Margin="3" hc:TitleElement.Title="Weight" x:Name="txtWeight" IsReadOnly="True"/>
+                <hc:TextBox Grid.Row="1" Grid.Column="1" Margin="3" hc:TitleElement.Title="Case Size" x:Name="txtCaseSize" IsReadOnly="True"/>
+                <hc:TextBox Grid.Row="2" Grid.Column="1" Margin="3" hc:TitleElement.Title="Cost Price" x:Name="txtCostPrice" IsReadOnly="True"/>
+                <hc:TextBox Grid.Row="3" Grid.Column="1" Margin="3" hc:TitleElement.Title="Retail Price" x:Name="txtRetailPrice" IsReadOnly="True"/>
+
+                <!-- Description spans both columns -->
+                <hc:TextBox Grid.Row="6" Grid.Column="0" Grid.ColumnSpan="2" Margin="3" 
+                          hc:TitleElement.Title="Description" 
+                          x:Name="txtDescription" 
+                          IsReadOnly="True" 
+                          TextWrapping="Wrap"
+                          AcceptsReturn="True"
+                          Height="100"/>
+            </Grid>
+        </Grid>
+
+        <Button Grid.Row="2" 
+                Content="Close" 
+                Style="{StaticResource ButtonPrimary}" 
+                Width="100" 
+                HorizontalAlignment="Right" 
+                Margin="0,10,0,0" 
+                Click="CloseButton_Click"/>
+    </Grid>
+</Window>

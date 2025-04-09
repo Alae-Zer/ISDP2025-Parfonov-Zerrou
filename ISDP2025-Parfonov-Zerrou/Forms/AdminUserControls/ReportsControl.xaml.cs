@@ -107,8 +107,6 @@ namespace ISDP2025_Parfonov_Zerrou.Forms.AdminUserControls
             {
                 var reportType = cmbReportType.SelectedValue.ToString();
 
-                // Hide all dynamic parameter panels first
-                dayOfWeekPanel.Visibility = Visibility.Collapsed;
                 rolePanel.Visibility = Visibility.Collapsed;
                 supplierPanel.Visibility = Visibility.Collapsed;
                 orderIdPanel.Visibility = Visibility.Collapsed;
@@ -128,13 +126,6 @@ namespace ISDP2025_Parfonov_Zerrou.Forms.AdminUserControls
                 // Show specific parameters based on report type
                 switch (reportType)
                 {
-                    case "Delivery":
-                        dayOfWeekPanel.Visibility = Visibility.Visible;
-                        // Make sure default is selected
-                        if (cmbDayOfWeek.SelectedIndex < 0)
-                            cmbDayOfWeek.SelectedIndex = 0;
-                        break;
-
                     case "Users":
                         rolePanel.Visibility = Visibility.Visible;
                         // Populate roles if not already done
@@ -229,9 +220,7 @@ namespace ISDP2025_Parfonov_Zerrou.Forms.AdminUserControls
                 switch (reportType)
                 {
                     case "Delivery":
-                        string dayOfWeek = cmbDayOfWeek.SelectedItem.ToString();
-                        if (dayOfWeek == "All Days") dayOfWeek = null;
-                        UpdateUI(reports.GenerateDeliveryReport(startDate, endDate, siteId, dayOfWeek));
+                        UpdateUI(reports.GenerateDeliveryReport(startDate, endDate, siteId));
                         break;
 
                     case "Store Order":

@@ -11,7 +11,7 @@ namespace ISDP2025_Parfonov_Zerrou.Reports
             context = bestContext;
         }
 
-        public object GenerateDeliveryReport(DateTime? startDate, DateTime? endDate, int? siteId, string dayOfWeek = null)
+        public object GenerateDeliveryReport(DateTime? startDate, DateTime? endDate, int? siteId)
         {
             var query = context.Deliveries
                 .Include(d => d.Txns)
@@ -20,14 +20,12 @@ namespace ISDP2025_Parfonov_Zerrou.Reports
                 .Where(d =>
                     (!startDate.HasValue || d.DeliveryDate >= startDate.Value) &&
                     (!endDate.HasValue || d.DeliveryDate <= endDate.Value) &&
-                    (!siteId.HasValue || d.Txns.Any(t => t.SiteIdto == siteId.Value)) &&
-                    (string.IsNullOrEmpty(dayOfWeek) || d.DeliveryDate.DayOfWeek.ToString() == dayOfWeek)
+                    (!siteId.HasValue || d.Txns.Any(t => t.SiteIdto == siteId.Value))
                 )
                 .Select(d => new
                 {
                     DeliveryId = d.DeliveryId,
                     DeliveryDate = d.DeliveryDate,
-                    DayOfWeek = d.DeliveryDate.DayOfWeek.ToString(),
                     SiteName = d.Txns.FirstOrDefault().SiteIdtoNavigation.SiteName,
                     SiteAddress = d.Txns.FirstOrDefault().SiteIdtoNavigation.Address + ", " +
                                   d.Txns.FirstOrDefault().SiteIdtoNavigation.City,

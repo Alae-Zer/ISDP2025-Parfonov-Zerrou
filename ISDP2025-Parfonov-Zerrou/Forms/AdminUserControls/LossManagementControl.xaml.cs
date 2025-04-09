@@ -2,6 +2,7 @@
 using HandyControl.Data;
 using ISDP2025_Parfonov_Zerrou.Functionality;
 using ISDP2025_Parfonov_Zerrou.Models;
+using Microsoft.EntityFrameworkCore;
 using System.Windows;
 using System.Windows.Controls;
 
@@ -13,65 +14,71 @@ namespace ISDP2025_Parfonov_Zerrou.Forms.InventoryControls
         List<InventoryViewModel> inventoryItems;
         int[] notStores = { 1, 3, 9999, 10000 };
         private string currentAdjustmentType = "Loss";
+        string perm;
 
         public InventoryAdjustmentControl(Employee employee, string permission)
         {
             InitializeComponent();
             currentUser = employee;
             btnSubmit.IsEnabled = false;
+            perm = permission;
+        }
 
-            // Simple permission check - admin can select stores, others can't
-            if (permission == "Administrator")
+        private void SetUserStore()
+        {
+            try
             {
-                cboStores.IsEnabled = true;
-            }
-            else
-            {
-                cboStores.IsEnabled = false;
-            }
+                using (var context = new BestContext())
+                {
+                    // Get the user's site
+                    var userSite = context.Sites
+                        .FirstOrDefault(s => s.SiteId == currentUser.SiteId);
 
-            PopulateStoresComboBox();
+                    if (userSite != null)
+                    {
+                        // Create a list with just the user's site
+                        List<Site> userSiteList = new List<Site> { userSite };
+                        cboStores.ItemsSource = userSiteList;
+                        cboStores.DisplayMemberPath = "SiteName";
+                        cboStores.SelectedValuePath = "SiteId";
+                        cboStores.SelectedIndex = 0;
+                    }
+                }
+
+                LoadInventoryData();
+            }
+            catch (Exception ex)
+            {
+                HandyControl.Controls.MessageBox.Show($"Error loading store: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
         }
 
         private void PopulateStoresComboBox()
         {
             try
             {
-                List<Site> allSites = new List<Site>();
-
                 using (var context = new BestContext())
                 {
-                    // Add "All Stores" option for admins
-                    allSites.Add(new Site { SiteId = 0, SiteName = "All Stores" });
-
-                    // Add all active stores
+                    // Get all valid store sites (excluding non-stores)
                     var sites = context.Sites
                         .Where(s => s.Active == 1 && !notStores.Contains(s.SiteId))
                         .OrderBy(s => s.SiteName)
-                        .Select(s => new Site { SiteId = s.SiteId, SiteName = s.SiteName })
                         .ToList();
 
-                    allSites.AddRange(sites);
-                }
+                    cboStores.ItemsSource = sites;
+                    cboStores.DisplayMemberPath = "SiteName";
+                    cboStores.SelectedValuePath = "SiteId";
 
-                cboStores.ItemsSource = allSites;
-                cboStores.DisplayMemberPath = "SiteName";
-                cboStores.SelectedValuePath = "SiteId";
-
-                // For non-admins, select their site
-                if (!cboStores.IsEnabled)
-                {
-                    // Find user's site in the list
-                    var userSite = allSites.FirstOrDefault(s => s.SiteId == currentUser.SiteId);
+                    // Default to the current user's site
+                    var userSite = sites.FirstOrDefault(s => s.SiteId == currentUser.SiteId);
                     if (userSite != null)
                     {
                         cboStores.SelectedValue = userSite.SiteId;
                     }
-                }
-                else
-                {
-                    // For admins, select "All Stores" by default
-                    cboStores.SelectedIndex = 0;
+                    else if (sites.Count > 0)
+                    {
+                        cboStores.SelectedIndex = 0;
+                    }
                 }
 
                 LoadInventoryData();
@@ -86,51 +93,50 @@ namespace ISDP2025_Parfonov_Zerrou.Forms.InventoryControls
         {
             try
             {
-                int selectedSiteId = 0;
-                if (cboStores.SelectedItem is Site selectedSite)
-                {
-                    selectedSiteId = selectedSite.SiteId;
-                }
+                if (cboStores.SelectedValue == null)
+                    return;
+
+                int siteId = (int)cboStores.SelectedValue;
 
                 using (var context = new BestContext())
                 {
-                    IQueryable<InventoryViewModel> query;
-
                     if (currentAdjustmentType == "Return")
                     {
-                        // For returns, show all items regardless of inventory
-                        query = from i in context.Items
-                                join inv in context.Inventories
-                                    on new { ItemId = i.ItemId, SiteId = selectedSiteId == 0 ? currentUser.SiteId : selectedSiteId }
-                                    equals new { ItemId = inv.ItemId, SiteId = inv.SiteId } into invJoin
-                                from inventory in invJoin.DefaultIfEmpty()
-                                where i.Active == 1
-                                select new InventoryViewModel
-                                {
-                                    ItemId = i.ItemId,
-                                    Name = i.Name,
-                                    CurrentStock = inventory != null ? inventory.Quantity : 0,
-                                    SiteId = selectedSiteId == 0 ? currentUser.SiteId : selectedSiteId
-                                };
+                        // For returns, show all active items regardless of inventory level
+                        var items = context.Inventories
+                            .Include(inv => inv.Item)
+                            .Where(inv => inv.SiteId == siteId && inv.Item.Active == 1)
+                            .Select(inv => new InventoryViewModel
+                            {
+                                ItemId = inv.ItemId,
+                                Name = inv.Item.Name,
+                                CurrentStock = inv.Quantity,
+                                SiteId = siteId
+                            })
+                            .OrderBy(i => i.Name)
+                            .ToList();
+
+                        inventoryItems = items;
                     }
                     else
                     {
-                        // For loss/damage, only show items with inventory
-                        query = from inv in context.Inventories
-                                join i in context.Items on inv.ItemId equals i.ItemId
-                                where (selectedSiteId == 0 || inv.SiteId == selectedSiteId)
-                                      && inv.Quantity > 0
-                                      && i.Active == 1
-                                select new InventoryViewModel
-                                {
-                                    ItemId = inv.ItemId,
-                                    Name = i.Name,
-                                    CurrentStock = inv.Quantity,
-                                    SiteId = inv.SiteId
-                                };
+                        // For loss/damage, only show items with positive inventory
+                        var items = context.Inventories
+                            .Include(inv => inv.Item)
+                            .Where(inv => inv.SiteId == siteId && inv.Quantity > 0 && inv.Item.Active == 1)
+                            .Select(inv => new InventoryViewModel
+                            {
+                                ItemId = inv.ItemId,
+                                Name = inv.Item.Name,
+                                CurrentStock = inv.Quantity,
+                                SiteId = siteId
+                            })
+                            .OrderBy(i => i.Name)
+                            .ToList();
+
+                        inventoryItems = items;
                     }
 
-                    inventoryItems = query.ToList();
                     dgvInventoryItems.ItemsSource = inventoryItems;
                 }
             }
@@ -149,31 +155,46 @@ namespace ISDP2025_Parfonov_Zerrou.Forms.InventoryControls
             else if (rbReturn.IsChecked == true)
                 currentAdjustmentType = "Return";
 
-            LoadInventoryData();
-            UpdateFormBasedOnType();
-        }
+            // Check if the UI elements are initialized before accessing them
+            if (txtSelectedItem != null)
+            {
+                txtSelectedItem.Text = "No item selected";
+            }
 
-        private void UpdateFormBasedOnType()
-        {
-            // Clear selection when changing type
-            dgvInventoryItems.SelectedItem = null;
-            txtSelectedItem.Text = "No item selected";
+            if (numQuantity != null)
+            {
+                numQuantity.Value = 1;
+            }
 
-            // Reset form
-            numQuantity.Value = 1;
-            txtNotes.Text = string.Empty;
-            btnSubmit.IsEnabled = false;
+            if (txtNotes != null)
+            {
+                txtNotes.Text = string.Empty;
+            }
+
+            if (btnSubmit != null)
+            {
+                btnSubmit.IsEnabled = false;
+            }
 
             // Update UI based on type
-            if (currentAdjustmentType == "Return")
+            if (currentAdjustmentType == "Return" && chkGoodCondition != null)
             {
                 chkGoodCondition.Visibility = Visibility.Visible;
                 chkGoodCondition.IsChecked = true;
             }
-            else
+            else if (chkGoodCondition != null)
             {
                 chkGoodCondition.Visibility = Visibility.Collapsed;
                 chkGoodCondition.IsChecked = false;
+            }
+
+            // Then load new data (this will reset the grid)
+            LoadInventoryData();
+
+            // After loading data, ensure nothing is selected
+            if (dgvInventoryItems != null && dgvInventoryItems.Items != null)
+            {
+                dgvInventoryItems.UnselectAll();
             }
         }
 
@@ -184,7 +205,18 @@ namespace ISDP2025_Parfonov_Zerrou.Forms.InventoryControls
 
         private void btnRefresh_Click(object sender, RoutedEventArgs e)
         {
-            LoadInventoryData();
+            // Only admins can select different stores
+            if (perm == "Administrator")
+            {
+                cboStores.IsEnabled = true;
+                PopulateStoresComboBox();
+            }
+            else
+            {
+                // Non-admins can only work with their locations
+                cboStores.IsEnabled = false;
+                SetUserStore();
+            }
         }
 
         private void txtSearch_TextChanged(object sender, TextChangedEventArgs e)
@@ -236,10 +268,20 @@ namespace ISDP2025_Parfonov_Zerrou.Forms.InventoryControls
             {
                 int quantity = (int)numQuantity.Value;
 
-                // Validate for returns
-                if (currentAdjustmentType == "Return" && !(chkGoodCondition.IsChecked == true))
+                // Get the transaction type based on selected radio button
+                string txnType;
+                if (rbLoss.IsChecked == true)
+                    txnType = "Loss";
+                else if (rbDamage.IsChecked == true)
+                    txnType = "Damage";
+                else if (rbReturn.IsChecked == true)
+                    txnType = "Return";
+                else
+                    return; // No valid selection
+
+                // Handle returns in bad condition
+                if (txnType == "Return" && !(chkGoodCondition.IsChecked == true))
                 {
-                    // For returns in bad condition, prompt to create a loss instead
                     var result = HandyControl.Controls.MessageBox.Show(
                         "Item is not in good condition for resale. Would you like to create a LOSS record instead?",
                         "Item Condition",
@@ -247,15 +289,9 @@ namespace ISDP2025_Parfonov_Zerrou.Forms.InventoryControls
                         MessageBoxImage.Question);
 
                     if (result == MessageBoxResult.Yes)
-                    {
-                        // Create a loss record instead
-                        currentAdjustmentType = "Loss";
-                        rbLoss.IsChecked = true;
-                    }
+                        txnType = "Loss";
                     else
-                    {
-                        return; // User cancelled
-                    }
+                        return;
                 }
 
                 using (var context = new BestContext())
@@ -264,147 +300,80 @@ namespace ISDP2025_Parfonov_Zerrou.Forms.InventoryControls
                     var txn = new Txn
                     {
                         EmployeeId = currentUser.EmployeeID,
-                        TxnType = currentAdjustmentType,
+                        SiteIdto = selectedItem.SiteId,
+                        SiteIdfrom = selectedItem.SiteId,
                         TxnStatus = "COMPLETE",
                         ShipDate = DateTime.Now,
-                        BarCode = GenerateBarcode(),
+                        TxnType = txnType,
+                        BarCode = $"{txnType}-{DateTime.Now:yyyyMMddHHmmss}",
                         CreatedDate = DateTime.Now,
-                        Notes = txtNotes.Text,
+                        Notes = txtNotes.Text
                     };
-
-                    // Set source/destination based on adjustment type
-                    if (currentAdjustmentType == "Return")
-                    {
-                        // For return, we're adding to the store's inventory
-                        txn.SiteIdto = selectedItem.SiteId;
-                        txn.SiteIdfrom = 10000; // System source for a return
-                    }
-                    else // Loss or Damage
-                    {
-                        // For loss/damage, we're removing from the store's inventory
-                        txn.SiteIdfrom = selectedItem.SiteId;
-                        txn.SiteIdto = 10000; // Disposed to system
-                    }
 
                     context.Txns.Add(txn);
                     context.SaveChanges();
 
-                    // Create transaction item
+                    // Create transaction item record
                     var txnItem = new Txnitem
                     {
                         TxnId = txn.TxnId,
                         ItemId = selectedItem.ItemId,
-                        Quantity = quantity
+                        Quantity = quantity,
+                        Notes = txtNotes.Text
                     };
 
                     context.Txnitems.Add(txnItem);
-                    context.SaveChanges();
-
-                    bool success = false;
 
                     // Update inventory
-                    if (currentAdjustmentType == "Loss" || currentAdjustmentType == "Damage")
-                    {
-                        // For loss/damage, decrement inventory
-                        var inventory = context.Inventories.FirstOrDefault(i =>
-                            i.ItemId == selectedItem.ItemId && i.SiteId == selectedItem.SiteId);
+                    var inventory = context.Inventories
+                        .FirstOrDefault(i => i.ItemId == selectedItem.ItemId && i.SiteId == selectedItem.SiteId);
 
-                        if (inventory != null)
-                        {
+                    if (inventory != null)
+                    {
+                        // Update quantity based on transaction type
+                        if (txnType == "Loss" || txnType == "Damage")
                             inventory.Quantity -= quantity;
-                            success = true;
-                        }
-                    }
-                    else // Return
-                    {
-                        // For return, increment inventory
-                        var inventory = context.Inventories.FirstOrDefault(i =>
-                            i.ItemId == selectedItem.ItemId && i.SiteId == selectedItem.SiteId);
-
-                        if (inventory != null)
-                        {
+                        else if (txnType == "Return")
                             inventory.Quantity += quantity;
-                            success = true;
-                        }
-                        else
-                        {
-                            // Create new inventory entry if one doesn't exist
-                            var newInventory = new Inventory
-                            {
-                                ItemId = selectedItem.ItemId,
-                                SiteId = selectedItem.SiteId,
-                                ItemLocation = "Stock",
-                                Quantity = quantity,
-                                OptimumThreshold = 5,
-                                ReorderThreshold = 2
-                            };
-                            context.Inventories.Add(newInventory);
-                            success = true;
-                        }
-                    }
 
-                    if (success)
-                    {
                         context.SaveChanges();
-                    }
-                    else
-                    {
-                        HandyControl.Controls.MessageBox.Show("Failed to update inventory", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
-                        return;
-                    }
 
-                    // Create audit trail
-                    string auditMessage = "";
-                    if (currentAdjustmentType == "Return")
-                    {
-                        auditMessage = $"Processed return of {quantity} units of {selectedItem.Name}";
+                        // Create audit record
+                        AuditTransactions.LogActivity(
+                            currentUser,
+                            txn.TxnId,
+                            txnType,
+                            "COMPLETE",
+                            selectedItem.SiteId,
+                            null,
+                            $"{(txnType == "Return" ? "Processed return" : "Recorded")} of {quantity} units of {selectedItem.Name}. Reason: {txtNotes.Text}"
+                        );
+
+                        Growl.Success(new GrowlInfo
+                        {
+                            Message = $"{txnType} recorded successfully",
+                            ShowDateTime = false,
+                            WaitTime = 3
+                        });
+
+                        // Reset form
+                        txtSelectedItem.Text = "No item selected";
+                        numQuantity.Value = 1;
+                        txtNotes.Text = string.Empty;
+                        btnSubmit.IsEnabled = false;
+                        dgvInventoryItems.SelectedItem = null;
+                        LoadInventoryData();
                     }
-                    else
-                    {
-                        auditMessage = $"Recorded {quantity} units of {selectedItem.Name} as {currentAdjustmentType}";
-                    }
-
-                    AuditTransactions.LogActivity(
-                        currentUser,
-                        txn.TxnId,
-                        currentAdjustmentType,
-                        "COMPLETE",
-                        selectedItem.SiteId,
-                        null,
-                        auditMessage
-                    );
-
-                    Growl.Success(new GrowlInfo
-                    {
-                        Message = $"{currentAdjustmentType} record created successfully",
-                        ShowDateTime = false,
-                        WaitTime = 3
-                    });
-
-                    // Reset form and refresh data
-                    txtSelectedItem.Text = "No item selected";
-                    numQuantity.Value = 1;
-                    txtNotes.Text = string.Empty;
-                    btnSubmit.IsEnabled = false;
-                    dgvInventoryItems.SelectedItem = null;
-                    chkGoodCondition.IsChecked = true;
-                    LoadInventoryData();
                 }
             }
             catch (Exception ex)
             {
-                HandyControl.Controls.MessageBox.Show($"Error creating record: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                HandyControl.Controls.MessageBox.Show(
+                    $"Error creating record: {ex.Message}",
+                    "Error",
+                    MessageBoxButton.OK,
+                    MessageBoxImage.Error);
             }
-        }
-
-        private string GenerateBarcode()
-        {
-            // Generate a unique barcode format: [TYPE]-[DATE/TIME]-[RANDOM]
-            string type = currentAdjustmentType.Substring(0, 1).ToUpper(); // L, D, or R
-            string datetime = DateTime.Now.ToString("yyyyMMddHHmmss");
-            string random = new Random().Next(1000, 9999).ToString();
-
-            return $"{type}{datetime}{random}";
         }
     }
 

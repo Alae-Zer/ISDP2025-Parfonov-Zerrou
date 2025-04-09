@@ -1,6 +1,7 @@
 ﻿using ISDP2025_Parfonov_Zerrou.Forms.AdminUserControls;
 using ISDP2025_Parfonov_Zerrou.Forms.FloorGuyUserControl;
 using ISDP2025_Parfonov_Zerrou.Forms.ForemanUserControls;
+using ISDP2025_Parfonov_Zerrou.Forms.InventoryControls;
 using ISDP2025_Parfonov_Zerrou.Forms.UserControls;
 using ISDP2025_Parfonov_Zerrou.Functionality;
 using ISDP2025_Parfonov_Zerrou.Models;
@@ -115,6 +116,11 @@ namespace ISDP2025_Parfonov_Zerrou
         private void btnSuppliers_Click(object sender, RoutedEventArgs e)
         {
             MainContent.Content = new ForemanSupplierControl(employee);
+        }
+
+        private void btnLossReturn_Click(object sender, RoutedEventArgs e)
+        {
+            MainContent.Content = new InventoryAdjustmentControl(employee, " ");
         }
     }
 }

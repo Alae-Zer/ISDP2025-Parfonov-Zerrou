@@ -177,7 +177,16 @@
                         </StackPanel>
                     </Button>
 
-                    <Button x:Name="btnReorderThresholds" Tag="ReorderThresholdsPage" Height="41" Margin="0,9" 
+                            <Button x:Name="btnLossReturn" Tag="LossReturnPage" Height="41" Margin="0,9" 
+Style="{StaticResource SidebarButtonStyle}" Click="btnLossReturn_Click">
+                                <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                                    <Label Style="{StaticResource SidebarLabelStyle}" Content="&#xF793;" Padding="9,5,0,5" Margin="10,0,10,0" Width="34" />
+                                    <TextBlock Text="Loss/Return" VerticalAlignment="Center" />
+                                </StackPanel>
+                            </Button>
+
+
+                            <Button x:Name="btnReorderThresholds" Tag="ReorderThresholdsPage" Height="41" Margin="0,9" 
                             Style="{StaticResource SidebarButtonStyle}" Click="btnReorderThresholds_Click">
                         <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
                             <Label Style="{StaticResource SidebarLabelStyle}" Content="&#xF201;" Padding="6,5,3,5" Margin="10,0,9,0" />

@@ -227,7 +227,14 @@ Style="{StaticResource SidebarButtonStyle}" Click="btnLossReturn_Click">
                             <TextBlock Text="Orders" VerticalAlignment="Center" />
                         </StackPanel>
                     </Button>
-                </StackPanel>
+                    <Button x:Name="btnReports" Tag="reports" Height="41" Margin="0,9" 
+                        Style="{StaticResource SidebarButtonStyle}" Click="btnReports_Click">
+                        <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                            <Label Style="{StaticResource SidebarLabelStyle}" Content="&#xf56c;" Padding="9,5,0,5" Margin="10,0,10,0" Width="34" />
+                            <TextBlock Text="reports" VerticalAlignment="Center" />
+                        </StackPanel>
+                    </Button>
+                        </StackPanel>
                     </ScrollViewer>
                     <TextBlock x:Name="scrollIndicator" Text="▼ More options" Foreground="#AAA" 
 FontSize="10" HorizontalAlignment="Center" VerticalAlignment="Bottom" 

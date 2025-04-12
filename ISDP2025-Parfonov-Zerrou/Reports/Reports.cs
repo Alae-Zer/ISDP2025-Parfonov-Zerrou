@@ -11,27 +11,29 @@ namespace ISDP2025_Parfonov_Zerrou.Reports
             context = bestContext;
         }
 
-        public object GenerateDeliveryReport(DateTime? startDate, DateTime? endDate, int? siteId)
+        public object GenerateDeliveryReport(DateTime? startDate, DateTime? endDate, int? siteId, DayOfWeek dayOfWeek)
         {
+            // Basic query without day of week filtering
             var query = context.Deliveries
                 .Include(d => d.Txns)
-                    .ThenInclude(t => t.SiteIdtoNavigation)
-                .Include(d => d.VehicleTypeNavigation)
                 .Where(d =>
                     (!startDate.HasValue || d.DeliveryDate >= startDate.Value) &&
                     (!endDate.HasValue || d.DeliveryDate <= endDate.Value) &&
-                    (!siteId.HasValue || d.Txns.Any(t => t.SiteIdto == siteId.Value))
+                    (!siteId.HasValue || d.Txns.Any(t => t.SiteIdto == siteId.Value)) &&
+                    (dayOfWeek == DayOfWeek.Sunday || d.DeliveryDate.DayOfWeek == dayOfWeek)
                 )
-                .Select(d => new
+                .ToList() // Execute the query to get the results
+                .Select(d => new // Process the results locally
                 {
-                    DeliveryId = d.DeliveryId,
-                    DeliveryDate = d.DeliveryDate,
-                    SiteName = d.Txns.FirstOrDefault().SiteIdtoNavigation.SiteName,
-                    SiteAddress = d.Txns.FirstOrDefault().SiteIdtoNavigation.Address + ", " +
-                                  d.Txns.FirstOrDefault().SiteIdtoNavigation.City,
-                    Distance = d.Txns.FirstOrDefault().SiteIdtoNavigation.DistanceFromWh,
+                    D_Id = d.DeliveryId,
+                    D_Date = d.DeliveryDate,
+                    DayOfWeek = d.DeliveryDate.DayOfWeek.ToString(),
+                    Site_Name = d.Txns.FirstOrDefault()?.SiteIdtoNavigation.SiteName ?? "Unknown",
+                    Address = d.Txns.FirstOrDefault()?.SiteIdtoNavigation.Address + ", " +
+                     d.Txns.FirstOrDefault()?.SiteIdtoNavigation.City ?? "Unknown",
+                    Distance = d.Txns.FirstOrDefault()?.SiteIdtoNavigation.DistanceFromWh ?? 0,
                     VehicleType = d.VehicleType,
-                    DistanceCost = d.DistanceCost,
+                    Cost = d.DistanceCost,
                     MaxWeight = d.VehicleTypeNavigation.MaxWeight,
                     Notes = d.Notes
                 });
@@ -42,9 +44,6 @@ namespace ISDP2025_Parfonov_Zerrou.Reports
         public object GenerateStoreOrderReport(DateTime? startDate, DateTime? endDate, int? siteId)
         {
             var query = context.Txns
-                .Include(t => t.SiteIdfromNavigation)
-                .Include(t => t.SiteIdtoNavigation)
-                .Include(t => t.Employee)
                 .Where(t => t.TxnType == "Store Order" &&
                       (!startDate.HasValue || t.CreatedDate >= startDate.Value) &&
                       (!endDate.HasValue || t.CreatedDate <= endDate.Value) &&
@@ -64,38 +63,33 @@ namespace ISDP2025_Parfonov_Zerrou.Reports
             return query.ToList();
         }
 
+        // show the items not just the list
         public object GenerateStoreOrderDetailReport(int orderId)
         {
-            var query = context.Txns
-                .Include(t => t.SiteIdfromNavigation)
-                .Include(t => t.SiteIdtoNavigation)
-                .Include(t => t.Employee)
-                .Include(t => t.Txnitems)
-                    .ThenInclude(ti => ti.Item)
-                .Where(t => t.TxnId == orderId)
-                .Select(t => new
-                {
-                    OrderId = t.TxnId,
-                    OrderType = t.TxnType,
-                    CreatedDate = t.CreatedDate,
-                    ShipDate = t.ShipDate,
-                    Status = t.TxnStatus,
-                    FromSite = t.SiteIdfromNavigation.SiteName,
-                    ToSite = t.SiteIdtoNavigation.SiteName,
-                    CreatedBy = t.Employee.FirstName + " " + t.Employee.LastName,
-                    Notes = t.Notes,
-                    Items = t.Txnitems.Select(i => new
-                    {
-                        ItemId = i.ItemId,
-                        Name = i.Item.Name,
-                        Quantity = i.Quantity,
-                        CaseSize = i.Item.CaseSize,
-                        Price = i.Item.RetailPrice,
-                        Total = i.Quantity * i.Item.RetailPrice
-                    }).ToList()
-                });
+            var order = context.Txns
+            .FirstOrDefault(t => t.TxnId == orderId);
 
-            return query.ToList();
+            if (order != null)
+            {
+                // Extract just the items with the properties you want to display
+                var items = order.Txnitems.Select(i => new
+                {
+                    ItemId = i.ItemId,
+                    Name = i.Item.Name,
+                    Quantity = i.Quantity,
+                    CaseSize = i.Item.CaseSize,
+                    Price = i.Item.RetailPrice,
+                    Total = i.Quantity * i.Item.RetailPrice,
+                    Weight = i.Item.Weight,
+                    TotalWeight = Math.Round(i.Quantity * i.Item.Weight, 2)
+                }).ToList();
+
+                return items;
+            }
+            else
+            {
+                return null;
+            }
         }
 
         public object GenerateInventoryReport(int? siteId)
@@ -105,7 +99,8 @@ namespace ISDP2025_Parfonov_Zerrou.Reports
                 .Include(i => i.Site)
                 .Where(i => (!siteId.HasValue || i.SiteId == siteId.Value) &&
                             i.Item.Active == 1)
-                .OrderBy(i => i.Site.SiteName)
+                .OrderBy(i => i.ItemId)
+                .ThenBy(i => i.Site.SiteName)
                 .ThenBy(i => i.Item.Name)
                 .Select(i => new
                 {
@@ -115,7 +110,7 @@ namespace ISDP2025_Parfonov_Zerrou.Reports
                     Quantity = i.Quantity,
                     ReorderThreshold = i.ReorderThreshold ?? 0,
                     OptimumThreshold = i.OptimumThreshold,
-                    BelowThreshold = i.Quantity < (i.ReorderThreshold ?? 0)
+                    BelowThreshold = (i.Quantity < i.ReorderThreshold) == true ? "Yes" : "No"
                 });
 
             return query.ToList();
@@ -124,9 +119,6 @@ namespace ISDP2025_Parfonov_Zerrou.Reports
         public object GenerateOrdersReport(DateTime? startDate, DateTime? endDate, int? siteId)
         {
             var query = context.Txns
-                .Include(t => t.SiteIdfromNavigation)
-                .Include(t => t.SiteIdtoNavigation)
-                .Include(t => t.Employee)
                 .Where(t => (!startDate.HasValue || t.CreatedDate >= startDate.Value) &&
                             (!endDate.HasValue || t.CreatedDate <= endDate.Value) &&
                             (!siteId.HasValue || t.SiteIdto == siteId.Value))
@@ -196,56 +188,10 @@ namespace ISDP2025_Parfonov_Zerrou.Reports
 
             return query.ToList();
         }
-        public object GenerateShippingReceiptReport(int txnId)
-        {
-            var query = context.Txns
-                .Include(t => t.SiteIdfromNavigation)
-                .Include(t => t.SiteIdtoNavigation)
-                .Include(t => t.Employee)
-                .Include(t => t.Txnitems)
-                    .ThenInclude(ti => ti.Item)
-                .Include(t => t.Delivery)
-                    .ThenInclude(d => d.VehicleTypeNavigation)
-                .Where(t => t.TxnId == txnId)
-                .Select(t => new
-                {
-                    OrderId = t.TxnId,
-                    BarCode = t.BarCode,
-                    ShipDate = t.ShipDate,
-                    VehicleType = t.Delivery.VehicleType,
-                    FromSite = t.SiteIdfromNavigation.SiteName,
-                    FromAddress = t.SiteIdfromNavigation.Address,
-                    FromCity = t.SiteIdfromNavigation.City,
-                    FromPostalCode = t.SiteIdfromNavigation.PostalCode,
-                    FromPhone = t.SiteIdfromNavigation.Phone,
-                    ToSite = t.SiteIdtoNavigation.SiteName,
-                    ToAddress = t.SiteIdtoNavigation.Address,
-                    ToCity = t.SiteIdtoNavigation.City,
-                    ToPostalCode = t.SiteIdtoNavigation.PostalCode,
-                    ToPhone = t.SiteIdtoNavigation.Phone,
-                    CreatedBy = t.Employee.FirstName + " " + t.Employee.LastName,
-                    EmergencyDelivery = t.EmergencyDelivery == 1 ? "Yes" : "No",
-                    Notes = t.Notes,
-                    Items = t.Txnitems.Select(i => new
-                    {
-                        ItemId = i.ItemId,
-                        Name = i.Item.Name,
-                        Quantity = i.Quantity,
-                        CaseSize = i.Item.CaseSize,
-                        Weight = i.Item.Weight,
-                        TotalWeight = i.Quantity * i.Item.Weight
-                    }).ToList()
-                });
-
-            return query.FirstOrDefault();
-        }
 
         public object GenerateBackordersReport(DateTime? startDate, DateTime? endDate, int? siteId)
         {
             var query = context.Txns
-                .Include(t => t.SiteIdfromNavigation)
-                .Include(t => t.SiteIdtoNavigation)
-                .Include(t => t.Employee)
                 .Where(t => t.TxnType == "Back Order" &&
                             (!startDate.HasValue || t.CreatedDate >= startDate.Value) &&
                             (!endDate.HasValue || t.CreatedDate <= endDate.Value) &&
@@ -265,35 +211,69 @@ namespace ISDP2025_Parfonov_Zerrou.Reports
             return query.ToList();
         }
 
-        public object GenerateSupplierOrderReport(int? siteId, string supplierName = null, bool usePageBreaks = false)
+        // Method to list all supplier orders
+        public object GenerateSupplierOrdersReport(DateTime? startDate, DateTime? endDate)
         {
-            var query = context.Items
-                .Include(i => i.Supplier)
-                .Include(i => i.Inventories)
-                .Where(i =>
-                    i.Active == 1 &&
-                    (string.IsNullOrEmpty(supplierName) || i.Supplier.Name == supplierName)
-                )
-                .OrderBy(i => i.Supplier.Name)
-                .ThenBy(i => i.Name)
-                .Select(i => new
+            var query = context.Txns
+                .Where(t => t.TxnType == "Supplier Order" &&
+                      (!startDate.HasValue || t.CreatedDate >= startDate.Value) &&
+                      (!endDate.HasValue || t.CreatedDate <= endDate.Value))
+                .Select(t => new
                 {
-                    ItemId = i.ItemId,
-                    SKU = i.Sku,
-                    Name = i.Name,
-                    Description = i.Description,
-                    CaseSize = i.CaseSize,
-                    Category = i.Category,
-                    CostPrice = i.CostPrice,
-                    RetailPrice = i.RetailPrice,
-                    Supplier = i.Supplier.Name,
-                    WarehouseStock = i.Inventories.FirstOrDefault(inv => inv.SiteId == 2).Quantity,
-                    ReorderThreshold = i.Inventories.FirstOrDefault(inv => inv.SiteId == 2).ReorderThreshold ?? 0,
-                    BelowThreshold = i.Inventories.FirstOrDefault(inv => inv.SiteId == 2).Quantity <
-                                    (i.Inventories.FirstOrDefault(inv => inv.SiteId == 2).ReorderThreshold ?? 0)
-                });
+                    OrderId = t.TxnId,
+                    CreatedDate = t.CreatedDate,
+                    ShipDate = t.ShipDate,
+                    Status = t.TxnStatus,
+                    CreatedBy = t.Employee.FirstName + " " + t.Employee.LastName,
+                    Notes = t.Notes,
+                    ItemCount = t.Txnitems.Count,
+                    TotalItems = t.Txnitems.Sum(i => i.Quantity),
+                    TotalValue = t.Txnitems.Sum(i => i.Quantity * i.Item.CostPrice)
+                })
+                .OrderByDescending(t => t.CreatedDate);
 
             return query.ToList();
+        }
+
+        // Method to show detailed items within a specific supplier order
+        public object GenerateSupplierOrderDetailReport(int orderId)
+        {
+            var order = context.Txns
+                .FirstOrDefault(t => t.TxnId == orderId && t.TxnType == "Supplier Order");
+
+            if (order != null)
+            {
+                // Get items in this order with supplier information
+                var items = context.Txnitems
+                    .Where(ti => ti.TxnId == orderId)
+                    .Include(ti => ti.Item)
+                    .ThenInclude(i => i.Supplier)
+                    .Select(i => new
+                    {
+                        ItemId = i.ItemId,
+                        SKU = i.Item.Sku,
+                        Name = i.Item.Name,
+                        Quantity = i.Quantity,
+                        CaseSize = i.Item.CaseSize,
+                        CasesOrdered = Math.Round((decimal)i.Quantity / i.Item.CaseSize, 2),
+                        CostPrice = i.Item.CostPrice,
+                        TotalCost = Math.Round(i.Quantity * i.Item.CostPrice, 2),
+                        SupplierId = i.Item.SupplierId,
+                        SupplierName = i.Item.Supplier.Name,
+                        Category = i.Item.Category,
+                        Notes = i.Notes
+                    })
+                    .OrderBy(i => i.SupplierName)
+                    .ThenBy(i => i.Name)
+                    .ToList();
+
+                // Return the items collection directly
+                return items;
+            }
+            else
+            {
+                return null;
+            }
         }
     }
 }

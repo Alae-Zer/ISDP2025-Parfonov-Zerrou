@@ -49,6 +49,21 @@
 
                     <!-- Parameters that change based on report type -->
                     <StackPanel x:Name="dynamicParametersPanel">
+                        <!-- Day of Week filter (for Delivery report) -->
+                        <StackPanel x:Name="dayOfWeekPanel" Visibility="Collapsed">
+                            <TextBlock Text="Filter by Day:" Margin="0,5,0,5"/>
+                            <hc:ComboBox x:Name="cmbDayOfWeek" Margin="0,0,0,10">
+                                <ComboBoxItem Content="All Days"/>
+                                <ComboBoxItem Content="Monday"/>
+                                <ComboBoxItem Content="Tuesday"/>
+                                <ComboBoxItem Content="Wednesday"/>
+                                <ComboBoxItem Content="Thursday"/>
+                                <ComboBoxItem Content="Friday"/>
+                                <ComboBoxItem Content="Saturday"/>
+                                <ComboBoxItem Content="Sunday"/>
+                            </hc:ComboBox>
+                        </StackPanel>
+
                         <!-- Role filter (for Users report) -->
                         <StackPanel x:Name="rolePanel" Visibility="Collapsed">
                             <TextBlock Text="Filter by Role:" Margin="0,5,0,5"/>

@@ -1,12 +1,15 @@
 ﻿using System.IO;
 using System.Windows;
 using System.Windows.Controls;
+using HandyControl.Controls;
+using HandyControl.Data;
 using ISDP2025_Parfonov_Zerrou.Models;
 using ISDP2025_Parfonov_Zerrou.Reports;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Win32;
 using MigraDoc.DocumentObjectModel;
 using MigraDoc.DocumentObjectModel.Shapes;
+using MigraDoc.DocumentObjectModel.Tables;
 using MigraDoc.Rendering;
 
 namespace ISDP2025_Parfonov_Zerrou.Forms.AdminUserControls
@@ -110,6 +113,7 @@ namespace ISDP2025_Parfonov_Zerrou.Forms.AdminUserControls
                 rolePanel.Visibility = Visibility.Collapsed;
                 supplierPanel.Visibility = Visibility.Collapsed;
                 orderIdPanel.Visibility = Visibility.Collapsed;
+                dayOfWeekPanel.Visibility = Visibility.Collapsed;
 
                 // Enable/disable site selection based on report type
                 cmbSite.IsEnabled = reportType != "Users";
@@ -119,6 +123,7 @@ namespace ISDP2025_Parfonov_Zerrou.Forms.AdminUserControls
                                      reportType == "Store Order" ||
                                      reportType == "Emergency Order" ||
                                      reportType == "Orders" ||
+                                     reportType == "Shipping" ||
                                      reportType == "Back Order";
 
                 chkUseDateRange.IsEnabled = needsDateRange;
@@ -126,6 +131,13 @@ namespace ISDP2025_Parfonov_Zerrou.Forms.AdminUserControls
                 // Show specific parameters based on report type
                 switch (reportType)
                 {
+                    case "Delivery":
+                        dayOfWeekPanel.Visibility = Visibility.Visible; // Show day of week selection
+                                                                        // Make sure default is selected
+                        if (cmbDayOfWeek.SelectedIndex < 0)
+                            cmbDayOfWeek.SelectedIndex = 0;
+                        break;
+
                     case "Users":
                         rolePanel.Visibility = Visibility.Visible;
                         // Populate roles if not already done
@@ -153,12 +165,13 @@ namespace ISDP2025_Parfonov_Zerrou.Forms.AdminUserControls
                                 cmbSupplier.Items.Add(supplier.Name);
                             }
                         }
+                        orderIdPanel.Visibility = Visibility.Visible;
                         // Select default
                         if (cmbSupplier.SelectedIndex < 0)
                             cmbSupplier.SelectedIndex = 0;
                         break;
 
-                    case "Shipping Receipt":
+                    case "Shipping":
                     case "Store Order":
                         orderIdPanel.Visibility = Visibility.Visible;
                         break;
@@ -220,9 +233,33 @@ namespace ISDP2025_Parfonov_Zerrou.Forms.AdminUserControls
                 switch (reportType)
                 {
                     case "Delivery":
-                        UpdateUI(reports.GenerateDeliveryReport(startDate, endDate, siteId));
+                        DayOfWeek dayOfWeek = DayOfWeek.Sunday;
+                        if (cmbDayOfWeek.SelectedIndex > 0) // Skip "All Days"
+                        {
+                            ComboBoxItem selectedItem = (ComboBoxItem)cmbDayOfWeek.SelectedItem;
+                            string value = selectedItem.Content.ToString();
+                            switch (value)
+                            {
+                                case "Monday":
+                                    dayOfWeek = DayOfWeek.Monday;
+                                    break;
+                                case "Tuesday":
+                                    dayOfWeek = DayOfWeek.Tuesday;
+                                    break;
+                                case "Wednesday":
+                                    dayOfWeek = DayOfWeek.Wednesday;
+                                    break;
+                                case "Thursday":
+                                    dayOfWeek = DayOfWeek.Thursday;
+                                    break;
+                                case "Friday":
+                                    dayOfWeek = DayOfWeek.Friday;
+                                    break;
+                            }
+                        }
+                        UpdateUI(reports.GenerateDeliveryReport(startDate, endDate, siteId, dayOfWeek));
                         break;
-
+                    case "Shipping":
                     case "Store Order":
                         if (!string.IsNullOrWhiteSpace(txtOrderId.Text) && int.TryParse(txtOrderId.Text, out int orderId))
                         {
@@ -233,20 +270,6 @@ namespace ISDP2025_Parfonov_Zerrou.Forms.AdminUserControls
                         {
                             // Show list of orders
                             UpdateUI(reports.GenerateStoreOrderReport(startDate, endDate, siteId));
-                        }
-                        break;
-
-                    case "Shipping Receipt":
-                        if (!string.IsNullOrWhiteSpace(txtOrderId.Text) && int.TryParse(txtOrderId.Text, out int receiptId))
-                        {
-                            // Show specific shipping receipt
-                            UpdateUI(reports.GenerateShippingReceiptReport(receiptId));
-                        }
-                        else
-                        {
-                            HandyControl.Controls.MessageBox.Show("Please enter a valid Order ID for the shipping receipt",
-                                "Report Generation", MessageBoxButton.OK, MessageBoxImage.Warning);
-                            return;
                         }
                         break;
 
@@ -275,11 +298,19 @@ namespace ISDP2025_Parfonov_Zerrou.Forms.AdminUserControls
                     case "Supplier Order":
                         string supplier = cmbSupplier.SelectedItem.ToString();
                         if (supplier == "All Suppliers") supplier = null;
-
                         bool usePageBreaks = chkPageBreakBySupplier.IsChecked == true;
 
-                        // Pass the usePageBreaks parameter to the report generator
-                        UpdateUI(reports.GenerateSupplierOrderReport(siteId, supplier, usePageBreaks));
+                        // If order ID is specified, show order details
+                        if (!string.IsNullOrWhiteSpace(txtOrderId.Text) && int.TryParse(txtOrderId.Text, out int Id))
+                        {
+                            // Show specific supplier order details
+                            UpdateUI(reports.GenerateSupplierOrderDetailReport(Id));
+                        }
+                        else
+                        {
+                            // Show list of supplier orders
+                            UpdateUI(reports.GenerateSupplierOrdersReport(startDate, endDate));
+                        }
                         break;
 
                     default:
@@ -296,6 +327,16 @@ namespace ISDP2025_Parfonov_Zerrou.Forms.AdminUserControls
         }
         private void UpdateUI(object data)
         {
+            if (data == null)
+            {
+                Growl.Warning(new GrowlInfo
+                {
+                    Message = "No Order with that ID",
+                    ShowDateTime = false,
+                    WaitTime = 2
+                });
+                return;
+            }
             dgReportData.ItemsSource = (System.Collections.IEnumerable)data;
             var count = ((System.Collections.ICollection)data).Count;
             txtRecordCount.Text = $"Records: {count}";
@@ -377,13 +418,14 @@ namespace ISDP2025_Parfonov_Zerrou.Forms.AdminUserControls
             document.Info.Title = GetReportTitle();
             document.Info.Subject = "Bullseye Inventory System Report";
             document.Info.Author = "Bullseye Inventory System";
-            PageSetup pageSetup = document.DefaultPageSetup.Clone();
 
+            // Clone the default page setup before modifying it
+            PageSetup pageSetup = document.DefaultPageSetup.Clone();
             pageSetup.Orientation = MigraDoc.DocumentObjectModel.Orientation.Landscape;
-            pageSetup.TopMargin = "1cm";
-            pageSetup.BottomMargin = "1cm";
-            pageSetup.LeftMargin = "1cm";
-            pageSetup.RightMargin = "1cm";
+            pageSetup.LeftMargin = Unit.FromCentimeter(2); // Adjust left margin
+            pageSetup.RightMargin = Unit.FromCentimeter(2); // Adjust right margin
+            pageSetup.TopMargin = Unit.FromCentimeter(2);
+            pageSetup.BottomMargin = Unit.FromCentimeter(2);
 
             // Define styles
             DefineStyles(document);
@@ -392,11 +434,10 @@ namespace ISDP2025_Parfonov_Zerrou.Forms.AdminUserControls
             CreateCoverPage(document);
 
             // Add the report data
-            AddReportContent(document);
+            AddReportContent(document, pageSetup);
 
             return document;
         }
-
 
         private void DefineStyles(Document document)
         {
@@ -534,93 +575,102 @@ namespace ISDP2025_Parfonov_Zerrou.Forms.AdminUserControls
             row.Cells[1].Format.Alignment = ParagraphAlignment.Left;
         }
 
-        private void AddReportContent(Document document)
+        private void AddReportContent(Document document, PageSetup pageSetup)
         {
             // Add a section to the document
             var section = document.AddSection();
-            section.PageSetup.Orientation = MigraDoc.DocumentObjectModel.Orientation.Landscape;
+
+            // Apply the page setup
+            section.PageSetup = pageSetup.Clone();
 
             // Add header and footer
-            // ... [existing header/footer code] ...
+            var header = section.Headers.Primary;
+            var headerParagraph = header.AddParagraph();
+            headerParagraph.AddText("Bullseye Sporting Goods");
+            headerParagraph.AddTab();
+            headerParagraph.AddText(GetReportTitle());
+
+            var footer = section.Footers.Primary;
+            var footerParagraph = footer.AddParagraph();
+            footerParagraph.AddText("Generated on: " + DateTime.Now.ToString("MM/dd/yyyy HH:mm:ss"));
+            footerParagraph.AddTab();
+            footerParagraph.AddText("Page ");
+            footerParagraph.AddPageField();
+            footerParagraph.AddText(" of ");
+            footerParagraph.AddNumPagesField();
 
             // Add report title
             var paragraph = section.AddParagraph(GetReportTitle());
             paragraph.Style = StyleNames.Heading1;
             paragraph.Format.SpaceAfter = 10;
 
-            // For supplier order with page breaks between suppliers
-            bool usePageBreaksBetweenSuppliers = false;
-            if (chkPageBreakBySupplier != null)
+            // Handle supplier order with page breaks between suppliers
+            if (cmbReportType.SelectedValue.ToString() == "Supplier Order" &&
+                chkPageBreakBySupplier.IsChecked == true &&
+                dgReportData.Items.Count > 0)
             {
-                usePageBreaksBetweenSuppliers = chkPageBreakBySupplier.IsChecked == true;
-            }
-
-            // Special case for supplier order with page breaks
-            if (cmbReportType.SelectedValue.ToString() == "Supplier Order" && usePageBreaksBetweenSuppliers)
-            {
-                // Group data by supplier
+                // Group items by supplier
                 var data = (System.Collections.IEnumerable)dgReportData.ItemsSource;
-                var suppliers = new List<string>();
+                var supplierGroups = new Dictionary<string, List<object>>();
 
-                // Extract suppliers from data
+                // Group items by supplier name
                 foreach (var item in data)
                 {
-                    var property = item.GetType().GetProperty("Supplier");
+                    var property = item.GetType().GetProperty("SupplierName");
                     if (property != null)
                     {
-                        string supplier = property.GetValue(item)?.ToString();
-                        if (!string.IsNullOrEmpty(supplier) && !suppliers.Contains(supplier))
+                        string supplierName = property.GetValue(item)?.ToString() ?? "Unknown";
+
+                        if (!supplierGroups.ContainsKey(supplierName))
                         {
-                            suppliers.Add(supplier);
+                            supplierGroups[supplierName] = new List<object>();
                         }
+
+                        supplierGroups[supplierName].Add(item);
                     }
                 }
 
-                // For each supplier, create a separate table on a new page (except first one)
-                foreach (var supplier in suppliers)
+                // Create a separate section for each supplier
+                bool isFirstSupplier = true;
+                foreach (var supplierGroup in supplierGroups)
                 {
-                    if (supplier != suppliers[0])
+                    if (!isFirstSupplier)
                     {
-                        // Add page break for subsequent suppliers
+                        // Add a new section with page break for subsequent suppliers
                         section = document.AddSection();
-                        section.PageSetup.Orientation = MigraDoc.DocumentObjectModel.Orientation.Landscape;
+                        section.PageSetup = pageSetup.Clone();
 
-                        // Add header and footer to new section
-                        var header = section.Headers.Primary;
-                        var headerParagraph = header.AddParagraph();
+                        // Add header and footer to the new section
+                        header = section.Headers.Primary;
+                        headerParagraph = header.AddParagraph();
                         headerParagraph.AddText("Bullseye Sporting Goods");
                         headerParagraph.AddTab();
                         headerParagraph.AddText(GetReportTitle());
 
-                        var footer = section.Footers.Primary;
-                        var footerParagraph = footer.AddParagraph();
+                        footer = section.Footers.Primary;
+                        footerParagraph = footer.AddParagraph();
                         footerParagraph.AddText("Generated on: " + DateTime.Now.ToString("MM/dd/yyyy HH:mm:ss"));
                         footerParagraph.AddTab();
                         footerParagraph.AddText("Page ");
                         footerParagraph.AddPageField();
                         footerParagraph.AddText(" of ");
                         footerParagraph.AddNumPagesField();
+                    }
 
-                        // Add supplier name as heading
-                        paragraph = section.AddParagraph($"Supplier: {supplier}");
-                        paragraph.Style = StyleNames.Heading2;
-                        paragraph.Format.SpaceAfter = 10;
-                    }
-                    else
-                    {
-                        // For first supplier, just add heading below report title
-                        paragraph = section.AddParagraph($"Supplier: {supplier}");
-                        paragraph.Style = StyleNames.Heading2;
-                        paragraph.Format.SpaceAfter = 10;
-                    }
+                    // Add supplier heading
+                    paragraph = section.AddParagraph($"Supplier: {supplierGroup.Key}");
+                    paragraph.Style = StyleNames.Heading2;
+                    paragraph.Format.SpaceAfter = 10;
 
                     // Create supplier-specific table
-                    CreateReportTable(section, FilterDataForSupplier(data, supplier));
+                    CreateReportTable(section, supplierGroup.Value);
+
+                    isFirstSupplier = false;
                 }
             }
             else
             {
-                // Standard report
+                // Standard report without page breaks
                 CreateReportTable(section, dgReportData.ItemsSource);
             }
         }
@@ -631,22 +681,122 @@ namespace ISDP2025_Parfonov_Zerrou.Forms.AdminUserControls
             var table = section.AddTable();
             table.Style = "Table";
             table.Borders.Width = 0.5;
-            table.Borders.Color = MigraDoc.DocumentObjectModel.Colors.Gray;
-            table.Shading.Color = MigraDoc.DocumentObjectModel.Colors.White;
+            table.Borders.Color = Colors.Gray;
+            table.Shading.Color = Colors.White;
             table.TopPadding = 3;
             table.BottomPadding = 3;
 
+            // Center the table in the section
+            table.Format.Alignment = ParagraphAlignment.Center;
+
             // Add columns to the table based on the data
-            if (data != null && ((System.Collections.ICollection)data).Count > 0)
+            if (dgReportData.Items.Count > 0)
             {
-                // [Your existing table column and data row creation code]
-                // ...
+                // Get the column headers and calculate widths
+                int columnCount = 0;
+                foreach (var column in dgReportData.Columns)
+                {
+                    if (column.Visibility == System.Windows.Visibility.Visible)
+                    {
+                        columnCount++;
+                    }
+                }
+
+                // Calculate column widths based on available page width
+                // Use slightly less than the full width to account for margins
+                double availableWidth = 24.0; // Typical usable page width in landscape mode in cm
+                double columnWidth = availableWidth / columnCount;
+
+                // Add columns with calculated widths
+                foreach (var column in dgReportData.Columns)
+                {
+                    if (column.Visibility == System.Windows.Visibility.Visible)
+                    {
+                        // Adjust width for specific columns to improve readability
+                        double width = columnWidth;
+                        string head = column.Header.ToString();
+                        // Make ID columns narrower, make Name columns wider
+                        if (head.Contains("Id") || head.Contains("ID") || head.Contains("Active") || head.Contains("Locked"))
+                            width = columnWidth * 0.7; // Make narrower
+                        else if (head.Contains("Notes") || head.Contains("Description"))
+                            width = columnWidth * 1.5; // Make wider
+                        else if (head.Contains("Email") || head.Contains("Name"))
+                            width = columnWidth * 1.3; // Make wider
+
+                        table.AddColumn(Unit.FromCentimeter(width));
+                    }
+                }
+
+                // Add header row
+                var headerRow = table.AddRow();
+                headerRow.HeadingFormat = true;
+                headerRow.Shading.Color = Colors.LightGray;
+                headerRow.Format.Font.Bold = true;
+                headerRow.Format.Alignment = ParagraphAlignment.Center;
+                headerRow.VerticalAlignment = MigraDoc.DocumentObjectModel.Tables.VerticalAlignment.Center;
+                headerRow.Height = "0.7cm";
+
+                int columnIndex = 0;
+                foreach (var column in dgReportData.Columns)
+                {
+                    if (column.Visibility == System.Windows.Visibility.Visible)
+                    {
+                        Cell cell = headerRow.Cells[columnIndex];
+                        cell.AddParagraph(column.Header.ToString());
+                        cell.Format.Alignment = ParagraphAlignment.Center;
+                        columnIndex++;
+                    }
+                }
+
+                // Add data rows
+                bool useAlternatingColor = true;
+                foreach (var item in data)
+                {
+                    var dataRow = table.AddRow();
+                    dataRow.VerticalAlignment = MigraDoc.DocumentObjectModel.Tables.VerticalAlignment.Center;
+                    dataRow.Height = "0.6cm";
+
+                    // Apply alternating row colors
+                    if (useAlternatingColor)
+                        dataRow.Shading.Color = new Color(240, 240, 240);
+
+                    useAlternatingColor = !useAlternatingColor;
+                    columnIndex = 0;
+
+                    foreach (var column in dgReportData.Columns)
+                    {
+                        if (column.Visibility == System.Windows.Visibility.Visible)
+                        {
+                            string head = column.Header.ToString();
+                            var property = item.GetType().GetProperty(head);
+
+                            if (property != null)
+                            {
+                                var value = property.GetValue(item);
+                                var cell = dataRow.Cells[columnIndex];
+                                cell.AddParagraph(value?.ToString() ?? "");
+
+                                // Center align IDs, dates, statuses, and numeric fields
+                                if (head.Contains("Id") || head.Contains("ID") ||
+                                    head.Contains("Date") || head.Contains("Status") ||
+                                    head.Contains("Emergency") || head.Contains("Active") ||
+                                    head.Contains("Locked") || head.Contains("Quantity") ||
+                                    head.Contains("CaseSize") || head.Contains("Price"))
+                                    cell.Format.Alignment = ParagraphAlignment.Center;
+                                else
+                                    cell.Format.Alignment = ParagraphAlignment.Left;
+                            }
+                            columnIndex++;
+                        }
+                    }
+                }
             }
             else
             {
                 // If no data, display a message
                 var paragraph = section.AddParagraph("No data available for this report.");
                 paragraph.Format.Font.Italic = true;
+                paragraph.Format.Alignment = ParagraphAlignment.Center;
             }
         }
 

@@ -30,7 +30,7 @@ namespace ISDP2025_Parfonov_Zerrou.Forms.AdminUserControls
             LoadSites();
             reports = new AllReports(context);
 
-            // Set default date range
+            // Set default date range (from now to 30 days ago)
             dpStartDate.SelectedDate = DateTime.Now.AddDays(-30);
             dpEndDate.SelectedDate = DateTime.Now;
         }
@@ -40,7 +40,6 @@ namespace ISDP2025_Parfonov_Zerrou.Forms.AdminUserControls
             // Load report types
             reportTypes = context.Txntypes.ToList();
 
-            // Custom report types list for more user-friendly names
             var customReportTypes = new List<object>
             {
                 new { ReportName = "Delivery Report", ReportType = "Delivery" },
@@ -61,12 +60,10 @@ namespace ISDP2025_Parfonov_Zerrou.Forms.AdminUserControls
 
         public void LoadSites()
         {
-            // Reload the current user with position information
             currentUser = context.Employees
                         .Include(e => e.Position)
                         .FirstOrDefault(e => e.EmployeeID == currentUser.EmployeeID);
 
-            // Create a list with "All Sites" option first
             var sitesList = new List<object>();
             sitesList.Add(new { SiteId = 0, SiteName = "All Sites" });
 
@@ -87,7 +84,6 @@ namespace ISDP2025_Parfonov_Zerrou.Forms.AdminUserControls
             cmbSite.DisplayMemberPath = "SiteName";
             cmbSite.SelectedValuePath = "SiteId";
 
-            // Auto-select the store manager's store or first item for other roles
             if (currentUser.Position?.PermissionLevel == "Store Manager")
             {
                 cmbSite.SelectedValue = currentUser.SiteId;
@@ -100,7 +96,6 @@ namespace ISDP2025_Parfonov_Zerrou.Forms.AdminUserControls
 
         private void chkUseDateRange_CheckedChanged(object sender, RoutedEventArgs e)
         {
-            // Enable/disable date range controls based on checkbox
             dateRangePanel.IsEnabled = chkUseDateRange.IsChecked == true;
         }
 
@@ -115,10 +110,8 @@ namespace ISDP2025_Parfonov_Zerrou.Forms.AdminUserControls
                 orderIdPanel.Visibility = Visibility.Collapsed;
                 dayOfWeekPanel.Visibility = Visibility.Collapsed;
 
-                // Enable/disable site selection based on report type
                 cmbSite.IsEnabled = reportType != "Users";
 
-                // Enable/disable date range checkbox based on report type
                 bool needsDateRange = reportType == "Delivery" ||
                                      reportType == "Store Order" ||
                                      reportType == "Emergency Order" ||
@@ -132,8 +125,8 @@ namespace ISDP2025_Parfonov_Zerrou.Forms.AdminUserControls
                 switch (reportType)
                 {
                     case "Delivery":
-                        dayOfWeekPanel.Visibility = Visibility.Visible; // Show day of week selection
-                                                                        // Make sure default is selected
+                        dayOfWeekPanel.Visibility = Visibility.Visible;
+
                         if (cmbDayOfWeek.SelectedIndex < 0)
                             cmbDayOfWeek.SelectedIndex = 0;
                         break;
@@ -422,8 +415,8 @@ namespace ISDP2025_Parfonov_Zerrou.Forms.AdminUserControls
             // Clone the default page setup before modifying it
             PageSetup pageSetup = document.DefaultPageSetup.Clone();
             pageSetup.Orientation = MigraDoc.DocumentObjectModel.Orientation.Landscape;
-            pageSetup.LeftMargin = Unit.FromCentimeter(2); // Adjust left margin
-            pageSetup.RightMargin = Unit.FromCentimeter(2); // Adjust right margin
+            pageSetup.LeftMargin = Unit.FromCentimeter(2);
+            pageSetup.RightMargin = Unit.FromCentimeter(2);
             pageSetup.TopMargin = Unit.FromCentimeter(2);
             pageSetup.BottomMargin = Unit.FromCentimeter(2);
 
@@ -717,11 +710,11 @@ namespace ISDP2025_Parfonov_Zerrou.Forms.AdminUserControls
                         string head = column.Header.ToString();
                         // Make ID columns narrower, make Name columns wider
                         if (head.Contains("Id") || head.Contains("ID") || head.Contains("Active") || head.Contains("Locked"))
-                            width = columnWidth * 0.7; // Make narrower
+                            width = columnWidth * 0.7;
                         else if (head.Contains("Notes") || head.Contains("Description"))
-                            width = columnWidth * 1.5; // Make wider
+                            width = columnWidth * 1.5;
                         else if (head.Contains("Email") || head.Contains("Name"))
-                            width = columnWidth * 1.3; // Make wider
+                            width = columnWidth * 1.3;
 
                         table.AddColumn(Unit.FromCentimeter(width));
                     }
